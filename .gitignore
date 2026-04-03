@@ -1,0 +1,22 @@
+# Secrets
+.env
+.env.bak
+secrets.env
+*.key
+*.pem
+
+# Persistente Daten (zu groß für git, per backup.sh sichern)
+pihole/config/
+homeassistant/config/
+infra/portainer_data/
+*/config/
+
+# Backups
+backups/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
