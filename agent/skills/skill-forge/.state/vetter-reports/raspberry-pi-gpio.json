@@ -1,0 +1,15 @@
+{
+  "schema_version": "2",
+  "slug": "raspberry-pi-gpio",
+  "verdict": "PASS",
+  "risk_tier": "MEDIUM",
+  "scores": {
+    "input_score": 80,
+    "static_score": 80,
+    "static_semantic_score": 50,
+    "reputation_score": 80,
+    "final_score": 80
+  },
+  "static_semantic_flags": [],
+  "timestamp": "2026-04-09T05:01:03Z"
+}

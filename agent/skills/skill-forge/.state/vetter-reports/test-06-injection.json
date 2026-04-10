@@ -1,0 +1,13 @@
+{
+  "slug": "test-06-injection",
+  "verdict": "REVIEW",
+  "risk_tier": "HIGH",
+  "scores": {
+    "input_score": 75,
+    "static_score": 75,
+    "semantic_score": 25,
+    "reputation_score": 75,
+    "final_score": 50
+  },
+  "timestamp": "2026-04-05T07:49:17Z"
+}

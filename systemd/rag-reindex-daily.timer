@@ -1,0 +1,11 @@
+[Unit]
+Description=RAG Reindex (taeglich 04:30)
+Requires=rag-reindex-daily.service
+
+[Timer]
+OnCalendar=*-*-* 04:30:00 Europe/Berlin
+Persistent=true
+RandomizedDelaySec=10min
+
+[Install]
+WantedBy=timers.target

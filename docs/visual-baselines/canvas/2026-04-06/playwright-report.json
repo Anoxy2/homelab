@@ -1,0 +1,82 @@
+{
+  "config": {
+    "configFile": "/tmp/playwright.config.js",
+    "rootDir": "/tmp",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json",
+        {
+          "outputFile": "/work/playwright-report.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "/work/playwright-junit.xml"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "",
+        "name": "",
+        "testDir": "/tmp",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.53.0",
+    "workers": 2,
+    "webServer": null
+  },
+  "suites": [],
+  "errors": [
+    {
+      "message": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- /tmp/canvas.spec.js\n- /root/.npm/_npx/67dcf0932bafa1af/node_modules/playwright/lib/transform/transform.js\n- /root/.npm/_npx/67dcf0932bafa1af/node_modules/playwright/lib/common/configLoader.js\n- /root/.npm/_npx/67dcf0932bafa1af/node_modules/playwright/lib/program.js\n- /root/.npm/_npx/67dcf0932bafa1af/node_modules/@playwright/test/cli.js",
+      "stack": "Error: Cannot find module '@playwright/test'\nRequire stack:\n- /tmp/canvas.spec.js\n- /root/.npm/_npx/67dcf0932bafa1af/node_modules/playwright/lib/transform/transform.js\n- /root/.npm/_npx/67dcf0932bafa1af/node_modules/playwright/lib/common/configLoader.js\n- /root/.npm/_npx/67dcf0932bafa1af/node_modules/playwright/lib/program.js\n- /root/.npm/_npx/67dcf0932bafa1af/node_modules/@playwright/test/cli.js\n    at Object.<anonymous> (/tmp/canvas.spec.js:1:26)",
+      "location": {
+        "file": "/tmp/canvas.spec.js",
+        "column": 26,
+        "line": 1
+      },
+      "snippet": "   at canvas.spec.js:1\n\n> 1 | const { test, expect } = require('@playwright/test');\n    |                          ^\n  2 |\n  3 | const BASE_URL = process.env.BASE_URL || 'http://192.168.2.101:8090';\n  4 | const OUT_DIR = process.env.OUT_DIR || '/work';"
+    },
+    {
+      "message": "Error: No tests found.\nMake sure that arguments are regular expressions matching test files.\nYou may need to escape symbols like \"$\" or \"*\" and quote the arguments.",
+      "stack": "Error: No tests found.\nMake sure that arguments are regular expressions matching test files.\nYou may need to escape symbols like \"$\" or \"*\" and quote the arguments."
+    }
+  ],
+  "stats": {
+    "startTime": "2026-04-06T14:50:45.009Z",
+    "duration": 54.19800000000009,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

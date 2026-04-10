@@ -1,0 +1,13 @@
+{
+  "slug": "wechat-layout-publish",
+  "verdict": "PASS",
+  "risk_tier": "MEDIUM",
+  "scores": {
+    "input_score": 78,
+    "static_score": 78,
+    "semantic_score": 50,
+    "reputation_score": 78,
+    "final_score": 78
+  },
+  "timestamp": "2026-04-04T16:11:57Z"
+}

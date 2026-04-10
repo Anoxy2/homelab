@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "runbook-maintenance output",
+  "oneOf": [
+    {
+      "description": "weekly-check result",
+      "type": "object",
+      "required": ["kind", "timestamp", "total", "failed", "status", "results"],
+      "properties": {
+        "kind": { "const": "runbook_maintenance_weekly_check" },
+        "timestamp": { "type": "string" },
+        "timeout_s": { "type": "integer" },
+        "total": { "type": "integer", "minimum": 0 },
+        "failed": { "type": "integer", "minimum": 0 },
+        "status": { "type": "string", "enum": ["ok", "needs_attention"] },
+        "results": { "type": "array", "items": { "type": "object" } }
+      },
+      "additionalProperties": true
+    },
+    {
+      "description": "maintenance checklist",
+      "type": "object",
+      "required": ["kind", "sequence"],
+      "properties": {
+        "kind": { "const": "runbook_maintenance_checklist" },
+        "sequence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["step", "action", "command"],
+            "properties": {
+              "step": { "type": "integer" },
+              "action": { "type": "string" },
+              "command": { "type": "string" },
+              "expected_duration_s": { "type": "integer" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "failover scenario",
+      "type": "object",
+      "required": ["kind", "scenario", "summary", "runbook"],
+      "properties": {
+        "kind": { "const": "runbook_failover" },
+        "scenario": { "type": "string" },
+        "summary": { "type": "string" },
+        "runbook": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  ]
+}

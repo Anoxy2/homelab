@@ -1,0 +1,13 @@
+{
+  "slug": "test-10-safe3",
+  "verdict": "PASS",
+  "risk_tier": "LOW",
+  "scores": {
+    "input_score": 85,
+    "static_score": 85,
+    "semantic_score": 50,
+    "reputation_score": 85,
+    "final_score": 85
+  },
+  "timestamp": "2026-04-05T07:49:18Z"
+}

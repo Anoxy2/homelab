@@ -1,0 +1,7 @@
+version: 1
+limits:
+  max_active_skills: 25
+  max_parallel_jobs: 2
+  max_cpu_minutes_per_run: 25
+  max_memory_mb: 512
+  canary_hours: 24

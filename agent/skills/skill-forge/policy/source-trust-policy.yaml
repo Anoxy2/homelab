@@ -1,0 +1,12 @@
+version: 1
+sources:
+  clawhub:
+    trust_tier: medium
+  clawskills:
+    trust_tier: medium
+  skills.sh:
+    trust_tier: medium
+  awesome-openclaw:
+    trust_tier: high
+  openclaw-skills:
+    trust_tier: high

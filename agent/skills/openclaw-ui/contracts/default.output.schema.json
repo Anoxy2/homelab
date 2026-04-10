@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "openclaw-ui canvas output",
+  "description": "Minimal contract for the canvas UI skill. No structured JSON dispatch; UI state is served as HTML.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "status": { "type": "string", "enum": ["ok", "error"] },
+    "message": { "type": "string" }
+  }
+}

@@ -1,0 +1,5 @@
+version: 1
+auto_freeze:
+  extreme_findings_same_source_24h: 3
+  freeze_on_policy_lint_failure: true
+manual_override_required_for_unfreeze: true

@@ -1,0 +1,156 @@
+{
+  "version": 2,
+  "updated_at": "2026-04-09",
+  "questions": [
+    {
+      "id": "services-ports",
+      "query": "Welche Services laufen auf dem Pi und auf welchen Ports?",
+      "expected_evidence": ["docs/core/services-and-ports.md", "README.md", "CLAUDE.md"]
+    },
+    {
+      "id": "growbox-humidity-thresholds",
+      "query": "Welche Zielwerte gelten fuer die Growbox-Luftfeuchtigkeit?",
+      "expected_evidence": ["growbox/THRESHOLDS.md"]
+    },
+    {
+      "id": "skill-forge-daily-check",
+      "query": "Wie fuehre ich den taeglichen Skill-Manager-Check aus?",
+      "expected_evidence": ["docs/skills/skill-forge-governance.md", "agent/skills/skill-forge/SKILL.md"]
+    },
+    {
+      "id": "pihole-risks",
+      "query": "Welche Risiken gibt es bei Pi-hole im Betrieb?",
+      "expected_evidence": ["CLAUDE.md", "docs/core/security-baseline.md", "docs/runbooks/pihole-dns-ausfall.md"]
+    },
+    {
+      "id": "update-playbook",
+      "query": "Wie sieht das OpenClaw-Update-Playbook aus?",
+      "expected_evidence": ["docs/operations/maintenance-and-backups.md"]
+    },
+    {
+      "id": "dns-outage-recovery",
+      "query": "Wie ist der Recovery-Ablauf bei Pi-hole DNS-Ausfall?",
+      "expected_evidence": ["docs/runbooks/pihole-dns-ausfall.md"]
+    },
+    {
+      "id": "openclaw-config-guard",
+      "query": "Wie schuetze ich openclaw.json vor EBUSY Race Conditions?",
+      "expected_evidence": ["docs/operations/maintenance-and-backups.md", "docs/skills/skill-forge-governance.md"]
+    },
+    {
+      "id": "nightly-check",
+      "query": "Was macht der Nightly Self-Check und wann laeuft er?",
+      "expected_evidence": ["docs/operations/maintenance-and-backups.md", "CHANGELOG.md"]
+    },
+    {
+      "id": "canary-evaluate",
+      "query": "Wie evaluiere ich einen Canary-Lauf?",
+      "expected_evidence": ["docs/skills/skill-forge-governance.md", "agent/skills/canary/SKILL.md"]
+    },
+    {
+      "id": "growbox-diary",
+      "query": "Wie wird das taegliche Growbox-Tagebuch erzeugt?",
+      "expected_evidence": ["docs/operations/maintenance-and-backups.md", "agent/skills/growbox/SKILL.md"]
+    },
+    {
+      "id": "rag-reindex-recovery",
+      "query": "Was ist der Ablauf wenn der RAG-Reindex fehlschlaegt?",
+      "expected_evidence": ["docs/runbooks/rag-reindex-failure-recovery.md"]
+    },
+    {
+      "id": "rag-quality-report",
+      "query": "Wie mache ich den RAG Qualitaetsreport am Samstag?",
+      "expected_evidence": ["docs/runbooks/rag-qualitaetsreport-samstag.md"]
+    },
+    {
+      "id": "offsite-backup",
+      "query": "Wie richte ich Restic Offsite-Backups ein?",
+      "expected_evidence": ["docs/operations/maintenance-and-backups.md"]
+    },
+    {
+      "id": "openclaw-heartbeat",
+      "query": "Was macht der OpenClaw Heartbeat?",
+      "expected_evidence": ["agent/skills/heartbeat/SKILL.md"]
+    },
+    {
+      "id": "skill-wrapper-separation",
+      "query": "Wann nutze ich scripts/skills und wann scripts/skill-forge?",
+      "expected_evidence": ["docs/skills/skill-forge-governance.md", "agent/HANDSHAKE.md"]
+    },
+    {
+      "id": "canary-criteria-versioning",
+      "query": "Wo sind die Canary-Kriterien pro Skill definiert?",
+      "expected_evidence": ["docs/skills/skill-forge-governance.md", "agent/skills/canary/SKILL.md"]
+    },
+    {
+      "id": "security-scan",
+      "query": "Wie pruefe ich verbotene Security-Patterns in Shell-Skripten?",
+      "expected_evidence": ["CHANGELOG.md", "docs/operations/session-handover.md"]
+    },
+    {
+      "id": "skill-structure-check",
+      "query": "Wie pruefe ich die Skill-Struktur im Repo?",
+      "expected_evidence": ["CHANGELOG.md", "docs/operations/session-handover.md"]
+    },
+    {
+      "id": "rag-timeouts",
+      "query": "Welche Timeouts und Fallbacks gelten fuer RAG retrieve und reindex?",
+      "expected_evidence": ["docs/skills/skill-forge-governance.md", "docs/operations/maintenance-and-backups.md"]
+    },
+    {
+      "id": "openclaw-ui-lifecycle",
+      "query": "Wie ist der Lifecycle fuer openclaw-ui?",
+      "expected_evidence": ["agent/skills/openclaw-ui/SKILL.md", "docs/openclaw/openclaw-canary-run-plan.md"]
+    },
+    {
+      "id": "self-model-identity",
+      "query": "Wer bist du und was machst du?",
+      "expected_evidence": ["agent/SELF-MODEL.md", "agent/IDENTITY.md"]
+    },
+    {
+      "id": "skill-list",
+      "query": "Welche Skills hast du aktuell und was tun sie?",
+      "expected_evidence": ["agent/SKILL-INVENTORY.md", "agent/SELF-MODEL.md"]
+    },
+    {
+      "id": "system-architecture",
+      "query": "Wie ist das Pilab-System aufgebaut und welche Komponenten gibt es?",
+      "expected_evidence": ["docs/core/system-overview.md", "docs/core/system-architecture.md"]
+    },
+    {
+      "id": "openclaw-communication",
+      "query": "Wie kommuniziert steges mit OpenClaw und umgekehrt?",
+      "expected_evidence": ["docs/openclaw/openclaw-communication.md", "agent/HANDSHAKE.md"]
+    },
+    {
+      "id": "growbox-summary",
+      "query": "Welche Alarmgrenzen gelten fuer die Growbox-Temperatur in der Bluetephase?",
+      "expected_evidence": ["growbox/THRESHOLDS.md", "growbox/GROW-SUMMARY.md"]
+    },
+    {
+      "id": "growbox-ha-entities",
+      "query": "Welche Home Assistant Entities gibt es fuer die Growbox?",
+      "expected_evidence": ["growbox/GROW-SUMMARY.md", "growbox/GROWBOX.md"]
+    },
+    {
+      "id": "system-state",
+      "query": "Was ist der aktuelle Betriebszustand des Systems?",
+      "expected_evidence": ["agent/SYSTEM-STATE.md", "agent/SELF-MODEL.md"]
+    },
+    {
+      "id": "history-recent",
+      "query": "Was wurde in den letzten Wochen am System geaendert oder verbessert?",
+      "expected_evidence": ["agent/HISTORY.md", "CHANGELOG.md"]
+    },
+    {
+      "id": "claw-send-protocol",
+      "query": "Wie uebergebe ich Aufgaben von Claude an OpenClaw?",
+      "expected_evidence": ["docs/openclaw/openclaw-communication.md", "agent/HANDSHAKE.md"]
+    },
+    {
+      "id": "growbox-diary-how",
+      "query": "Wie und wann wird das Growbox-Tagebuch automatisch erstellt?",
+      "expected_evidence": ["agent/skills/growbox/SKILL.md", "growbox/GROW-SUMMARY.md"]
+    }
+  ]
+}

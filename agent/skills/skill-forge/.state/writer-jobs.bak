@@ -1,0 +1,158 @@
+[
+  {
+    "created_at": "2026-04-04T15:20:15Z",
+    "id": "writer-1775316015",
+    "path": "/home/steges/agent/skills/skill-manager/generated/docs/playbook-fuer-pihole-dns-stoerung.md",
+    "status": "completed",
+    "task": "Playbook fuer pihole dns stoerung",
+    "type": "docs"
+  },
+  {
+    "created_at": "2026-04-04T15:20:15Z",
+    "id": "writer-1775316015",
+    "path": "/home/steges/agent/skills/skill-manager/generated/code/health-check-helper.sh",
+    "status": "completed",
+    "task": "health check helper",
+    "type": "code"
+  },
+  {
+    "created_at": "2026-04-04T15:20:30Z",
+    "id": "writer-1775316030",
+    "path": "/home/steges/agent/skills/skill-manager/generated/docs/playbook-fuer-pihole-dns-stoerung.md",
+    "status": "completed",
+    "task": "Playbook fuer pihole dns stoerung",
+    "type": "docs"
+  },
+  {
+    "created_at": "2026-04-04T15:20:30Z",
+    "id": "writer-1775316030",
+    "path": "/home/steges/agent/skills/skill-manager/generated/code/health-check-helper.sh",
+    "status": "completed",
+    "task": "health check helper",
+    "type": "code"
+  },
+  {
+    "created_at": "2026-04-04T15:21:04Z",
+    "id": "writer-1775316064-222",
+    "path": "/home/steges/agent/skills/skill-manager/generated/docs/dokumentation-healthcheck-skillmanager.md",
+    "status": "completed",
+    "task": "Dokumentation Healthcheck Skillmanager",
+    "type": "docs"
+  },
+  {
+    "created_at": "2026-04-04T15:21:13Z",
+    "id": "writer-1775316073-5649",
+    "path": "/home/steges/agent/skills/skill-manager/generated/docs/dokumentation-healthcheck-skillmanager.md",
+    "status": "completed",
+    "task": "Dokumentation Healthcheck Skillmanager",
+    "type": "docs"
+  },
+  {
+    "created_at": "2026-04-04T19:07:07Z",
+    "envelope_path": "/home/steges/agent/skills/skill-manager/generated/envelopes/healthcheck-helper-for-pi-disk.json",
+    "id": "writer-1775329627-5539",
+    "path": "/home/steges/agent/skills/skill-manager/generated/code/healthcheck-helper-for-pi-disk.sh",
+    "review_verdict": "pass",
+    "reviewed": true,
+    "schema_version": "1",
+    "status": "completed",
+    "task": "healthcheck helper for pi disk",
+    "type": "code"
+  },
+  {
+    "created_at": "2026-04-04T19:07:15Z",
+    "envelope_path": "/home/steges/agent/skills/skill-manager/generated/envelopes/smoke-test-for-coding-skill.json",
+    "id": "writer-1775329635-5946",
+    "path": "/home/steges/agent/skills/skill-manager/generated/test/smoke-test-for-coding-skill.sh",
+    "review_verdict": "pass",
+    "reviewed": true,
+    "schema_version": "1",
+    "status": "completed",
+    "task": "smoke test for coding skill",
+    "type": "test"
+  },
+  {
+    "created_at": "2026-04-04T19:25:22Z",
+    "envelope_path": "/home/steges/agent/skills/skill-manager/generated/envelopes/smoke-wrapper-parity.json",
+    "id": "writer-1775330722-4061",
+    "path": "/home/steges/agent/skills/skill-manager/generated/docs/smoke-wrapper-parity.md",
+    "review_verdict": "pass",
+    "reviewed": true,
+    "schema_version": "1",
+    "status": "completed",
+    "task": "smoke wrapper parity",
+    "type": "docs"
+  },
+  {
+    "created_at": "2026-04-04T19:25:22Z",
+    "envelope_path": "/home/steges/agent/skills/skill-manager/generated/envelopes/smoke-wrapper-parity-manager.json",
+    "id": "writer-1775330722-167",
+    "path": "/home/steges/agent/skills/skill-manager/generated/docs/smoke-wrapper-parity-manager.md",
+    "review_verdict": "pass",
+    "reviewed": true,
+    "schema_version": "1",
+    "status": "completed",
+    "task": "smoke wrapper parity manager",
+    "type": "docs"
+  },
+  {
+    "created_at": "2026-04-06T12:20:31Z",
+    "envelope_path": "/home/steges/agent/skills/skill-manager/generated/envelopes/test-task-for-output-validation.json",
+    "id": "writer-1775478031-4050",
+    "path": "/home/steges/agent/skills/skill-manager/generated/docs/test-task-for-output-validation.md",
+    "review_verdict": "pass",
+    "reviewed": true,
+    "schema_version": "1",
+    "status": "completed",
+    "task": "test task for output validation",
+    "type": "docs"
+  },
+  {
+    "created_at": "2026-04-06T12:20:34Z",
+    "envelope_path": "/home/steges/agent/skills/skill-manager/generated/envelopes/test-json-output.json",
+    "id": "writer-1775478034-4932",
+    "path": "/home/steges/agent/skills/skill-manager/generated/docs/test-json-output.md",
+    "review_verdict": "pass",
+    "reviewed": true,
+    "schema_version": "1",
+    "status": "completed",
+    "task": "test json output",
+    "type": "docs"
+  },
+  {
+    "created_at": "2026-04-06T12:20:40Z",
+    "envelope_path": "/home/steges/agent/skills/skill-manager/generated/envelopes/slug-collision-test.json",
+    "id": "writer-1775478040-7611",
+    "path": "/home/steges/agent/skills/skill-manager/generated/docs/slug-collision-test.md",
+    "review_verdict": "pass",
+    "reviewed": true,
+    "schema_version": "1",
+    "status": "completed",
+    "task": "slug collision test",
+    "type": "docs"
+  },
+  {
+    "created_at": "2026-04-06T12:20:40Z",
+    "envelope_path": "/home/steges/agent/skills/skill-manager/generated/envelopes/slug-collision-test-20260406122040.json",
+    "id": "writer-1775478040-5735",
+    "path": "/home/steges/agent/skills/skill-manager/generated/docs/slug-collision-test-20260406122040.md",
+    "review_verdict": "pass",
+    "reviewed": true,
+    "schema_version": "1",
+    "status": "completed",
+    "task": "slug collision test",
+    "type": "docs"
+  },
+  {
+    "created_at": "2026-04-06T12:20:46Z",
+    "envelope_path": "/home/steges/agent/skills/skill-manager/generated/envelopes/slug-collision-test-20260406122046.json",
+    "id": "writer-1775478046-5802",
+    "path": "/home/steges/agent/skills/skill-manager/generated/docs/slug-collision-test-20260406122046.md",
+    "review_verdict": "pass",
+    "reviewed": true,
+    "schema_version": "1",
+    "status": "completed",
+    "task": "slug collision test",
+    "type": "docs"
+  }
+]

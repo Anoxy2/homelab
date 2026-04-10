@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["job_id", "path", "status", "review_verdict"],
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "description": "Unique job identifier, format: writer-<timestamp>-<hash>"
+    },
+    "path": {
+      "type": "string",
+      "description": "Absolute path to the generated artifact file"
+    },
+    "envelope_path": {
+      "type": "string",
+      "description": "Absolute path to the envelope JSON file"
+    },
+    "status": {
+      "enum": ["completed", "pending-review"],
+      "description": "completed = reviewer gave Go; pending-review = reviewer gave No-Go, steges must approve"
+    },
+    "review_verdict": {
+      "type": "string",
+      "description": "pass = Go; fail:<reason> = No-Go"
+    },
+    "reviewed": {
+      "type": "boolean",
+      "description": "Whether the artifact passed through the reviewer phase"
+    },
+    "kind": {
+      "enum": ["code", "config", "docs", "test"],
+      "description": "Artifact type"
+    },
+    "task": {
+      "type": "string",
+      "description": "Original task description"
+    }
+  }
+}

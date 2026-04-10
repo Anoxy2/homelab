@@ -1,0 +1,16 @@
+[Unit]
+Description=Wöchentliche Backup-Verifikation
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=steges
+WorkingDirectory=/home/steges
+ExecStart=/home/steges/scripts/backup-verify.sh
+TimeoutStartSec=120
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=backup-verify
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,638 @@
+[
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict",
+    "slug": "test-suspicious",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "deep-scan-demo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=eval",
+    "slug": "test-02-eval",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=exec,network-fetch",
+    "slug": "test-03-exec",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=sudo-noninteractive",
+    "slug": "test-04-sudo",
+    "source": "auto-promote"
+  },
+  {
+    "added": "2026-04-06",
+    "reason": "extreme verdict flags=network-fetch sem=purpose-mismatch",
+    "slug": "test-08-mismatch",
+    "source": "auto-promote"
+  }
+]

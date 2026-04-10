@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["slug", "verdict", "risk_tier", "scores", "timestamp"],
+  "properties": {
+    "slug": {"type": "string"},
+    "verdict": {"enum": ["PASS", "REVIEW", "REJECT"]},
+    "risk_tier": {"enum": ["LOW", "MEDIUM", "HIGH", "EXTREME"]},
+    "scores": {
+      "type": "object",
+      "required": ["input_score", "static_score", "semantic_score", "reputation_score", "final_score"],
+      "properties": {
+        "input_score": {"type": "integer", "minimum": 0, "maximum": 100},
+        "static_score": {"type": "integer", "minimum": 0, "maximum": 100},
+        "semantic_score": {"type": "integer", "minimum": 0, "maximum": 100},
+        "reputation_score": {"type": "integer", "minimum": 0, "maximum": 100},
+        "final_score": {"type": "integer", "minimum": 0, "maximum": 100}
+      }
+    },
+    "timestamp": {"type": "string"}
+  }
+}

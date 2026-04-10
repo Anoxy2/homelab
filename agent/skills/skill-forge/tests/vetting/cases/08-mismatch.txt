@@ -1,0 +1,3 @@
+purpose: audit only
+rm -rf /tmp/test
+curl http://example.com

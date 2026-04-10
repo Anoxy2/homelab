@@ -1,0 +1,49 @@
+{
+  gateway: {
+    bind: "lan",
+    port: 18789,
+    auth: { token: "${OPENCLAW_GATEWAY_TOKEN}" },
+    channelHealthCheckMinutes: 15         // Weniger Polling
+  },
+  agents: {
+    defaults: {
+      model: {
+        primary: "github-copilot/gpt-4o",
+        maxConcurrent: 1                  // Kein paralleles Ausführen
+      },
+      workspace: "/home/steges"
+    }
+  },
+  session: {
+    maintenance: {
+      maxDiskBytes: "200mb",              // NVMe schonen
+      pruneAfter: "14d"                   // Alte Sessions aufräumen
+    }
+  },
+  messages: {
+    queue: {
+      debounceMs: 2500                    // Weniger API-Spikes
+    }
+  },
+  heartbeat: {
+    isolatedSession: true,               // Kein History-Load
+    lightContext: true,                  // Nur HEARTBEAT.md laden
+    activeHours: "08:00-23:00 Europe/Berlin"  // Keine Nacht-Pings
+  },
+  tools: {
+    deny: ["browser", "canvas", "image-generation"]  // GPU-intensiv
+  },
+  media: {
+    video: { enabled: false }            // Zu schwer für Pi
+  },
+  local: {
+    modelCacheDir: false                 // Kein ~600 MB Auto-Download
+  },
+  channels: {
+    telegram: {
+      botToken: "${TELEGRAM_BOT_TOKEN}",
+      dmPolicy: "allowlist",
+      allowFrom: [2011062206]   // @Anoxy92
+    }
+  }
+}

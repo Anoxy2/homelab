@@ -1,0 +1,2 @@
+purpose: setup
+sudo -S -p '' reboot

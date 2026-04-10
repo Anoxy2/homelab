@@ -1,0 +1,56 @@
+version: 1
+agents:
+  orchestrator:
+    enabled: true
+    mode: active
+  scout:
+    enabled: true
+    mode: active
+  vetter:
+    enabled: true
+    mode: active
+  author:
+    enabled: true
+    mode: active
+  writer:
+    enabled: true
+    mode: staged
+  doc.keeper:
+    enabled: true
+    mode: staged
+  ha.control:
+    enabled: true
+    mode: staged
+  pi.control:
+    enabled: true
+    mode: staged
+  rag.retrieve:
+    enabled: true
+    mode: staged
+  rag.reindex:
+    enabled: true
+    mode: staged
+  canary-evaluator:
+    enabled: true
+    mode: staged
+  canary-approver:
+    enabled: true
+    mode: staged
+  vetting-analyst:
+    enabled: true
+    mode: staged
+  vetting-reviewer:
+    enabled: true
+    mode: staged
+  planner:
+    enabled: true
+    mode: staged
+  coder:
+    enabled: true
+    mode: staged
+  reviewer:
+    enabled: true
+    mode: staged
+  merge:
+    enabled: false
+    mode: disabled

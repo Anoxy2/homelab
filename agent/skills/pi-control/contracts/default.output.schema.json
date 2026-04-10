@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "pi-control status output",
+  "description": "Pi-control scripts output human-readable text. This contract documents the structured disk metric output from disk.sh.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "status": { "type": "string", "enum": ["ok", "warn", "error"] },
+    "message": { "type": "string" }
+  }
+}

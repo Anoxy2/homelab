@@ -1,0 +1,56 @@
+version: 1
+shadow_mode_days: 14
+canary:
+  enabled: true
+  window_hours: 24
+  hard_min_hours: 24
+  max_triggers_per_day: 5
+promote_canary_to_active:
+  require_no_high_or_extreme_events: true
+  require_no_trigger_conflict: true
+  allow_emergency: true
+  emergency_requires_reason: true
+
+# Maschinenlesbare Entscheidungstabelle fuer canary-dispatch.sh
+# Bedingungen werden top-to-bottom ausgewertet; erste Uebereinstimmung gewinnt.
+decision_table:
+  - id: freeze_active
+    condition: freeze_enabled
+    recommendation: fail
+    failure_class: freeze_fail
+    confidence: 100
+  - id: status_not_running
+    condition: status != running
+    recommendation: extend
+    failure_class: none
+    confidence: 40
+  - id: signal_fail
+    condition: require_no_high_or_extreme_events AND high_events > 0
+    recommendation: fail
+    failure_class: signal_fail
+    confidence: 95
+  - id: conflict_fail
+    condition: require_no_trigger_conflict AND conflict_count > 0
+    recommendation: fail
+    failure_class: conflict_fail
+    confidence: 90
+  - id: policy_fail
+    condition: trigger_count >= max_triggers_per_day
+    recommendation: fail
+    failure_class: policy_fail
+    confidence: 88
+  - id: window_too_young
+    condition: window_pct < 25
+    recommendation: extend
+    failure_class: none
+    confidence: 70
+  - id: window_expired
+    condition: window_expired
+    recommendation: promote
+    failure_class: none
+    confidence: 90
+  - id: default
+    condition: default
+    recommendation: promote
+    failure_class: none
+    confidence: 85

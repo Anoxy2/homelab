@@ -1,0 +1,20 @@
+[Unit]
+Description=Backup Automation - GitHub + USB
+After=network.target mnt-usb\x2dbackup.mount
+Requires=mnt-usb\x2dbackup.mount
+
+[Service]
+Type=oneshot
+ExecStart=/home/steges/agent/skills/backup-automation/scripts/backup-full.sh
+User=steges
+Group=steges
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=backup-automation
+
+# Environment
+Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+Environment="HOME=/home/steges"
+
+[Install]
+WantedBy=multi-user.target

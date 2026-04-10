@@ -1,0 +1,12 @@
+[Unit]
+Description=OpenClaw autonomer Heartbeat (2x täglich)
+Requires=openclaw-heartbeat.service
+
+[Timer]
+# 07:00 und 19:00 Europe/Berlin
+OnCalendar=*-*-* 07,19:00:00 Europe/Berlin
+Persistent=true
+RandomizedDelaySec=5min
+
+[Install]
+WantedBy=timers.target

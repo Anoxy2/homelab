@@ -1,21 +1,56 @@
-# Secrets
+# Whitelist-Modell: standardmaessig alles ignorieren
+*
+
+# Repo-Metadaten und Kernfiles erlauben
+!.gitignore
+!.github/
+!.github/**
+!README.md
+!CLAUDE.md
+!CHANGELOG.md
+!docker-compose.yml
+!index.md
+
+# Arbeitsbereiche erlauben
+!docs/
+!docs/**
+!scripts/
+!scripts/**
+!agent/
+!agent/**
+!growbox/
+!growbox/**
+!systemd/
+!systemd/**
+!infra/
+!infra/openclaw.json
+
+# Explizite Blacklist fuer bekannte sensible/volatile Inhalte
 .env
 .env.bak
 secrets.env
 *.key
 *.pem
-
-# Persistente Daten (zu groß für git, per backup.sh sichern)
 pihole/config/
 homeassistant/config/
+esphome/config/
+esphome/config/secrets.yaml
+mosquitto/config/passwd
+mosquitto/data/
+mosquitto/log/
+tailscale/state/
+infra/openclaw-data/
 infra/portainer_data/
-*/config/
-
-# Backups
+agent/skills/skill-manager/.state/
+agent/memory/
 backups/
-
-# Logs
+caddy/data/
+**/__pycache__/
+*.pyc
 *.log
+homeassistant/config/home-assistant_v2.db
+homeassistant/config/home-assistant.log*
+docs/operations/doc-keeper-latest.md
 
 # OS
 .DS_Store

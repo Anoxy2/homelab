@@ -1,0 +1,16 @@
+[Unit]
+Description=OpenClaw stack via docker compose
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/steges
+RemainAfterExit=yes
+ExecStart=/usr/bin/docker compose up -d openclaw
+ExecStop=/usr/bin/docker compose stop openclaw
+TimeoutStartSec=300
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "planner output",
+  "type": "object",
+  "required": ["artifact_type", "filename", "task", "constraints", "acceptance_criteria"],
+  "additionalProperties": false,
+  "properties": {
+    "artifact_type": {"type": "string", "enum": ["code", "config", "docs", "test"]},
+    "filename": {"type": "string", "minLength": 3},
+    "task": {"type": "string", "minLength": 1},
+    "constraints": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "acceptance_criteria": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+  }
+}

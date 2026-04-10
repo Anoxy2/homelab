@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["slug", "semantic_delta", "flags", "rationale"],
+  "properties": {
+    "slug": {"type": "string"},
+    "semantic_delta": {
+      "type": "integer",
+      "minimum": -20,
+      "maximum": 10,
+      "description": "Semantischer Score-Delta: negativ = Risiko-Erhöhung, positiv = Vertrauen-Erhöhung"
+    },
+    "flags": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Erkannte Risiko-Flags: purpose-mismatch, prompt-injection-like, broad-permissions, cross-file-mismatch"
+    },
+    "rationale": {
+      "type": "string",
+      "description": "Begründung des Score-Deltas in 1-3 Sätzen"
+    }
+  }
+}

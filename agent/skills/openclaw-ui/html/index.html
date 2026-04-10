@@ -1,0 +1,1308 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0a0d13" />
+<link rel="manifest" href="/manifest.json" />
+<title>OpenClaw Canvas</title>
+<style>
+  :root {
+    --bg0: #0a0d13;
+    --bg1: #111827;
+    --card: rgba(255, 255, 255, 0.05);
+    --border: rgba(255, 255, 255, 0.14);
+    --text: #f8fafc;
+    --muted: #a8b3c6;
+    --ok: #39d98a;
+    --warn: #f7b955;
+    --bad: #ff6b6b;
+    --accent: #2dd4bf;
+    --nav-h: 52px;
+  }
+
+  body.light-mode {
+    --bg0: #f3f6fa;
+    --bg1: #e6edf6;
+    --card: rgba(255, 255, 255, 0.82);
+    --border: rgba(14, 25, 45, 0.18);
+    --text: #0f172a;
+    --muted: #4b5563;
+    --ok: #14884d;
+    --warn: #9a6400;
+    --bad: #b42318;
+    --accent: #0f766e;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    color: var(--text);
+    font: 15px/1.45 "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    background:
+      radial-gradient(circle at 15% 15%, rgba(45, 212, 191, 0.22), transparent 35%),
+      radial-gradient(circle at 85% 10%, rgba(96, 165, 250, 0.18), transparent 30%),
+      linear-gradient(160deg, var(--bg0), var(--bg1));
+    background-attachment: fixed;
+  }
+
+  /* ── Navbar ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--nav-h);
+    background: rgba(10, 13, 19, 0.88);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 4px;
+    z-index: 100;
+  }
+
+  .nav-brand {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.3px;
+    margin-right: 12px;
+    white-space: nowrap;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2px;
+    flex: 1;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .nav-link {
+    flex: 0 0 auto;
+    padding: 6px 11px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    border: none;
+    background: none;
+    transition: color 120ms, background 120ms;
+    white-space: nowrap;
+  }
+
+  .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.07); }
+  .nav-link.active { color: var(--accent); background: rgba(45, 212, 191, 0.12); }
+
+  .nav-clock {
+    font-size: 12px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    margin-left: auto;
+  }
+
+  /* ── Pages ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .wrap {
+    padding: calc(var(--nav-h) + 20px) 20px 20px;
+    min-height: 100%;
+  }
+
+  .inner {
+    max-width: 980px;
+    margin: 0 auto;
+  }
+
+  /* ── Cards / Panes ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(3px);
+  }
+
+  .pane {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: rgba(0, 0, 0, 0.24);
+    padding: 12px;
+  }
+
+  .pane h2 {
+    margin: 0 0 10px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+  }
+
+  .page-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .page-title h1 { margin: 0; font-size: 22px; letter-spacing: 0.2px; }
+  .page-title .sub { color: var(--muted); font-size: 13px; }
+
+  /* ── Grid ── */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* ── Chips ── */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    padding: 6px 9px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 12px;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .chip.ok  { border-color: rgba(57, 217, 138, 0.7);  color: var(--ok); }
+  .chip.warn{ border-color: rgba(247, 185, 85, 0.7);  color: var(--warn); }
+  .chip.bad { border-color: rgba(255, 107, 107, 0.7); color: var(--bad); }
+
+  /* ── Metrics ── */
+  .metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .metric {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .metric .k { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; }
+  .metric .v { font-size: 15px; font-weight: 700; margin-top: 2px; }
+  .metric .v.ok { color: var(--ok); }
+  .metric .v.warn { color: var(--warn); }
+  .metric .v.bad { color: var(--bad); }
+
+  /* ── Buttons ── */
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  button {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text);
+    padding: 9px 11px;
+    border-radius: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+  }
+  button:hover { background: rgba(45, 212, 191, 0.15); border-color: rgba(45, 212, 191, 0.6); }
+  button:active { transform: translateY(1px); }
+  button.primary { background: rgba(45, 212, 191, 0.2); border-color: rgba(45, 212, 191, 0.5); color: var(--accent); }
+  button.primary:hover { background: rgba(45, 212, 191, 0.3); }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  /* ── Timeline ── */
+  .timeline {
+    margin: 0; padding: 0; list-style: none;
+    display: grid; gap: 6px;
+    max-height: 180px; overflow: auto;
+  }
+  .timeline li {
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 7px;
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  /* ── Dashboard Expanded ── */
+  .control-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .control-row .state { font-size: 12px; color: var(--muted); }
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .kpi {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .kpi .k { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; }
+  .kpi .v { font-size: 16px; font-weight: 700; margin-top: 2px; }
+  .kpi .v.ok { color: var(--ok); }
+  .kpi .v.warn { color: var(--warn); }
+  .kpi .v.bad { color: var(--bad); }
+  .service-table-wrap {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.2);
+  }
+  .service-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .service-table th,
+  .service-table td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 7px 8px;
+    text-align: left;
+    vertical-align: middle;
+  }
+  .service-table th {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .service-table tr:last-child td { border-bottom: none; }
+  .service-state { font-weight: 700; }
+  .service-state.ok { color: var(--ok); }
+  .service-state.warn { color: var(--warn); }
+  .service-state.bad { color: var(--bad); }
+  .service-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .service-link:hover { text-decoration: underline; }
+  .alert-feed {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 6px;
+    max-height: 160px;
+    overflow: auto;
+  }
+  .alert-feed li {
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 7px;
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.2);
+  }
+  .alert-feed li.ok { border-color: rgba(57, 217, 138, 0.6); }
+  .alert-feed li.warn { border-color: rgba(247, 185, 85, 0.7); }
+  .alert-feed li.bad { border-color: rgba(255, 107, 107, 0.8); }
+
+  .doc-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 8px;
+  }
+  .doc-list li {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 10px;
+    background: rgba(0, 0, 0, 0.2);
+    font-size: 13px;
+  }
+  .doc-list-empty {
+    color: var(--muted);
+  }
+  .doc-card-grid {
+    display: grid;
+    gap: 10px;
+  }
+  .doc-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.2);
+  }
+  .doc-card h3 {
+    margin: 0 0 6px;
+    font-size: 15px;
+  }
+  .doc-card-empty {
+    color: var(--muted);
+  }
+  .doc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 6px;
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .doc-body,
+  .doc-outcome,
+  .doc-note {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .doc-outcome {
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .doc-note {
+    color: var(--warn);
+    margin-bottom: 6px;
+  }
+  .doc-mini-list {
+    margin: 8px 0 0;
+    padding-left: 18px;
+    display: grid;
+    gap: 4px;
+    font-size: 12px;
+  }
+
+  /* ── Log ── */
+  .log {
+    margin-top: 12px;
+    white-space: pre-wrap;
+    font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 10px;
+    min-height: 70px;
+  }
+
+  .foot { margin-top: 8px; color: var(--muted); font-size: 12px; }
+
+  /* ── Chat ── */
+  .chat-history {
+    height: 340px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px 0;
+    margin-bottom: 12px;
+  }
+  .chat-msg {
+    max-width: 85%;
+    padding: 9px 12px;
+    border-radius: 13px;
+    font-size: 13px;
+    line-height: 1.5;
+    border: 1px solid var(--border);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .chat-msg.user { align-self: flex-end; background: rgba(45, 212, 191, 0.12); border-color: rgba(45, 212, 191, 0.3); }
+  .chat-msg.agent { align-self: flex-start; background: rgba(0, 0, 0, 0.3); }
+  .chat-msg.error { align-self: flex-start; border-color: rgba(255, 107, 107, 0.4); color: var(--bad); }
+  .chat-input-row { display: flex; gap: 8px; }
+  .chat-input-row textarea {
+    flex: 1;
+    resize: none;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    color: var(--text);
+    font: 14px/1.45 "Segoe UI", system-ui, sans-serif;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color 120ms;
+    height: 64px;
+    min-height: 44px;
+  }
+  .chat-input-row textarea:focus { border-color: rgba(45, 212, 191, 0.5); }
+  .chat-input-row textarea::placeholder { color: var(--muted); }
+
+  /* ── MQTT Browser ── */
+  .mqtt-stream {
+    height: 260px;
+    overflow-y: auto;
+    font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 10px;
+  }
+  .mqtt-msg { margin: 0 0 4px; }
+  .mqtt-msg .ts { color: var(--muted); margin-right: 6px; }
+  .mqtt-msg .topic { color: var(--accent); margin-right: 6px; }
+  .mqtt-msg .payload { color: var(--text); }
+  .mqtt-status {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 10px; font-size: 13px;
+  }
+  .mqtt-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--bad);
+    flex-shrink: 0;
+    transition: background 300ms;
+  }
+  .mqtt-dot.connected { background: var(--ok); }
+  .mqtt-dot.connecting { background: var(--warn); }
+
+  .publish-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .publish-row input {
+    flex: 1;
+    min-width: 120px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    color: var(--text);
+    font: 13px/1.4 "Segoe UI", system-ui, sans-serif;
+    padding: 7px 10px;
+    outline: none;
+    transition: border-color 120ms;
+  }
+  .publish-row input:focus { border-color: rgba(45, 212, 191, 0.5); }
+  .publish-row input::placeholder { color: var(--muted); }
+
+  /* ── RAG ── */
+  .rag-search-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .rag-search-row input {
+    flex: 1;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    color: var(--text);
+    font: 14px/1.4 "Segoe UI", system-ui, sans-serif;
+    padding: 9px 14px;
+    outline: none;
+    transition: border-color 120ms;
+  }
+  .rag-search-row input:focus { border-color: rgba(45, 212, 191, 0.5); }
+  .rag-search-row input::placeholder { color: var(--muted); }
+
+  .rag-results { display: grid; gap: 8px; }
+  .rag-result {
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 10px 12px;
+    background: rgba(0,0,0,0.2);
+    font-size: 13px;
+  }
+  .rag-result .rag-meta { color: var(--muted); font-size: 11px; margin-bottom: 4px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .rag-result .rag-source { color: var(--accent); }
+  .rag-result .rag-score { }
+  .rag-result .rag-body { white-space: pre-wrap; word-break: break-word; line-height: 1.5; }
+  .rag-empty { color: var(--muted); font-size: 13px; text-align: center; padding: 24px 0; }
+
+  .index-status-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .index-stat { font-size: 12px; color: var(--muted); }
+  .index-stat strong { color: var(--text); }
+
+  /* ── Settings ── */
+  .settings-section { margin-bottom: 20px; }
+  .settings-section h3 { margin: 0 0 10px; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; }
+  .settings-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row label { flex: 1; font-size: 13px; }
+  .settings-row label .hint { display: block; color: var(--muted); font-size: 11px; margin-top: 1px; }
+  .settings-row input[type="number"],
+  .settings-row input[type="text"],
+  .settings-row input[type="password"] {
+    width: 90px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font: 13px/1.4 "Segoe UI", system-ui, sans-serif;
+    padding: 6px 9px;
+    outline: none;
+    transition: border-color 120ms;
+    text-align: right;
+  }
+  .settings-row input:focus { border-color: rgba(45, 212, 191, 0.5); }
+  .save-row { display: flex; justify-content: flex-end; margin-top: 12px; }
+  .settings-notice { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  @media (max-width: 480px) {
+    .wrap { padding: calc(var(--nav-h) + 10px) 10px 10px; }
+    .card { padding: 11px; }
+    .page-title h1 { font-size: 18px; }
+    .actions button { width: 100%; }
+    .nav-link { padding: 5px 8px; font-size: 12px; }
+    .nav-brand { font-size: 13px; margin-right: 4px; }
+    .kpi-grid { grid-template-columns: 1fr; }
+    .service-table { font-size: 11px; }
+  }
+  /* 390px (iPhone 14 Pro/15, Samsung S23) */
+  @media (max-width: 390px) {
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .metric .v { font-size: 18px; }
+  }
+  /* 360px (Samsung base, small Android) */
+  @media (max-width: 360px) {
+    .metrics { grid-template-columns: 1fr 1fr; gap: 6px; }
+    .metric { padding: 5px; }
+    .metric .v { font-size: 16px; }
+    .nav-link span { display: none; }
+    .nav-link { padding: 5px; }
+  }
+  @media (max-width: 380px) {
+    button, input, textarea {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    .nav-link { font-size: 11px; padding: 4px 6px; }
+    .card { padding: 9px; }
+    .metric { padding: 6px; }
+    .chip { padding: 4px 8px; font-size: 11px; }
+    .settings-row input[type="number"],
+    .settings-row input[type="text"],
+    .settings-row input[type="password"] {
+      width: 70px;
+    }
+  }
+
+  /* ── Global Error Banner ── */
+  #global-error-banner { display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+    padding: 7px 16px; font-size: 13px; font-weight: 600; letter-spacing: 0.3px;
+    align-items: center; justify-content: space-between; gap: 8px; }
+  #global-error-banner.visible { display: flex !important; }
+  #global-error-banner.type-network  { background: #7f1d1d; color: #fca5a5; border-bottom: 1px solid #ef4444; }
+  #global-error-banner.type-auth     { background: #78350f; color: #fcd34d; border-bottom: 1px solid #f59e0b; }
+  #global-error-banner.type-timeout  { background: #1e3a5f; color: #93c5fd; border-bottom: 1px solid #3b82f6; }
+  #global-error-banner.type-schema   { background: #3b0764; color: #d8b4fe; border-bottom: 1px solid #a855f7; }
+  #global-error-banner .banner-dismiss { cursor: pointer; opacity: 0.7; font-size: 16px; line-height: 1; background: none; border: none; color: inherit; padding: 0 2px; }
+  #global-error-banner .banner-dismiss:hover { opacity: 1; }
+  body.has-global-banner nav { margin-top: 34px; }
+  @media (max-width: 480px) {
+    #global-error-banner { padding: 5px 12px; font-size: 12px; }
+  }
+  @media (max-width: 380px) {
+    #global-error-banner { flex-direction: column; align-items: flex-start; gap: 4px; }
+    #global-error-banner span { word-break: break-word; }
+  }
+
+  /* ── Skill Scout / Health / Metrics ── */
+  .skill-table-wrap {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    overflow-x: auto;
+    background: rgba(0, 0, 0, 0.2);
+  }
+  .skill-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .skill-table th,
+  .skill-table td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 6px 8px;
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  .skill-table th {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .skill-table tr:last-child td { border-bottom: none; }
+  .skill-empty { color: var(--muted); text-align: center; padding: 14px 0; font-size: 12px; }
+  .st {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid transparent;
+  }
+  .st-ok     { border-color: rgba(57,217,138,0.6);  color: var(--ok); }
+  .st-warn   { border-color: rgba(247,185,85,0.6);  color: var(--warn); }
+  .st-bad    { border-color: rgba(255,107,107,0.7); color: var(--bad); }
+  .st-canary { border-color: rgba(45,212,191,0.5);  color: var(--accent); }
+  .skill-block {
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+  .skill-block-ok  { background: rgba(57,217,138,0.08);  border: 1px solid rgba(57,217,138,0.4);  color: var(--ok); }
+  .skill-block-bad { background: rgba(255,107,107,0.10); border: 1px solid rgba(255,107,107,0.5); color: var(--bad); }
+  .sparkline-pane {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: rgba(0,0,0,0.22);
+  }
+  .sparkline-pane h3 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); }
+  .sparkline-pane svg { display: block; width: 100%; height: 60px; }
+
+  /* ── Spinner Animation ── */
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+</style>
+
+<!-- Global error banner (hidden by default, shown via .visible class) -->
+<div id="global-error-banner" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+<!-- Keyboard Shortcuts Modal -->
+<div id="shortcuts-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:9998;align-items:center;justify-content:center;" role="dialog" aria-labelledby="shortcuts-title" aria-hidden="true">
+  <div style="background:var(--bg1);border:1px solid var(--border);border-radius:18px;padding:24px;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.5);max-height:80vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 id="shortcuts-title" style="margin:0;font-size:18px;">Keyboard Shortcuts</h2>
+      <button id="shortcuts-close" style="background:none;border:none;color:var(--text);font-size:24px;cursor:pointer;padding:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;" aria-label="Close shortcuts">&times;</button>
+    </div>
+    <div style="display:grid;gap:12px;font-size:13px;">
+      <div><kbd style="background:rgba(255,255,255,0.1);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-family:monospace;font-weight:600;color:var(--accent);">1-5</kbd><span style="margin-left:8px;color:var(--text);">Switch to Dashboard / Chat / MQTT / RAG / Settings</span></div>
+      <div><kbd style="background:rgba(255,255,255,0.1);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-family:monospace;font-weight:600;color:var(--accent);">R</kbd><span style="margin-left:8px;color:var(--text);">Refresh Health &amp; Growbox (from Dashboard)</span></div>
+      <div><kbd style="background:rgba(255,255,255,0.1);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-family:monospace;font-weight:600;color:var(--accent);">?</kbd><span style="margin-left:8px;color:var(--text);">Show this help panel</span></div>
+      <div><kbd style="background:rgba(255,255,255,0.1);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-family:monospace;font-weight:600;color:var(--accent);">Esc</kbd><span style="margin-left:8px;color:var(--text);">Close any open modal or blur active input</span></div>
+      <div><kbd style="background:rgba(255,255,255,0.1);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-family:monospace;font-weight:600;color:var(--accent);">Enter</kbd><span style="margin-left:8px;color:var(--text);color:var(--muted);">(in Chat/RAG search) Send message / search</span></div>
+      <div><kbd style="background:rgba(255,255,255,0.1);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-family:monospace;font-weight:600;color:var(--accent);">Shift+Enter</kbd><span style="margin-left:8px;color:var(--text);color:var(--muted);">(in Chat) New line instead of send</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Navbar -->
+<nav role="navigation" aria-label="Main navigation">
+  <span class="nav-brand">OpenClaw</span>
+  <div class="nav-links">
+    <button class="nav-link active" data-page="dashboard" aria-current="page">Dashboard</button>
+    <button class="nav-link" data-page="chat">Chat</button>
+    <button class="nav-link" data-page="mqtt">MQTT</button>
+    <button class="nav-link" data-page="rag">RAG</button>
+    <button class="nav-link" data-page="scout">Scout</button>
+    <button class="nav-link" data-page="health">Health</button>
+    <button class="nav-link" data-page="metrics">Metrics</button>
+    <button class="nav-link" data-page="operations">Operations</button>
+    <button class="nav-link" data-page="decisions">Decisions</button>
+    <button class="nav-link" data-page="runbooks">Runbooks</button>
+    <button class="nav-link" data-page="settings">Settings</button>
+  </div>
+  <div class="nav-clock" id="clock" aria-label="Current time">--:--:--</div>
+</nav>
+
+<!-- ════════════════════════════════════════ DASHBOARD ══ -->
+<div class="wrap page active" id="page-dashboard">
+  <div class="inner">
+    <div class="card">
+      <div class="page-title">
+        <h1>Ops Dashboard</h1>
+        <span class="sub" aria-live="polite" id="dashboard-updated"></span>
+      </div>
+
+      <div class="grid">
+        <section class="pane" aria-label="System Health">
+          <h2>System Health</h2>
+          <div class="chips" id="health-chips"></div>
+        </section>
+
+        <section class="pane" aria-label="Live Signals">
+          <h2>Live Signals</h2>
+          <div class="metrics">
+            <div class="metric"><div class="k">Bridge</div><div class="v" id="m-bridge">--</div></div>
+            <div class="metric"><div class="k">Last Action</div><div class="v" id="m-last-action">--</div></div>
+            <div class="metric"><div class="k">Last Result</div><div class="v" id="m-last-result">--</div></div>
+            <div class="metric"><div class="k">Last Update</div><div class="v" id="m-last-update">--</div></div>
+            <div class="metric"><div class="k">Pi Temp</div><div class="v" id="m-pi-temp">--</div></div>
+          </div>
+        </section>
+
+        <section class="pane" aria-label="Growbox Live">
+          <h2>Growbox Live</h2>
+          <div class="metrics">
+            <div class="metric"><div class="k">Temperature</div><div class="v" id="g-temp">--</div></div>
+            <div class="metric"><div class="k">Humidity</div><div class="v" id="g-hum">--</div></div>
+            <div class="metric"><div class="k">CO₂</div><div class="v" id="g-co2">--</div></div>
+            <div class="metric"><div class="k">VPD</div><div class="v" id="g-vpd">--</div></div>
+            <div class="metric"><div class="k">Refresh</div><div class="v" id="g-refresh">--</div></div>
+            <div class="metric"><div class="k">Alarm Badge</div><div class="v" id="g-alarm">--</div></div>
+          </div>
+          <div class="grid" style="margin-top:10px;grid-template-columns:repeat(2,minmax(180px,1fr));gap:10px;">
+            <section class="pane" style="padding:10px;min-height:120px;">
+              <h2 style="margin:0 0 6px;font-size:12px;">Temp 24h</h2>
+              <svg id="g-temp-spark" viewBox="0 0 180 80" style="width:100%;height:80px;overflow:visible;"></svg>
+            </section>
+            <section class="pane" style="padding:10px;min-height:120px;">
+              <h2 style="margin:0 0 6px;font-size:12px;">Humidity 24h</h2>
+              <svg id="g-hum-spark" viewBox="0 0 180 80" style="width:100%;height:80px;overflow:visible;"></svg>
+            </section>
+          </div>
+          <div class="chips" style="margin-top:10px" id="growbox-state-chips"></div>
+        </section>
+
+        <section class="pane" aria-label="Actions">
+          <h2>Actions</h2>
+          <div class="actions" id="action-buttons"></div>
+        </section>
+
+        <section class="pane" aria-label="Action Timeline">
+          <h2>Action Timeline</h2>
+          <ul class="timeline" id="timeline"></ul>
+        </section>
+
+        <section class="pane" aria-label="Quick Links">
+          <h2>Quick Links</h2>
+          <div class="actions" id="dashboard-quick-links"></div>
+        </section>
+
+        <section class="pane" aria-label="Ops Control">
+          <h2>Ops Control</h2>
+          <div class="control-row">
+            <button id="btn-refresh-all" class="primary">Refresh All</button>
+            <button id="btn-auto-refresh">Pause Auto Refresh</button>
+            <button id="btn-export-snapshot">Export Snapshot</button>
+            <span class="state" id="auto-refresh-state">Auto refresh: on</span>
+          </div>
+        </section>
+
+        <section class="pane" aria-label="Ops KPIs">
+          <h2>Ops KPIs</h2>
+          <div class="kpi-grid" id="ops-kpi-grid"></div>
+        </section>
+
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Service Matrix">
+          <h2>Service Matrix</h2>
+          <div class="service-table-wrap">
+            <table class="service-table" aria-label="Service status matrix">
+              <thead>
+                <tr>
+                  <th>Service</th>
+                  <th>Status</th>
+                  <th>Latency</th>
+                  <th>Uptime (20)</th>
+                  <th>Checked</th>
+                  <th>Open</th>
+                </tr>
+              </thead>
+              <tbody id="service-matrix-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Alert Feed">
+          <h2>Alert Feed</h2>
+          <ul class="alert-feed" id="alert-feed"></ul>
+        </section>
+
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Open Work Snapshot">
+          <h2>Open Work Snapshot</h2>
+          <div id="dash-open-work-snap" style="display: grid; gap: 8px;"></div>
+          <div class="foot" id="dash-open-work-status">Loading…</div>
+        </section>
+
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Scout Snapshot">
+          <h2>Scout Snapshot</h2>
+          <div class="kpi-grid" id="dash-scout-snap"></div>
+          <div class="foot" id="dash-scout-status">Loading…</div>
+        </section>
+
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Governance Snapshot">
+          <h2>Governance / Health Snapshot</h2>
+          <div class="kpi-grid" id="dash-health-snap"></div>
+          <div class="foot" id="dash-health-status">Loading…</div>
+        </section>
+      </div>
+
+      <div class="log" id="log" role="status" aria-live="polite">Ready.</div>
+      <div class="foot">Observe &rarr; Decide &rarr; Act &rarr; Verify</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ CHAT ══ -->
+<div class="wrap page" id="page-chat">
+  <div class="inner">
+    <div class="card">
+      <div class="page-title">
+        <h1>OpenClaw Chat</h1>
+        <button id="btn-chat-clear" style="font-size:12px;padding:5px 10px;font-weight:500;">Clear</button>
+      </div>
+      <div class="chat-history" id="chat-history" role="log" aria-live="polite" aria-label="Chat history"></div>
+      <div class="chat-input-row">
+        <textarea id="chat-input" placeholder="Ask OpenClaw anything… (Enter to send, Shift+Enter for newline)" aria-label="Chat input"></textarea>
+        <button class="primary" id="btn-chat-send" aria-label="Send message">Send</button>
+      </div>
+      <div class="foot" id="chat-status">Type a message to start.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ MQTT ══ -->
+<div class="wrap page" id="page-mqtt">
+  <div class="inner">
+    <div class="card">
+      <div class="page-title"><h1>MQTT Browser</h1></div>
+
+      <div class="grid">
+        <section class="pane" style="grid-column: 1 / -1" aria-label="MQTT Connection">
+          <h2>Connection</h2>
+          <div class="mqtt-status">
+            <div class="mqtt-dot" id="mqtt-dot"></div>
+            <span id="mqtt-status-text">Disconnected</span>
+          </div>
+          <div class="actions">
+            <input id="mqtt-filter" placeholder="Topic filter (e.g. homeassistant/#)" style="flex:1;min-width:160px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:9px;color:var(--text);font:13px/1.4 system-ui,sans-serif;padding:7px 10px;outline:none;" aria-label="Topic subscription filter" />
+            <button id="btn-mqtt-connect" class="primary">Connect</button>
+            <button id="btn-mqtt-disconnect" disabled>Disconnect</button>
+            <button id="btn-mqtt-clear">Clear</button>
+          </div>
+        </section>
+
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Live messages">
+          <h2>Live Stream</h2>
+          <div class="mqtt-stream" id="mqtt-stream" role="log" aria-live="polite" aria-label="MQTT message stream"></div>
+        </section>
+
+        <section class="pane" style="grid-column: 1 / -1" aria-label="OpenClaw Action Log">
+          <h2>OpenClaw Action Log (latest 50)</h2>
+          <div class="actions" style="margin-bottom:8px;justify-content:space-between;">
+            <div class="foot" id="action-log-status">No data loaded.</div>
+            <button id="btn-action-log-refresh">Refresh</button>
+          </div>
+          <svg id="action-log-hist" viewBox="0 0 420 120" style="width:100%;height:120px;border:1px solid var(--border);border-radius:10px;background:rgba(0,0,0,0.2);margin-bottom:8px;"></svg>
+          <div class="mqtt-stream" id="action-log-stream" role="log" aria-live="polite" aria-label="OpenClaw action log stream"></div>
+        </section>
+
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Publish message">
+          <h2>Quick Publish</h2>
+          <div class="publish-row">
+            <input id="pub-topic" placeholder="Topic" aria-label="Publish topic" />
+            <input id="pub-payload" placeholder="Payload" style="flex:2" aria-label="Publish payload" />
+            <button id="btn-mqtt-publish">Publish</button>
+          </div>
+          <div class="foot" id="mqtt-publish-status"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ RAG ══ -->
+<div class="wrap page" id="page-rag">
+  <div class="inner">
+    <div class="card">
+      <div class="page-title"><h1>RAG Search</h1></div>
+
+      <section class="pane" style="margin-bottom:12px" aria-label="Index status">
+        <h2>Index Status</h2>
+        <div class="index-status-row" id="rag-index-status">
+          <span class="index-stat"><strong id="rag-doc-count">--</strong> documents</span>
+          <span class="index-stat">Last indexed: <strong id="rag-last-indexed">--</strong></span>
+          <span class="chip" id="rag-status-chip">unknown</span>
+          <button id="btn-rag-reindex" style="margin-left:auto">Reindex</button>
+        </div>
+        <div class="foot" id="rag-reindex-status" style="margin-top:6px;">Idle.</div>
+      </section>
+
+      <div class="rag-search-row">
+        <input type="search" id="rag-query" placeholder="Search homelab knowledge… (Enter to search)" aria-label="RAG search query" />
+        <button class="primary" id="btn-rag-search">Search</button>
+      </div>
+
+      <div class="rag-quick-queries" id="rag-quick-queries" style="display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0; align-items: center;">
+        <span style="font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px;">Quick:</span>
+        <button class="chip" style="cursor: pointer;" data-rag-quick="open work" title="Search for open work and pending items">Open Work</button>
+        <button class="chip" style="cursor: pointer;" data-rag-quick="pending decisions" title="Find decisions pending review">Decisions</button>
+        <button class="chip" style="cursor: pointer;" data-rag-quick="runbooks" title="Search runbooks and procedures">Runbooks</button>
+        <button class="chip" style="cursor: pointer;" data-rag-quick="skill governance canary" title="Skill-forge canary and governance">Skill Governance</button>
+        <button class="chip" style="cursor: pointer;" data-rag-quick="health risks" title="Health and risk assessment">Health Risks</button>
+      </div>
+
+      <div class="rag-results" id="rag-results">
+        <div class="rag-empty">Enter a query to search the homelab knowledge base.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ SCOUT ══ -->
+<div class="wrap page" id="page-scout">
+  <div class="inner">
+    <div class="card">
+      <div class="page-title">
+        <h1>Skill Scout</h1>
+        <button id="btn-scout-refresh">Refresh</button>
+      </div>
+
+      <div class="grid">
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Scout KPIs">
+          <h2>Scout Overview</h2>
+          <div class="kpi-grid" id="scout-kpis"></div>
+        </section>
+
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Skill Inventory">
+          <h2>Skill Inventory</h2>
+          <div class="skill-table-wrap">
+            <table class="skill-table" aria-label="Skill list">
+              <thead>
+                <tr>
+                  <th>Slug</th>
+                  <th>Source</th>
+                  <th>Status</th>
+                  <th>Version</th>
+                  <th>Last Scout</th>
+                  <th>Score</th>
+                </tr>
+              </thead>
+              <tbody id="scout-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <div class="foot" id="scout-status">Waiting for state brief feed.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ HEALTH ══ -->
+<div class="wrap page" id="page-health">
+  <div class="inner">
+    <div class="card">
+      <div class="page-title">
+        <h1>Skill Health</h1>
+        <button id="btn-health-refresh">Refresh</button>
+      </div>
+
+      <div class="grid">
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Health KPIs">
+          <h2>Health Overview</h2>
+          <div class="kpi-grid" id="health-kpis"></div>
+        </section>
+
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Freeze State">
+          <h2>Governance</h2>
+          <div id="health-freeze-info" class="skill-block skill-block-ok">Loading…</div>
+        </section>
+
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Active Canaries">
+          <h2>Active Canaries</h2>
+          <div class="skill-table-wrap">
+            <table class="skill-table" aria-label="Active canary skills">
+              <thead>
+                <tr>
+                  <th>Slug</th>
+                  <th>Status</th>
+                  <th>Started</th>
+                  <th>Until</th>
+                  <th>Promoted</th>
+                </tr>
+              </thead>
+              <tbody id="health-canary-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="pane" style="grid-column: 1 / -1" aria-label="High Risk Skills">
+          <h2>High-Risk Skills</h2>
+          <div class="skill-table-wrap">
+            <table class="skill-table" aria-label="High risk skills">
+              <thead>
+                <tr>
+                  <th>Slug</th>
+                  <th>Risk Tier</th>
+                  <th>Risk Score</th>
+                  <th>Verdict</th>
+                  <th>Rollbacks</th>
+                </tr>
+              </thead>
+              <tbody id="health-risk-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <div class="foot" id="health-status">Waiting for state brief feed.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ METRICS ══ -->
+<div class="wrap page" id="page-metrics">
+  <div class="inner">
+    <div class="card">
+      <div class="page-title">
+        <h1>Skill Metrics</h1>
+        <button id="btn-metrics-refresh">Refresh</button>
+      </div>
+
+      <div class="grid">
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Metrics KPIs">
+          <h2>Weekly KPIs</h2>
+          <div class="kpi-grid" id="metrics-kpis"></div>
+        </section>
+
+        <div class="sparkline-pane">
+          <h3>Install Success %</h3>
+          <svg id="metrics-spark-install"></svg>
+        </div>
+        <div class="sparkline-pane">
+          <h3>Rollback Rate %</h3>
+          <svg id="metrics-spark-rollback"></svg>
+        </div>
+        <div class="sparkline-pane" style="grid-column: 1 / -1">
+          <h3>Known Skills (total)</h3>
+          <svg id="metrics-spark-known"></svg>
+        </div>
+
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Recent Runs">
+          <h2>Recent Runs</h2>
+          <div class="skill-table-wrap">
+            <table class="skill-table" aria-label="Recent metric runs">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Mode</th>
+                  <th>Vet</th>
+                  <th>Install %</th>
+                  <th>Rollback %</th>
+                  <th>Known</th>
+                  <th>Canary</th>
+                </tr>
+              </thead>
+              <tbody id="metrics-runs-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <div class="foot" id="metrics-status">Waiting for state brief feed.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ OPERATIONS ══ -->
+<div class="wrap page" id="page-operations">
+  <div class="inner">
+    <div class="card">
+      <div class="page-title">
+        <h1>Operations</h1>
+        <button id="btn-operations-refresh">Refresh</button>
+      </div>
+
+      <div class="grid">
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Operations KPIs">
+          <h2>Operations KPIs</h2>
+          <div class="kpi-grid" id="operations-kpis"></div>
+        </section>
+
+        <section class="pane" aria-label="Open Work">
+          <h2>Open Work</h2>
+          <ul class="doc-list" id="operations-open-work"></ul>
+        </section>
+
+        <section class="pane" aria-label="Handover Order">
+          <h2>Handover Order</h2>
+          <ul class="doc-list" id="operations-handover-order"></ul>
+        </section>
+
+        <section class="pane" aria-label="Start Check">
+          <h2>Start Check</h2>
+          <ul class="doc-list" id="operations-handover-start"></ul>
+        </section>
+
+        <section class="pane" aria-label="Closeout Check">
+          <h2>Closeout Check</h2>
+          <ul class="doc-list" id="operations-handover-end"></ul>
+        </section>
+
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Operations Sources">
+          <h2>Sources</h2>
+          <ul class="doc-list" id="operations-sources"></ul>
+        </section>
+      </div>
+
+      <div class="foot" id="operations-status">Waiting for ops brief feed.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ DECISIONS ══ -->
+<div class="wrap page" id="page-decisions">
+  <div class="inner">
+    <div class="card">
+      <div class="page-title">
+        <h1>Decisions</h1>
+        <button id="btn-decisions-refresh">Refresh</button>
+      </div>
+
+      <div class="grid">
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Decision KPIs">
+          <h2>Decision KPIs</h2>
+          <div class="kpi-grid" id="decisions-kpis"></div>
+        </section>
+
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Decision List">
+          <h2>Decision Index</h2>
+          <div class="doc-card-grid" id="decisions-list"></div>
+        </section>
+      </div>
+
+      <div class="foot" id="decisions-status">Waiting for ops brief feed.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ RUNBOOKS ══ -->
+<div class="wrap page" id="page-runbooks">
+  <div class="inner">
+    <div class="card">
+      <div class="page-title">
+        <h1>Runbooks</h1>
+        <button id="btn-runbooks-refresh">Refresh</button>
+      </div>
+
+      <div class="grid">
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Runbook KPIs">
+          <h2>Runbook KPIs</h2>
+          <div class="kpi-grid" id="runbooks-kpis"></div>
+        </section>
+
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Runbook Index">
+          <h2>Runbook Index</h2>
+          <div class="doc-card-grid" id="runbooks-list"></div>
+        </section>
+      </div>
+
+      <div class="foot" id="runbooks-status">Waiting for ops brief feed.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ SETTINGS ══ -->
+<div class="wrap page" id="page-settings">
+  <div class="inner">
+    <div class="card">
+      <div class="page-title"><h1>Settings</h1></div>
+
+      <div class="settings-section">
+        <h3>Growbox Thresholds</h3>
+        <div class="settings-row">
+          <label>Grow phase<span class="hint">Load preset thresholds for this phase</span></label>
+          <select id="set-grow-phase">
+            <option value="seedling">Keimung (Seedling)</option>
+            <option value="veg">Vegetation</option>
+            <option value="bloom">Blüte (Bloom)</option>
+            <option value="flush">Spätblüte (Flush)</option>
+          </select>
+          <button type="button" id="btn-load-phase" style="margin-left:8px;padding:4px 10px;font-size:12px;">Load defaults</button>
+        </div>
+        <div class="settings-row">
+          <label>Temperature min (°C)<span class="hint">Trigger heating below this value</span></label>
+          <input type="number" id="set-temp-min" step="0.5" min="0" max="40" />
+        </div>
+        <div class="settings-row">
+          <label>Temperature max (°C)<span class="hint">Trigger cooling above this value</span></label>
+          <input type="number" id="set-temp-max" step="0.5" min="0" max="50" />
+        </div>
+        <div class="settings-row">
+          <label>Humidity min (%)<span class="hint">Trigger humidifier below this value</span></label>
+          <input type="number" id="set-hum-min" step="1" min="0" max="100" />
+        </div>
+        <div class="settings-row">
+          <label>Humidity max (%)<span class="hint">Trigger dehumidifier above this value</span></label>
+          <input type="number" id="set-hum-max" step="1" min="0" max="100" />
+        </div>
+        <div class="settings-row">
+          <label>CO₂ max (ppm)<span class="hint">Alert threshold</span></label>
+          <input type="number" id="set-co2-max" step="50" min="400" max="5000" />
+        </div>
+        <div class="settings-row">
+          <label>VPD target (kPa)<span class="hint">Optimal vapour pressure deficit</span></label>
+          <input type="number" id="set-vpd" step="0.05" min="0" max="3" />
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>Canvas</h3>
+        <div class="settings-row">
+          <label>Dark mode<span class="hint">Use dark theme for low-light operation</span></label>
+          <input type="checkbox" id="set-dark-mode" style="width:20px;height:20px;" />
+        </div>
+        <div class="settings-row">
+          <label>Health refresh interval (s)<span class="hint">How often to re-probe services</span></label>
+          <input type="number" id="set-health-interval" step="5" min="10" max="300" />
+        </div>
+        <div class="settings-row">
+          <label>Growbox refresh interval (s)<span class="hint">How often to refresh HA Growbox states</span></label>
+          <input type="number" id="set-growbox-refresh" step="5" min="10" max="300" />
+        </div>
+        <div class="settings-row">
+          <label>OpenClaw URL<span class="hint">Base URL for API and service checks</span></label>
+          <input type="text" id="set-openclaw-url" style="width:220px;text-align:left" />
+        </div>
+        <div class="settings-row">
+          <label>Home Assistant URL<span class="hint">Base URL for REST state calls</span></label>
+          <input type="text" id="set-ha-url" style="width:220px;text-align:left" />
+        </div>
+        <div class="settings-row">
+          <label>Pi-hole URL<span class="hint">UI URL for health checks and quick open</span></label>
+          <input type="text" id="set-pihole-url" style="width:220px;text-align:left" />
+        </div>
+        <div class="settings-row">
+          <label>Home Assistant Token<span class="hint">Bearer token (stored locally only)</span></label>
+          <input type="password" id="set-ha-token" style="width:220px;text-align:left" autocomplete="current-password" />
+        </div>
+        <div class="settings-row">
+          <label>MQTT host<span class="hint">Broker IP or hostname</span></label>
+          <input type="text" id="set-mqtt-host" style="width:160px;text-align:left" />
+        </div>
+        <div class="settings-row">
+          <label>MQTT WS port<span class="hint">WebSocket listener port</span></label>
+          <input type="number" id="set-mqtt-port" step="1" min="1" max="65535" />
+        </div>
+        <div class="settings-row">
+          <label>Mosquitto UI URL<span class="hint">Open target used in service matrix</span></label>
+          <input type="text" id="set-mqtt-open-url" style="width:220px;text-align:left" />
+        </div>
+        <div class="settings-row">
+          <label>MQTT username<span class="hint">Optional broker username</span></label>
+          <input type="text" id="set-mqtt-user" style="width:160px;text-align:left" autocomplete="username" />
+        </div>
+        <div class="settings-row">
+          <label>MQTT password<span class="hint">Optional broker password</span></label>
+          <input type="password" id="set-mqtt-pass" style="width:160px;text-align:left" autocomplete="current-password" />
+        </div>
+        <p class="settings-notice" style="margin:8px 0 0">Hinweis: MQTT-Credentials werden lokal im Browser (localStorage) gespeichert.</p>
+      </div>
+
+      <div class="settings-section">
+        <h3>Quick Links</h3>
+        <div class="settings-row" style="display:block;">
+          <label>Dashboard quick links<span class="hint">One per line: Label|URL</span></label>
+          <textarea id="set-quick-links" rows="7" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:rgba(0,0,0,0.2);color:var(--text);font:13px/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;"></textarea>
+        </div>
+        <div class="actions" style="margin-top:8px;">
+          <button type="button" id="btn-quick-links-defaults">Load default links</button>
+        </div>
+      </div>
+
+      <div class="save-row" style="gap:8px;justify-content:flex-end;">
+        <button id="btn-settings-reset">Reset local credentials</button>
+        <button class="primary" id="btn-settings-save">Save to localStorage</button>
+      </div>
+      <p class="settings-notice" id="settings-save-status">Settings are stored locally in the browser. Growbox threshold changes here are display-only - apply them in Home Assistant or THRESHOLDS.md to take effect.</p>
+    </div>
+  </div>
+</div>
+
+<script src="/app-net.js" defer></script>
+<script src="/app-config.js" defer></script>
+<script src="/app-dashboard.js" defer></script>
+<script src="/app-chat.js" defer></script>
+<script src="/app-mqtt.js" defer></script>
+<script src="/app-rag.js" defer></script>
+<script src="/app-skill.js" defer></script>
+<script src="/app-ops.js" defer></script>
+<script src="/app-settings.js" defer></script>
+<script src="/app-main.js" defer></script>

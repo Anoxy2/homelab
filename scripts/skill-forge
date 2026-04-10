@@ -1,0 +1,306 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# shellcheck source=/home/steges/scripts/lib/common-flag-parser.sh
+source "/home/steges/scripts/lib/common-flag-parser.sh"
+
+export EXIT_USAGE=2
+export EXIT_CONTRACT=3
+export EXIT_POLICY=4
+export EXIT_FREEZE=5
+export EXIT_MISSING_EXECUTABLE=6
+
+SM_ROOT="/home/steges/agent/skills/skill-forge"
+SCRIPTS="$SM_ROOT/scripts"
+STATE_LOCK="$SM_ROOT/.state/skill-forge.state.lock"
+
+usage() {
+  cat <<'EOF'
+Usage (Governance & Lifecycle):
+  skill-forge init
+  skill-forge status
+  skill-forge review <slug>
+  skill-forge install <slug> [source] [version] [score]
+  skill-forge update <slug> [--changelog <text>]|--all|--dry-run
+  skill-forge rollback <slug> [--list]
+  skill-forge policy lint|show
+  skill-forge lint shell [--changed|<path>...]
+  skill-forge vet <slug> <score> [--file <path>]
+  skill-forge test vetting
+  skill-forge test resilience
+  skill-forge test wrappers
+  skill-forge author skill <name> [--mode auto|template|from-tested|scratch] [--reason <text>]
+  skill-forge author queue
+  skill-forge author approve <job-id>
+  skill-forge canary start <slug> [hours]
+  skill-forge canary status <slug>
+  skill-forge canary promote <slug>
+  skill-forge canary fail <slug>
+  skill-forge conflict-check <slug>
+  skill-forge shadow on|off|status
+  skill-forge health
+  skill-forge audit [--rejected|--top-failures|--blocked-promotions|--frequent-rejects|--ebusy-baseline [hours]]
+  skill-forge budget
+  skill-forge blacklist add skill|creator <id> <reason>
+  skill-forge blacklist list
+  skill-forge blacklist remove skill <slug>
+  skill-forge blacklist promote
+  skill-forge dispatch [--validate-output <schema.json>] [--strict-output] <agent> <script> [args...]
+  skill-forge orchestrate [--live [limit]] [--vet-score <n>]
+  skill-forge incident freeze on|off|status
+  skill-forge provenance <slug>
+  skill-forge provenance write <slug> <source> <url> <upstream_fingerprint> <score> <tier> <version>
+
+Domain-Skills (use scripts/skills instead):
+
+Standalone Domain-Skills (preferred entry points):
+  ~/scripts/skills coding code|docs|config|test <task-text>
+  ~/scripts/skills vetting <slug> [--json]
+  ~/scripts/skills canary evaluate <slug> [--json]
+  ~/scripts/skills authoring <name> [--mode auto|template|from-tested|scratch] [--reason <text>]
+  ~/scripts/skills scout [--dry-run|--live [N]|--summary|--add|--apply-suggestions] [--json] [--semantic]
+  ~/scripts/skills heartbeat [--live [N] [vet_score]]
+  ~/scripts/skills metrics record|weekly|latest|install-success|risk-report ...
+  ~/scripts/skills rag retrieve <query> [--limit N] [--timeout-ms N] [--json]
+  ~/scripts/skills rag reindex [--changed-only] [--timeout-seconds N] [--json]
+  ~/scripts/skills profile show|add <keyword>|reset
+  ~/scripts/skills learn show|weekly [--json]|promote <id>|extract <id>
+  ~/scripts/skills health report|budget
+  ~/scripts/skills growbox diary|daily-report|should-report|mark-sent|status
+  ~/scripts/skills rag doc-keeper run [--reason <text>] [--daily] [--autodoc] [--autodoc-dry-run] [--autodoc-profile daily|post-promote|weekly] [--autodoc-provider auto|anthropic|copilot] [--autodoc-model <name>]
+EOF
+}
+
+init_cmd() {
+  "$SCRIPTS/policy-lint.sh" >/dev/null || exit "$EXIT_POLICY"
+  echo "skill-forge initialized"
+}
+
+status_cmd() {
+  python3 - <<'PY'
+import json
+base = '/home/steges/agent/skills/skill-forge/.state'
+with open(base + '/known-skills.json', 'r', encoding='utf-8') as f:
+    known = json.load(f)
+with open(base + '/pending-blacklist.json', 'r', encoding='utf-8') as f:
+    pending = json.load(f)
+with open(base + '/author-queue.json', 'r', encoding='utf-8') as f:
+  author_queue = json.load(f)
+with open(base + '/writer-jobs.json', 'r', encoding='utf-8') as f:
+  writer_jobs = json.load(f)
+with open(base + '/canary.json', 'r', encoding='utf-8') as f:
+  canary = json.load(f)
+with open(base + '/incident-freeze.json', 'r', encoding='utf-8') as f:
+    freeze = json.load(f)
+counts = {}
+for v in known.values():
+    s = v.get('status', 'unknown')
+    counts[s] = counts.get(s, 0) + 1
+print('skill-forge status')
+print(f'- total known: {len(known)}')
+for k in sorted(counts):
+    print(f'- {k}: {counts[k]}')
+print(f'- pending-blacklist-queue: {len(pending)}')
+print(f'- author-queue: {len(author_queue)}')
+print(f'- writer-jobs: {len(writer_jobs)}')
+print(f'- canary-tracked: {len(canary)}')
+print(f"- incident-freeze: {'on' if freeze.get('enabled') else 'off'}")
+PY
+}
+
+run_locked_cmd() {
+  if command -v flock >/dev/null 2>&1; then
+    mkdir -p "$SM_ROOT/.state"
+    SM_LOCK_HELD=1 flock "$STATE_LOCK" "$@"
+  else
+    "$@"
+  fi
+}
+
+cmd="${1:-}"
+case "$cmd" in
+  init)
+    shift
+    init_cmd "$@"
+    ;;
+  status)
+    shift
+    status_cmd "$@"
+    ;;
+    dispatch)
+      shift
+      "$SCRIPTS/dispatcher.sh" "$@"
+      ;;
+  review)
+    shift
+    "$SCRIPTS/review.sh" "$@"
+    ;;
+  install)
+    shift
+    "$SCRIPTS/install.sh" "$@"
+    ;;
+  update)
+    shift
+    run_locked_cmd "$SCRIPTS/update.sh" "$@"
+    ;;
+  rollback)
+    shift
+    "$SCRIPTS/rollback.sh" "$@"
+    ;;
+  profile)
+    shift
+    "$SCRIPTS/profile.sh" "$@"
+    ;;
+  policy)
+    shift
+    sub="${1:-}"
+    case "$sub" in
+      lint)
+        shift
+        "$SCRIPTS/policy-lint.sh" "$@" || exit "$EXIT_POLICY"
+        ;;
+      show)
+        shift
+        sed -n '1,200p' "$SM_ROOT/policy/vetting-policy.yaml"
+        ;;
+      *)
+        usage; exit "$EXIT_USAGE" ;;
+    esac
+    ;;
+  lint)
+    shift
+    sub="${1:-}"
+    case "$sub" in
+      shell)
+        shift
+        /home/steges/scripts/lint-shell.sh "${@:---changed}"
+        ;;
+      *)
+        usage; exit "$EXIT_USAGE" ;;
+    esac
+    ;;
+  vet)
+    shift
+    "$SCRIPTS/vet.sh" "$@"
+    ;;
+  test)
+    shift
+    sub="${1:-}"
+    case "$sub" in
+      vetting)
+        shift
+        "$SCRIPTS/test-vetting.sh" "$@"
+        ;;
+      resilience)
+        shift
+        "$SCRIPTS/test-resilience.sh" "$@"
+        ;;
+      wrappers)
+        shift
+        "$SCRIPTS/test-wrapper-contracts.sh" "$@"
+        ;;
+      *)
+        usage; exit "$EXIT_USAGE" ;;
+    esac
+    ;;
+  author)
+    shift
+    sub="${1:-}"
+    case "$sub" in
+      skill)
+        shift
+        parse_common_flags "$@" || exit "$EXIT_USAGE"
+        args=("${COMMON_ARGS[@]}")
+        append_common_flags args
+        run_locked_cmd "$SCRIPTS/author-skill.sh" "${args[@]}"
+        ;;
+      queue)
+        shift
+        "$SCRIPTS/author-queue.sh" list "$@"
+        ;;
+      approve)
+        shift
+        run_locked_cmd "$SCRIPTS/author-queue.sh" approve "$@"
+        ;;
+      *)
+        usage; exit "$EXIT_USAGE" ;;
+    esac
+    ;;
+  canary)
+    shift
+    sub="${1:-}"
+    if [[ "$sub" == "evaluate" ]]; then
+      shift
+      parse_common_flags "$@" || exit "$EXIT_USAGE"
+      args=("evaluate" "${COMMON_ARGS[@]}")
+      append_common_flags args
+      /home/steges/scripts/skills canary "${args[@]}"
+    else
+      run_locked_cmd "$SCRIPTS/canary.sh" "$sub" "${@:2}"
+    fi
+    ;;
+  conflict-check)
+    shift
+    "$SCRIPTS/conflict-check.sh" "$@"
+    ;;
+  shadow)
+    shift
+    "$SCRIPTS/shadow-mode.sh" "${1:-status}"
+    ;;
+  health)
+    shift
+    "$SCRIPTS/health.sh" "$@"
+    ;;
+  audit)
+    shift
+    "$SCRIPTS/audit.sh" "$@"
+    ;;
+  budget)
+    shift
+    "$SCRIPTS/budget.sh" "$@"
+    ;;
+
+
+  blacklist)
+    shift
+    "$SCRIPTS/blacklist.sh" "$@"
+    ;;
+
+
+  reaper)
+    shift
+    "$SCRIPTS/reaper.sh" "$@"
+    ;;
+
+  orchestrate)
+    shift
+    run_locked_cmd "$SCRIPTS/orchestrate.sh" "$@"
+    ;;
+
+
+  incident)
+    shift
+    sub="${1:-}"
+    [[ "$sub" == "freeze" ]] || { usage; exit "$EXIT_USAGE"; }
+    shift
+    "$SCRIPTS/incident-freeze.sh" "${1:-status}"
+    ;;
+  provenance)
+    shift
+    sub="${1:-}"
+    case "$sub" in
+      write)
+        shift
+        "$SCRIPTS/provenance-write.sh" "$@"
+        ;;
+      *)
+        "$SCRIPTS/provenance-show.sh" "$sub"
+        ;;
+    esac
+    ;;
+  *)
+    usage
+    exit "$EXIT_USAGE"
+    ;;
+esac

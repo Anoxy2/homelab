@@ -1,0 +1,10 @@
+[Unit]
+Description=Run nightly OpenClaw self-check
+
+[Timer]
+OnCalendar=*-*-* 03:15:00
+Persistent=true
+Unit=nightly-self-check.service
+
+[Install]
+WantedBy=timers.target

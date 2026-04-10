@@ -1,0 +1,18 @@
+[
+  {
+    "slug": "runbook-maintenance",
+    "mode": "single",
+    "timestamp": "2026-04-04T15:54:04Z",
+    "status_after": "active",
+    "version_after": "0.1.0",
+    "note": "delta: tighten triggers"
+  },
+  {
+    "slug": "coding",
+    "mode": "single",
+    "timestamp": "2026-04-04T19:34:24Z",
+    "status_after": "active",
+    "version_after": "2026.04.04",
+    "note": "manual update"
+  }
+]

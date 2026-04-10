@@ -1,0 +1,19 @@
+[Unit]
+Description=OpenClaw Chat Bridge (/api/chat → openclaw agent CLI)
+Documentation=file:///home/steges/docs/openclaw/openclaw-architecture.md
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=steges
+WorkingDirectory=/home/steges
+ExecStart=/usr/bin/python3 /home/steges/scripts/chat-bridge.py
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=chat-bridge
+
+[Install]
+WantedBy=multi-user.target

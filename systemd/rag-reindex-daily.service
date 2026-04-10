@@ -1,0 +1,17 @@
+[Unit]
+Description=Taeglicher inkrementeller RAG-Reindex
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=steges
+WorkingDirectory=/home/steges
+ExecStart=/home/steges/agent/skills/openclaw-rag/scripts/reindex.sh
+TimeoutStartSec=1800
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=rag-reindex-daily
+
+[Install]
+WantedBy=multi-user.target

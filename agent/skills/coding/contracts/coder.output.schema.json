@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "coder output",
+  "type": "object",
+  "required": ["job_id", "path", "status", "review_verdict", "kind", "task"],
+  "additionalProperties": true,
+  "properties": {
+    "job_id": {"type": "string"},
+    "path": {"type": "string"},
+    "status": {"type": "string", "enum": ["completed", "pending-review"]},
+    "review_verdict": {"type": "string"},
+    "kind": {"type": "string", "enum": ["code", "config", "docs", "test"]},
+    "task": {"type": "string"}
+  }
+}

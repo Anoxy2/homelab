@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["new_count", "total_known", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "new_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Anzahl neu gefundener Einträge (nicht in vuln-log.md)"
+    },
+    "total_known": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Gesamtanzahl bekannter Einträge in vuln-log.md"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "error", "dry-run"],
+      "description": "Laufstatus des Scans"
+    },
+    "error": {
+      "type": "string",
+      "description": "Fehlermeldung bei status=error"
+    }
+  }
+}

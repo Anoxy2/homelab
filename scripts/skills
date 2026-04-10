@@ -1,0 +1,177 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# shellcheck source=/home/steges/scripts/lib/common-flag-parser.sh
+source "/home/steges/scripts/lib/common-flag-parser.sh"
+
+EXIT_USAGE=2
+EXIT_MISSING_EXECUTABLE=6
+
+CODING_DISPATCH="/home/steges/agent/skills/coding/scripts/code-dispatch.sh"
+VETTING_DISPATCH="/home/steges/agent/skills/vetting/scripts/vetting-dispatch.sh"
+CANARY_DISPATCH="/home/steges/agent/skills/canary/scripts/canary-dispatch.sh"
+AUTHORING_DISPATCH="/home/steges/agent/skills/authoring/scripts/authoring-dispatch.sh"
+SCOUT_DISPATCH="/home/steges/agent/skills/scout/scripts/scout-dispatch.sh"
+HEARTBEAT_DISPATCH="/home/steges/agent/skills/heartbeat/scripts/heartbeat-dispatch.sh"
+GROWBOX_DISPATCH="/home/steges/agent/skills/growbox/scripts/growbox-dispatch.sh"
+METRICS_DISPATCH="/home/steges/agent/skills/metrics/scripts/metrics-dispatch.sh"
+PROFILE_DISPATCH="/home/steges/agent/skills/profile/scripts/profile-dispatch.sh"
+LEARN_DISPATCH="/home/steges/agent/skills/learn/scripts/learn-dispatch.sh"
+HEALTH_DISPATCH="/home/steges/agent/skills/health/scripts/health-dispatch.sh"
+RUNBOOK_MAINTENANCE_DISPATCH="/home/steges/agent/skills/runbook-maintenance/scripts/runbook-maintenance-dispatch.sh"
+RAG_DISPATCH="/home/steges/agent/skills/openclaw-rag/scripts/rag-dispatch.sh"
+VULN_WATCH_DISPATCH="/home/steges/agent/skills/vuln-watch/scripts/vuln-watch-dispatch.sh"
+LOG_QUERY_SCRIPT="/home/steges/agent/skills/log-query/scripts/query-loki.sh"
+WEB_SEARCH_SCRIPT="/home/steges/agent/skills/web-search/scripts/search.sh"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  skills coding code|docs|config|test <task-text>
+  skills vetting <slug> [--json]
+  skills canary evaluate <slug> [--json]
+  skills authoring <name> [--mode auto|template|from-tested|scratch] [--reason <text>]
+  skills scout [--dry-run|--live [N]|--summary|--add <slug> <source> <version>|--apply-suggestions] [--json] [--semantic]
+  skills heartbeat [--live [N] [vet_score]]
+  skills metrics record <run_id> <live> <vet_score> <duration_ms> | weekly | latest | install-success | risk-report
+  skills rag retrieve <query> [--limit N] [--timeout-ms N] [--json]
+  skills rag reindex [--changed-only] [--timeout-seconds N] [--json]
+  skills profile show|add <keyword>|reset
+  skills learn show|weekly [--json]|promote <id>|extract <id>
+  skills health report|budget
+  skills vuln-watch --weekly [--dry-run] [--json] | --summary | --json
+  skills growbox diary|daily-report|flush-queue|should-report|mark-sent|status
+  skills rag doc-keeper run [--reason <text>] [--daily] [--autodoc] [--autodoc-dry-run] [--autodoc-profile daily|post-promote|weekly] [--autodoc-provider auto|anthropic|copilot] [--autodoc-model <name>]
+  skills runbook-maintenance weekly-check|checklist|failover <scenario> [--json]
+  skills log-query query --service <name> [--lines N] [--since <duration>] [--grep <pattern>]
+  skills log-query query --query '<logql>' [--lines N] [--since <duration>]
+  skills log-query query --services
+  skills web-search search "<query>" [--limit N] [--engines <e1,e2>] [--lang <code>] [--json]
+  skills web-search check
+EOF
+}
+
+require_exec() {
+  local path="$1"
+  [[ -x "$path" ]] || {
+    echo "Missing executable: $path" >&2
+    exit "$EXIT_MISSING_EXECUTABLE"
+  }
+}
+
+main() {
+  local domain="${1:-}"
+  case "$domain" in
+    coding)
+      shift
+      [[ $# -ge 2 ]] || { usage; exit "$EXIT_USAGE"; }
+      require_exec "$CODING_DISPATCH"
+      exec "$CODING_DISPATCH" "$@"
+      ;;
+    vetting)
+      shift
+      [[ $# -ge 1 ]] || { usage; exit "$EXIT_USAGE"; }
+      require_exec "$VETTING_DISPATCH"
+      exec "$VETTING_DISPATCH" "$@"
+      ;;
+    canary)
+      shift
+      [[ $# -ge 2 ]] || { usage; exit "$EXIT_USAGE"; }
+      require_exec "$CANARY_DISPATCH"
+      exec "$CANARY_DISPATCH" "$@"
+      ;;
+    authoring)
+      shift
+      parse_common_flags "$@" || exit "$EXIT_USAGE"
+      [[ ${#COMMON_ARGS[@]} -ge 1 ]] || { usage; exit "$EXIT_USAGE"; }
+      require_exec "$AUTHORING_DISPATCH"
+      args=("${COMMON_ARGS[@]}")
+      append_common_flags args
+      exec "$AUTHORING_DISPATCH" "${args[@]}"
+      ;;
+    scout)
+      shift
+      require_exec "$SCOUT_DISPATCH"
+      exec "$SCOUT_DISPATCH" "$@"
+      ;;
+    heartbeat)
+      shift
+      require_exec "$HEARTBEAT_DISPATCH"
+      exec "$HEARTBEAT_DISPATCH" "$@"
+      ;;
+    metrics)
+      shift
+      [[ $# -ge 1 ]] || { usage; exit "$EXIT_USAGE"; }
+      require_exec "$METRICS_DISPATCH"
+      exec "$METRICS_DISPATCH" "$@"
+      ;;
+    profile)
+      shift
+      require_exec "$PROFILE_DISPATCH"
+      exec "$PROFILE_DISPATCH" "$@"
+      ;;
+    learn)
+      shift
+      require_exec "$LEARN_DISPATCH"
+      exec "$LEARN_DISPATCH" "$@"
+      ;;
+    health)
+      shift
+      require_exec "$HEALTH_DISPATCH"
+      exec "$HEALTH_DISPATCH" "$@"
+      ;;
+    growbox)
+      shift
+      require_exec "$GROWBOX_DISPATCH"
+      exec "$GROWBOX_DISPATCH" "$@"
+      ;;
+    doc-keeper)
+      shift
+      require_exec "$RAG_DISPATCH"
+      args=("$@")
+      if [[ "${args[0]:-}" == "run" ]]; then
+        args=("${args[@]:1}")
+      fi
+      exec "$RAG_DISPATCH" "doc-keeper" "run" "${args[@]}"
+      ;;
+    runbook-maintenance)
+      shift
+      require_exec "$RUNBOOK_MAINTENANCE_DISPATCH"
+      exec "$RUNBOOK_MAINTENANCE_DISPATCH" "$@"
+      ;;
+    rag)
+      shift
+      require_exec "$RAG_DISPATCH"
+      exec "$RAG_DISPATCH" "$@"
+      ;;
+    vuln-watch)
+      shift
+      require_exec "$VULN_WATCH_DISPATCH"
+      exec "$VULN_WATCH_DISPATCH" "$@"
+      ;;
+    log-query)
+      shift
+      [[ "${1:-}" == "query" ]] && shift
+      require_exec "$LOG_QUERY_SCRIPT"
+      exec "$LOG_QUERY_SCRIPT" "$@"
+      ;;
+    web-search)
+      shift
+      subcmd="${1:-}"
+      shift || true
+      require_exec "$WEB_SEARCH_SCRIPT"
+      case "$subcmd" in
+        search) exec "$WEB_SEARCH_SCRIPT" "$@" ;;
+        check)  exec "$WEB_SEARCH_SCRIPT" --check ;;
+        *)      echo "Usage: skills web-search search \"<query>\" | check" >&2; exit 2 ;;
+      esac
+      ;;
+    *)
+      usage
+      exit "$EXIT_USAGE"
+      ;;
+  esac
+}
+
+main "$@"

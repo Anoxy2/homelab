@@ -1,0 +1,7 @@
+version: 1
+notifications:
+  discord:
+    enabled: true
+    channel: skill-forge
+  telegram:
+    enabled: false

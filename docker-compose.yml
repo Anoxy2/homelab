@@ -1,0 +1,818 @@
+x-default-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+
+  # ─── DNS / Ad-blocking / DHCP ────────────────────────────────────────────────
+  pihole:
+    # aktuell: 2026.04.0, gepinnt: 2026-04-05
+    image: pihole/pihole:2026.04.0
+    container_name: pihole
+    network_mode: host
+    env_file: .env
+    environment:
+      FTLCONF_webserver_port: "8080"
+      FTLCONF_dns_interface: "end0"
+    cap_add:
+      - NET_ADMIN
+      - NET_BIND_SERVICE
+      - SYS_NICE
+    volumes:
+      - ./pihole/config:/etc/pihole
+    healthcheck:
+      test: ["CMD", "dig", "+short", "pi.hole", "@127.0.0.1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+    cpus: '0.50'
+    mem_limit: 512m
+    mem_reservation: 256m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── Home Automation ─────────────────────────────────────────────────────────
+  homeassistant:
+    # aktuell: 2026.4.1, gepinnt: 2026-04-05
+    image: ghcr.io/home-assistant/home-assistant:2026.4.1
+    container_name: homeassistant
+    network_mode: host
+    env_file: .env
+    volumes:
+      - ./homeassistant/config:/config
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8123"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    mem_limit: 800m
+    mem_reservation: 300m
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+    cpus: '1.50'
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── ESP32 / ESP8266 Firmware ─────────────────────────────────────────────────
+  esphome:
+    # aktuell: 2026.3.2, gepinnt: 2026-04-05
+    image: ghcr.io/esphome/esphome:2026.3.2
+    container_name: esphome
+    network_mode: host
+    volumes:
+      - ./esphome/config:/config
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.75'
+    mem_limit: 512m
+    mem_reservation: 256m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── VPN ─────────────────────────────────────────────────────────────────────
+  tailscale:
+    # aktuell: v1.94.2, gepinnt: 2026-04-05
+    image: tailscale/tailscale:v1.94.2
+    container_name: tailscale
+    hostname: pilab
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./tailscale/state:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    env_file: .env
+    environment:
+      TS_EXTRA_ARGS: "--advertise-exit-node"
+      TS_STATE_DIR: "/var/lib/tailscale"
+      TS_USERSPACE: "false"
+    cpus: '0.25'
+    mem_limit: 256m
+    mem_reservation: 128m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── MQTT Broker ─────────────────────────────────────────────────────────────
+  mosquitto:
+    # aktuell: 2.x (intern: 2.1.2), gepinnt: major-tag 2026-04-05
+    image: eclipse-mosquitto:2
+    container_name: mosquitto
+    network_mode: host
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    healthcheck:
+      # mosquitto hat allow_anonymous false → mosquitto_sub schlägt ohne Credentials fehl.
+      # TCP-Check reicht: wenn Port 1883 antwortet, ist der Broker up.
+      test: ["CMD-SHELL", "nc -z 192.168.2.101 1883 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.25'
+    mem_limit: 256m
+    mem_reservation: 128m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── Container Management ─────────────────────────────────────────────────────
+  portainer:
+    # aktuell: digest gepinnt 2026-04-05 (kein stabiles Version-Tag verfügbar)
+    # Update: image manuell pullen + Digest hier aktualisieren + Git-Commit
+    image: portainer/portainer-ce@sha256:1ae8e65d50ca5498cb2c33e617495a1e3ef245b0d2392b4a44c70ae09b822891
+    container_name: portainer
+    ports:
+      - "192.168.2.101:9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.50'
+    mem_limit: 256m
+    mem_reservation: 128m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── Reverse Proxy (LAN Hostnames) ───────────────────────────────────────────
+  caddy:
+    # aktuell: 2-alpine (major pinned), gepinnt: ja
+    image: caddy:2-alpine
+    container_name: caddy
+    network_mode: host
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - pihole
+      - homeassistant
+      - esphome
+      - mosquitto
+      - portainer
+      - openclaw
+      - ops-ui
+      - glances
+      - uptime-kuma
+      - homepage
+      - prometheus
+      - grafana
+      - influxdb
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- --header='Host: caddy-health.lan' http://127.0.0.1/ | grep -qx ok"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.50'
+    mem_limit: 256m
+    mem_reservation: 128m
+    logging: *default-logging
+    restart: unless-stopped
+
+  watchtower:
+    # aktuell: digest gepinnt 2026-04-05 (kein stabiles Version-Tag verfügbar)
+    # Update: image manuell pullen + Digest hier aktualisieren + Git-Commit
+    image: containrrr/watchtower@sha256:6dd50763bbd632a83cb154d5451700530d1e44200b268a4e9488fefdfcf2b038
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      WATCHTOWER_SCHEDULE: "0 0 3 * * 0"   # Sonntag 03:00
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_LABEL_ENABLE: "true"
+      WATCHTOWER_NOTIFICATIONS_LEVEL: warn
+      TZ: Europe/Berlin
+      DOCKER_API_VERSION: "1.41"
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.25'
+    mem_limit: 128m
+    mem_reservation: 64m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── Docker Socket Proxy (least privilege middleware) ──────────────────────
+  docker-socket-proxy:
+    # gepinnt: v0.4.2 (2026-04-06)
+    image: tecnativa/docker-socket-proxy:v0.4.2
+    container_name: docker-socket-proxy
+    environment:
+      CONTAINERS: 1
+      IMAGES: 1
+      NETWORKS: 1
+      VOLUMES: 1
+      INFO: 1
+      VERSION: 1
+      PING: 1
+      EVENTS: 1
+      POST: 1
+      AUTH: 0
+      BUILD: 0
+      COMMIT: 0
+      CONFIGS: 0
+      DISTRIBUTION: 0
+      EXEC: 0
+      NODES: 0
+      PLUGINS: 0
+      SECRETS: 0
+      SERVICES: 0
+      SESSION: 0
+      SWARM: 0
+      SYSTEM: 0
+      TASKS: 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "127.0.0.1:2375:2375"
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+    cpus: '0.25'
+    mem_limit: 128m
+    mem_reservation: 64m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── Uptime Monitoring ───────────────────────────────────────────────────────
+  uptime-kuma:
+    # aktuell: 1.23.17, gepinnt: 2026-04-05
+    image: louislam/uptime-kuma:1.23.17
+    container_name: uptime-kuma
+    ports:
+      - "192.168.2.101:3001:3001"
+    volumes:
+      - uptime-kuma_data:/app/data
+    healthcheck:
+      # wget nicht verfügbar in diesem Image → node HTTP-Check
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3001', r => process.exit(r.statusCode < 400 ? 0 : 1)).on('error', () => process.exit(1))\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.50'
+    mem_limit: 256m
+    mem_reservation: 128m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── System Metrics (Live) ──────────────────────────────────────────────────
+  glances:
+    # aktuell: latest-full, Digest gepinnt: 2026-04-10
+    # TODO: auf feste Versionsnummer wechseln sobald upstream ein stabiles Tag liefert
+    image: nicolargo/glances@sha256:b4b0f059fa8064a0e8dae5530ce9334834ab07205269cfbf405d16b4d40c0c66
+    container_name: glances
+    pid: host
+    network_mode: host
+    environment:
+      GLANCES_OPT: "-w"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/os-release:/etc/os-release:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:61208"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.75'
+    mem_limit: 512m
+    mem_reservation: 256m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── Service Dashboard ───────────────────────────────────────────────────────
+  homepage:
+    # aktuell: v1.12.3, gepinnt: 2026-04-05
+    image: ghcr.io/gethomepage/homepage:v1.12.3
+    container_name: homepage
+    ports:
+      - "192.168.2.101:3002:3000"
+    volumes:
+      - ./homepage/config:/app/config
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: "home.lan,dashboard.lan,192.168.2.101:3002"
+      DOCKER_HOST: tcp://docker-socket-proxy:2375
+    depends_on:
+      - docker-socket-proxy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.50'
+    mem_limit: 256m
+    mem_reservation: 128m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── Claude Agent ─────────────────────────────────────────────────────────────
+  openclaw:
+    # Basis bleibt auf gepinntem Digest, erweitert lokal um Docker-CLI für inspect/change Tasks
+    build:
+      context: ./infra/openclaw-image
+      dockerfile: Dockerfile
+    image: openclaw:local
+    container_name: openclaw
+    env_file: .env
+    environment:
+      TZ: Europe/Berlin
+      NODE_COMPILE_CACHE: /home/node/.openclaw/.node-compile-cache
+      OPENCLAW_NO_RESPAWN: "1"
+      DOCKER_HOST: tcp://docker-socket-proxy:2375
+    ports:
+      - "192.168.2.101:18789:18789"
+    volumes:
+      - ./infra/openclaw-data:/home/node/.openclaw
+      - /home/steges:/home/steges
+    depends_on:
+      - mosquitto
+      - docker-socket-proxy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:18789"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    mem_limit: 1g
+    mem_reservation: 256m
+    cpus: '1.50'
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ─── Ops-UI (statisches Web-Interface) ──────────────────────────────────────
+  ops-ui:
+    # aktuell: 1.29-alpine, gepinnt: 2026-04-05
+    image: nginx:1.29-alpine
+    container_name: ops-ui
+    ports:
+      - "192.168.2.101:8090:80"
+    volumes:
+      - ./agent/skills/openclaw-ui/html:/usr/share/nginx/html:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.25'
+    mem_limit: 128m
+    mem_reservation: 64m
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  # ─── RAG Embedding API ───────────────────────────────────────────────────────
+  rag-embed:
+    build:
+      context: ./agent/skills/openclaw-rag/embedding
+    container_name: rag-embed
+    ports:
+      - "192.168.2.101:18790:18790"
+    volumes:
+      - /home/steges:/home/steges
+      - ./infra/openclaw-data/rag:/data/rag
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:18790/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+    cpus: '1.00'
+    mem_limit: 768m
+    mem_reservation: 384m
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ─── Recursive DNS Resolver ────────────────────────────────────────────────
+  unbound:
+    # gepinnt: 1.24.2 (2026-04-06)
+    image: crazymax/unbound:1.24.2
+    container_name: unbound
+    network_mode: host
+    volumes:
+      - ./unbound/config:/config:ro
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 5335 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.25'
+    mem_limit: 256m
+    mem_reservation: 128m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── Metrics Stack ──────────────────────────────────────────────────────────
+  influxdb:
+    # aktuell: 2.7.12, gepinnt: 2026-04-06
+    image: influxdb:2.7.12
+    container_name: influxdb
+    ports:
+      - "192.168.2.101:8086:8086"
+    volumes:
+      - ./influxdb/data:/var/lib/influxdb2
+      - ./influxdb/config:/etc/influxdb2
+    environment:
+      # DOCKER_INFLUXDB_INIT_MODE: setup  # nur für Erstsetup — nach DB-Init auskommentiert lassen
+      DOCKER_INFLUXDB_INIT_USERNAME: "${INFLUXDB_ADMIN_USER:-admin}"
+      DOCKER_INFLUXDB_INIT_PASSWORD: "${INFLUXDB_ADMIN_PASSWORD:?INFLUXDB_ADMIN_PASSWORD not set}"
+      DOCKER_INFLUXDB_INIT_ORG: "${INFLUXDB_ORG:-pilab}"
+      DOCKER_INFLUXDB_INIT_BUCKET: "${INFLUXDB_BUCKET:-homeassistant}"
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "${INFLUXDB_ADMIN_TOKEN:?INFLUXDB_ADMIN_TOKEN not set}"
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.75'
+    mem_limit: 512m
+    mem_reservation: 256m
+    logging: *default-logging
+    restart: unless-stopped
+
+  node-exporter:
+    # gepinnt: v1.11.0 (2026-04-06)
+    image: prom/node-exporter:v1.11.0
+    container_name: node-exporter
+    network_mode: host
+    pid: host
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9100/metrics >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.25'
+    mem_limit: 256m
+    mem_reservation: 128m
+    logging: *default-logging
+    restart: unless-stopped
+
+  prometheus:
+    # gepinnt: v3.11.0 (2026-04-06)
+    image: prom/prometheus:v3.11.0
+    container_name: prometheus
+    ports:
+      - "192.168.2.101:9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.75'
+    mem_limit: 1g
+    mem_reservation: 512m
+    logging: *default-logging
+    restart: unless-stopped
+
+  grafana:
+    # gepinnt: 12.4.2 (2026-04-06)
+    image: grafana/grafana-oss:12.4.2
+    container_name: grafana
+    ports:
+      - "192.168.2.101:3003:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_ADMIN_PASSWORD:-admin}"
+      GF_SERVER_ROOT_URL: "http://grafana.lan"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      INFLUXDB_ADMIN_TOKEN: "${INFLUXDB_ADMIN_TOKEN}"
+      INFLUXDB_ORG: "${INFLUXDB_ORG}"
+      INFLUXDB_BUCKET: "${INFLUXDB_BUCKET}"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      - prometheus
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.75'
+    mem_limit: 512m
+    mem_reservation: 256m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── Container Metrics ──────────────────────────────────────────────────────
+  cadvisor:
+    # gepinnt: v0.52.1 (2026-04-10)
+    image: gcr.io/cadvisor/cadvisor:v0.52.1
+    container_name: cadvisor
+    ports:
+      - "192.168.2.101:8087:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    devices:
+      - /dev/kmsg
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+    cpus: '0.50'
+    mem_limit: 256m
+    mem_reservation: 128m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── Log Aggregation ─────────────────────────────────────────────────────────
+  loki:
+    # gepinnt: 3.5.0 (2026-04-10)
+    image: grafana/loki:3.5.0
+    container_name: loki
+    ports:
+      - "192.168.2.101:3100:3100"
+    volumes:
+      - ./loki/config/loki.yml:/etc/loki/loki.yml:ro
+      - loki_data:/loki
+    command: -config.file=/etc/loki/loki.yml
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3100/ready || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.50'
+    mem_limit: 512m
+    mem_reservation: 256m
+    logging: *default-logging
+    restart: unless-stopped
+
+  promtail:
+    # gepinnt: 3.5.0 (2026-04-10)
+    image: grafana/promtail:3.5.0
+    container_name: promtail
+    volumes:
+      - ./promtail/config/promtail.yml:/etc/promtail/promtail.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /tmp:/tmp
+    command: -config.file=/etc/promtail/promtail.yml
+    depends_on:
+      - loki
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.25'
+    mem_limit: 256m
+    mem_reservation: 64m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── Alerting ────────────────────────────────────────────────────────────────
+  alertmanager:
+    # gepinnt: v0.28.1 (2026-04-10)
+    image: prom/alertmanager:v0.28.1
+    container_name: alertmanager
+    ports:
+      - "192.168.2.101:9093:9093"
+    volumes:
+      - ./alertmanager/config/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager_data:/alertmanager
+    env_file: .env
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://alertmanager.lan'
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9093/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.25'
+    mem_limit: 128m
+    mem_reservation: 64m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── Password Manager ────────────────────────────────────────────────────────
+  vaultwarden:
+    # gepinnt: 1.34.1-alpine (2026-04-10)
+    image: vaultwarden/server:1.34.1-alpine
+    container_name: vaultwarden
+    ports:
+      - "192.168.2.101:8888:80"
+    volumes:
+      - ./vaultwarden/data:/data
+    environment:
+      WEBSOCKET_ENABLED: "true"
+      SIGNUPS_ALLOWED: "false"
+      DOMAIN: "http://vault.lan"
+      LOG_LEVEL: "warn"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/alive"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.25'
+    mem_limit: 256m
+    mem_reservation: 64m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── Push Notifications ──────────────────────────────────────────────────────
+  ntfy:
+    # gepinnt: v2.13.0 (2026-04-10)
+    image: binwiederhier/ntfy:v2.13.0
+    container_name: ntfy
+    ports:
+      - "192.168.2.101:8900:80"
+    volumes:
+      - ./ntfy/server.yml:/etc/ntfy/server.yml:ro
+      - ntfy_cache:/var/cache/ntfy
+      - ntfy_data:/var/lib/ntfy
+    command: serve --config /etc/ntfy/server.yml
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:80/v1/health | grep -q 'healthy'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.25'
+    mem_limit: 128m
+    mem_reservation: 64m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── NVMe / SMART Monitoring ─────────────────────────────────────────────────
+  scrutiny:
+    # gepinnt: v0.8.1 (2026-04-10)
+    image: ghcr.io/analogj/scrutiny:v0.8.1-omnibus
+    container_name: scrutiny
+    ports:
+      - "192.168.2.101:8891:8080"
+    volumes:
+      - ./scrutiny/config:/opt/scrutiny/config
+      - /run/udev:/run/udev:ro
+    cap_add:
+      - SYS_RAWIO
+    devices:
+      - /dev/nvme0n1:/dev/nvme0n1
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/api/health"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+    cpus: '0.25'
+    mem_limit: 256m
+    mem_reservation: 64m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── Web-Search (für OpenClaw) ───────────────────────────────────────────────
+  searxng:
+    # gepinnt: Digest 2026-04-10 (kein stabiles Versions-Tag; Watchtower übernimmt Updates)
+    image: searxng/searxng@sha256:6a89a150d0163877caab1982b7a20d0a03fd4b39401a0d3f26f61ad205949442
+    container_name: searxng
+    ports:
+      - "192.168.2.101:8085:8080"
+    volumes:
+      - ./searxng/config:/etc/searxng:rw
+    environment:
+      SEARXNG_BASE_URL: "http://search.lan/"
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+      - DAC_OVERRIDE
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    cpus: '0.50'
+    mem_limit: 512m
+    mem_reservation: 128m
+    logging: *default-logging
+    restart: unless-stopped
+
+  # ─── Auth / SSO (Forward-Auth für Caddy) ─────────────────────────────────────
+  authelia:
+    # gepinnt: 4.37.5 (2026-04-10) – letzte Version mit HTTP-Support (4.38+ erzwingt HTTPS)
+    image: authelia/authelia:4.37.5
+    container_name: authelia
+    ports:
+      - "192.168.2.101:9091:9091"
+    volumes:
+      - ./authelia/config:/config
+    environment:
+      TZ: Europe/Berlin
+    env_file: .env
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9091/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+    cpus: '0.25'
+    mem_limit: 256m
+    mem_reservation: 64m
+    logging: *default-logging
+    restart: unless-stopped
+
+volumes:
+  portainer_data:
+  caddy_data:
+  caddy_config:
+  uptime-kuma_data:
+  prometheus_data:
+  grafana_data:
+  loki_data:
+  alertmanager_data:
+  ntfy_cache:
+  ntfy_data:

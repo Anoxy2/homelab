@@ -1,0 +1,1 @@
+purpose: check syntax and produce report

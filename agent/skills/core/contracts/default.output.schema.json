@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "core skill output",
+  "description": "Minimal contract for the core skill. Core provides shared constants and no dispatch script.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "status": { "type": "string", "enum": ["ok", "error"] },
+    "message": { "type": "string" }
+  }
+}

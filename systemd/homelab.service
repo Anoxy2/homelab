@@ -1,0 +1,19 @@
+[Unit]
+Description=Homelab Docker Compose Stack
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/home/steges
+User=steges
+ExecStart=/usr/bin/docker compose up -d --remove-orphans
+ExecStop=/usr/bin/docker compose down
+# Recover from transient DNS/network failures at boot.
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

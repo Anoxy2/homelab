@@ -1,0 +1,1440 @@
+{
+  "updated_at": "2026-04-09T21:21:59Z",
+  "scout": {
+    "known_total": 88,
+    "status_counts": {
+      "canary": 49,
+      "active": 22,
+      "pending-blacklist": 9,
+      "pending-review": 3,
+      "rollback": 2,
+      "vetted": 2,
+      "reviewed": 1
+    },
+    "canary_count": 49,
+    "active_count": 22,
+    "pending_review": 3,
+    "pending_blacklist_count": 0,
+    "last_scout_ts": "1775760289",
+    "skills": [
+      {
+        "slug": "test-05-base64",
+        "source": "manual",
+        "status": "pending-review",
+        "version": "0.0.0",
+        "discovered_at": "",
+        "last_scout": "",
+        "scout_score": 0.0,
+        "vetting_score": 50.0,
+        "vetted_at": "2026-04-05T07:49:17Z"
+      },
+      {
+        "slug": "test-06-injection",
+        "source": "manual",
+        "status": "pending-review",
+        "version": "0.0.0",
+        "discovered_at": "",
+        "last_scout": "",
+        "scout_score": 0.0,
+        "vetting_score": 50.0,
+        "vetted_at": "2026-04-05T07:49:17Z"
+      },
+      {
+        "slug": "test-07-permissions",
+        "source": "manual",
+        "status": "pending-review",
+        "version": "0.0.0",
+        "discovered_at": "",
+        "last_scout": "",
+        "scout_score": 0.0,
+        "vetting_score": 55.0,
+        "vetted_at": "2026-04-05T07:49:17Z"
+      },
+      {
+        "slug": "deep-scan-demo",
+        "source": "manual",
+        "status": "pending-blacklist",
+        "version": "0.0.0",
+        "discovered_at": "",
+        "last_scout": "",
+        "scout_score": 0.0,
+        "vetting_score": 30.0,
+        "vetted_at": "2026-04-04T15:54:04Z"
+      },
+      {
+        "slug": "resilience-extreme-0",
+        "source": "skills.sh",
+        "status": "pending-blacklist",
+        "version": "",
+        "discovered_at": "",
+        "last_scout": "",
+        "scout_score": 0.0,
+        "vetting_score": 0.0,
+        "vetted_at": "2026-04-04T21:14:25Z"
+      },
+      {
+        "slug": "resilience-extreme-1",
+        "source": "skills.sh",
+        "status": "pending-blacklist",
+        "version": "",
+        "discovered_at": "",
+        "last_scout": "",
+        "scout_score": 0.0,
+        "vetting_score": 0.0,
+        "vetted_at": "2026-04-04T21:14:25Z"
+      },
+      {
+        "slug": "resilience-extreme-2",
+        "source": "skills.sh",
+        "status": "pending-blacklist",
+        "version": "",
+        "discovered_at": "",
+        "last_scout": "",
+        "scout_score": 0.0,
+        "vetting_score": 0.0,
+        "vetted_at": "2026-04-04T21:14:25Z"
+      },
+      {
+        "slug": "test-02-eval",
+        "source": "manual",
+        "status": "pending-blacklist",
+        "version": "0.0.0",
+        "discovered_at": "",
+        "last_scout": "",
+        "scout_score": 0.0,
+        "vetting_score": 10.0,
+        "vetted_at": "2026-04-05T07:49:16Z"
+      },
+      {
+        "slug": "test-03-exec",
+        "source": "manual",
+        "status": "pending-blacklist",
+        "version": "0.0.0",
+        "discovered_at": "",
+        "last_scout": "",
+        "scout_score": 0.0,
+        "vetting_score": 0.0,
+        "vetted_at": "2026-04-05T07:49:16Z"
+      },
+      {
+        "slug": "test-04-sudo",
+        "source": "manual",
+        "status": "pending-blacklist",
+        "version": "0.0.0",
+        "discovered_at": "",
+        "last_scout": "",
+        "scout_score": 0.0,
+        "vetting_score": 30.0,
+        "vetted_at": "2026-04-05T07:49:16Z"
+      },
+      {
+        "slug": "test-08-mismatch",
+        "source": "manual",
+        "status": "pending-blacklist",
+        "version": "0.0.0",
+        "discovered_at": "",
+        "last_scout": "",
+        "scout_score": 0.0,
+        "vetting_score": 22.0,
+        "vetted_at": "2026-04-05T07:49:17Z"
+      },
+      {
+        "slug": "test-suspicious",
+        "source": "clawhub",
+        "status": "pending-blacklist",
+        "version": "0.0.1",
+        "discovered_at": "2026-04-04T15:13:45Z",
+        "last_scout": "2026-04-04T15:13:45Z",
+        "scout_score": 0.0,
+        "vetting_score": 20.0,
+        "vetted_at": "2026-04-04T15:13:45Z"
+      },
+      {
+        "slug": "0protocol",
+        "source": "openclaw-skills",
+        "status": "canary",
+        "version": "2026.04.08",
+        "discovered_at": "2026-04-08T19:04:58Z",
+        "last_scout": "2026-04-08T19:19:09Z",
+        "scout_score": 8.0,
+        "vetting_score": 88.0,
+        "vetted_at": "2026-04-09T05:00:47Z"
+      },
+      {
+        "slug": "agentic-mcp-server-builder",
+        "source": "openclaw-skills",
+        "status": "canary",
+        "version": "2026.04.08",
+        "discovered_at": "2026-04-08T19:17:07Z",
+        "last_scout": "2026-04-08T19:19:09Z",
+        "scout_score": 8.0,
+        "vetting_score": 88.0,
+        "vetted_at": "2026-04-09T05:00:47Z"
+      },
+      {
+        "slug": "ai-vulnerability-tracker",
+        "source": "openclaw-skills",
+        "status": "canary",
+        "version": "2026.04.08",
+        "discovered_at": "2026-04-08T19:04:58Z",
+        "last_scout": "2026-04-08T19:19:09Z",
+        "scout_score": 8.0,
+        "vetting_score": 88.0,
+        "vetted_at": "2026-04-09T05:00:49Z"
+      },
+      {
+        "slug": "carsxe",
+        "source": "openclaw-skills",
+        "status": "canary",
+        "version": "2026.04.08",
+        "discovered_at": "2026-04-08T19:04:59Z",
+        "last_scout": "2026-04-08T19:19:09Z",
+        "scout_score": 8.0,
+        "vetting_score": 88.0,
+        "vetted_at": "2026-04-09T05:00:51Z"
+      },
+      {
+        "slug": "cyber-ir-playbook",
+        "source": "openclaw-skills",
+        "status": "canary",
+        "version": "2026.04.08",
+        "discovered_at": "2026-04-08T19:17:07Z",
+        "last_scout": "2026-04-08T19:19:09Z",
+        "scout_score": 8.0,
+        "vetting_score": 88.0,
+        "vetted_at": "2026-04-09T05:00:51Z"
+      },
+      {
+        "slug": "cyber-kev-triage",
+        "source": "openclaw-skills",
+        "status": "canary",
+        "version": "2026.04.08",
+        "discovered_at": "2026-04-08T19:17:07Z",
+        "last_scout": "2026-04-08T19:19:09Z",
+        "scout_score": 8.0,
+        "vetting_score": 88.0,
+        "vetted_at": "2026-04-09T05:00:52Z"
+      },
+      {
+        "slug": "cyber-owasp-review",
+        "source": "openclaw-skills",
+        "status": "canary",
+        "version": "2026.04.08",
+        "discovered_at": "2026-04-08T19:17:07Z",
+        "last_scout": "2026-04-08T19:19:09Z",
+        "scout_score": 8.0,
+        "vetting_score": 88.0,
+        "vetted_at": "2026-04-09T05:00:52Z"
+      },
+      {
+        "slug": "dl-transformer-finetune",
+        "source": "openclaw-skills",
+        "status": "canary",
+        "version": "2026.04.08",
+        "discovered_at": "2026-04-08T19:17:07Z",
+        "last_scout": "2026-04-08T19:19:09Z",
+        "scout_score": 8.0,
+        "vetting_score": 88.0,
+        "vetted_at": "2026-04-09T05:00:53Z"
+      },
+      {
+        "slug": "docs-pipeline-automation",
+        "source": "openclaw-skills",
+        "status": "canary",
+        "version": "2026.04.08",
+        "discovered_at": "2026-04-08T19:17:07Z",
+        "last_scout": "2026-04-08T19:19:09Z",
+        "scout_score": 8.0,
+        "vetting_score": 88.0,
+        "vetted_at": "2026-04-09T05:00:54Z"
+      },
+      {
+        "slug": "obsidian-cli-skills",
+        "source": "openclaw-skills",
+        "status": "canary",
+        "version": "2026.04.08",
+        "discovered_at": "2026-04-08T19:17:07Z",
+        "last_scout": "2026-04-08T19:19:09Z",
+        "scout_score": 8.0,
+        "vetting_score": 88.0,
+        "vetted_at": "2026-04-09T05:01:01Z"
+      },
+      {
+        "slug": "session-rotate-80",
+        "source": "openclaw-skills",
+        "status": "canary",
+        "version": "2026.04.08",
+        "discovered_at": "2026-04-08T19:04:59Z",
+        "last_scout": "2026-04-08T19:19:09Z",
+        "scout_score": 8.0,
+        "vetting_score": 88.0,
+        "vetted_at": "2026-04-09T05:01:04Z"
+      },
+      {
+        "slug": "triple-layer-memory",
+        "source": "openclaw-skills",
+        "status": "canary",
+        "version": "2026.04.08",
+        "discovered_at": "2026-04-08T19:04:59Z",
+        "last_scout": "2026-04-08T19:19:09Z",
+        "scout_score": 8.0,
+        "vetting_score": 88.0,
+        "vetted_at": "2026-04-09T05:01:05Z"
+      },
+      {
+        "slug": "google-workspace-automation",
+        "source": "openclaw-skills",
+        "status": "canary",
+        "version": "2026.04.08",
+        "discovered_at": "2026-04-08T19:17:08Z",
+        "last_scout": "2026-04-08T19:19:10Z",
+        "scout_score": 8.0,
+        "vetting_score": 88.0,
+        "vetted_at": "2026-04-09T05:00:54Z"
+      },
+      {
+        "slug": "ml-experiment-tracker",
+        "source": "openclaw-skills",
+        "status": "canary",
+        "version": "2026.04.08",
+        "discovered_at": "2026-04-08T19:17:08Z",
+        "last_scout": "2026-04-08T19:19:10Z",
+        "scout_score": 8.0,
+        "vetting_score": 88.0,
+        "vetted_at": "2026-04-09T05:01:00Z"
+      },
+      {
+        "slug": "automation-workflows",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:05Z",
+        "last_scout": "2026-04-09T17:03:56Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:50Z"
+      },
+      {
+        "slug": "automation-workflows-0-1-0",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:05Z",
+        "last_scout": "2026-04-09T17:03:56Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:50Z"
+      },
+      {
+        "slug": "homelab-ai",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:05Z",
+        "last_scout": "2026-04-09T17:03:56Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:58Z"
+      },
+      {
+        "slug": "homelab-cluster",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:05Z",
+        "last_scout": "2026-04-09T17:03:56Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:58Z"
+      },
+      {
+        "slug": "homelab-runbook",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-09T17:03:56Z",
+        "last_scout": "2026-04-09T17:03:56Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T17:04:00Z"
+      },
+      {
+        "slug": "homeserver",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:05Z",
+        "last_scout": "2026-04-09T17:03:56Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:59Z"
+      },
+      {
+        "slug": "afrexai-business-automation",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:05Z",
+        "last_scout": "2026-04-09T17:03:57Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:47Z"
+      },
+      {
+        "slug": "agentic-workflow-automation",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:17:07Z",
+        "last_scout": "2026-04-09T17:03:57Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:48Z"
+      },
+      {
+        "slug": "ai-automation-workflow",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:05Z",
+        "last_scout": "2026-04-09T17:03:57Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:48Z"
+      },
+      {
+        "slug": "ai-ceo-automation",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:06Z",
+        "last_scout": "2026-04-09T17:03:57Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:48Z"
+      },
+      {
+        "slug": "automation-tool",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:06Z",
+        "last_scout": "2026-04-09T17:03:57Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:49Z"
+      },
+      {
+        "slug": "automation-workflow-builder",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:05Z",
+        "last_scout": "2026-04-09T17:03:57Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:50Z"
+      },
+      {
+        "slug": "home-assistant",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:06Z",
+        "last_scout": "2026-04-09T17:03:57Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:55Z"
+      },
+      {
+        "slug": "home-assistant-agent-secure",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:06Z",
+        "last_scout": "2026-04-09T17:03:57Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:56Z"
+      },
+      {
+        "slug": "home-assistant-master",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:06Z",
+        "last_scout": "2026-04-09T17:03:57Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:56Z"
+      },
+      {
+        "slug": "home-assistant-toolkit",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:06Z",
+        "last_scout": "2026-04-09T17:03:57Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:57Z"
+      },
+      {
+        "slug": "iot",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:06Z",
+        "last_scout": "2026-04-09T17:03:57Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:59Z"
+      },
+      {
+        "slug": "productivity-automation-kit",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:05Z",
+        "last_scout": "2026-04-09T17:03:57Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:01:02Z"
+      },
+      {
+        "slug": "wechat-automation",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:06Z",
+        "last_scout": "2026-04-09T17:03:57Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:01:05Z"
+      },
+      {
+        "slug": "dht11-temp",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:07Z",
+        "last_scout": "2026-04-09T17:03:58Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:53Z"
+      },
+      {
+        "slug": "esp32",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:07Z",
+        "last_scout": "2026-04-09T17:03:58Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:54Z"
+      },
+      {
+        "slug": "ha-ultimate",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:07Z",
+        "last_scout": "2026-04-09T17:03:58Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:55Z"
+      },
+      {
+        "slug": "home-assistant-bridge-python",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:06Z",
+        "last_scout": "2026-04-09T17:03:58Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:56Z"
+      },
+      {
+        "slug": "homeassistant-assist",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:06Z",
+        "last_scout": "2026-04-09T17:03:58Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:57Z"
+      },
+      {
+        "slug": "homeassistant-cli",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:06Z",
+        "last_scout": "2026-04-09T17:03:58Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:58Z"
+      },
+      {
+        "slug": "mcp-hass",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:06Z",
+        "last_scout": "2026-04-09T17:03:58Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:01:00Z"
+      },
+      {
+        "slug": "moltbot-ha",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:06Z",
+        "last_scout": "2026-04-09T17:03:58Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:01:01Z"
+      },
+      {
+        "slug": "raspberry",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:07Z",
+        "last_scout": "2026-04-09T17:03:58Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:01:02Z"
+      },
+      {
+        "slug": "raspberry-pi-camera-service",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:07Z",
+        "last_scout": "2026-04-09T17:03:58Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:01:02Z"
+      },
+      {
+        "slug": "raspberry-pi-gpio",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:07Z",
+        "last_scout": "2026-04-09T17:03:58Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:01:03Z"
+      },
+      {
+        "slug": "raspberry-pi-servo",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:07Z",
+        "last_scout": "2026-04-09T17:03:58Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:01:03Z"
+      },
+      {
+        "slug": "rdk-x5-gpio",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:07Z",
+        "last_scout": "2026-04-09T17:03:58Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:01:04Z"
+      },
+      {
+        "slug": "daily-health-report",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:07Z",
+        "last_scout": "2026-04-09T17:03:59Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:00:52Z"
+      },
+      {
+        "slug": "led-ctrl",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:07Z",
+        "last_scout": "2026-04-09T17:03:59Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:01:00Z"
+      },
+      {
+        "slug": "rdk-x5-tros",
+        "source": "clawhub",
+        "status": "canary",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-08T19:19:07Z",
+        "last_scout": "2026-04-09T17:03:59Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-09T05:01:04Z"
+      },
+      {
+        "slug": "openclaw-rag",
+        "source": "manual",
+        "status": "active",
+        "version": "0.0.0",
+        "discovered_at": "",
+        "last_scout": "",
+        "scout_score": 0.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-06T12:24:28Z"
+      },
+      {
+        "slug": "resilience-check",
+        "source": "manual",
+        "status": "active",
+        "version": "0.0.0",
+        "discovered_at": "",
+        "last_scout": "",
+        "scout_score": 0.0,
+        "vetting_score": 0.0,
+        "vetted_at": ""
+      },
+      {
+        "slug": "runbook-maintenance",
+        "source": "author-engine",
+        "status": "active",
+        "version": "0.1.0",
+        "discovered_at": "",
+        "last_scout": "",
+        "scout_score": 0.0,
+        "vetting_score": 0.0,
+        "vetted_at": ""
+      },
+      {
+        "slug": "vuln-watch",
+        "source": "internal",
+        "status": "active",
+        "version": "2026.04.08",
+        "discovered_at": "2026-04-08T19:53:49Z",
+        "last_scout": "",
+        "scout_score": 0.0,
+        "vetting_score": 85.0,
+        "vetted_at": "2026-04-08T19:53:49Z"
+      },
+      {
+        "slug": "demo2",
+        "source": "manual",
+        "status": "active",
+        "version": "0.2.0",
+        "discovered_at": "2026-04-04T15:27:12Z",
+        "last_scout": "2026-04-04T15:27:12Z",
+        "scout_score": 0.0,
+        "vetting_score": 87.0,
+        "vetted_at": "2026-04-04T15:27:12Z"
+      },
+      {
+        "slug": "coding",
+        "source": "internal",
+        "status": "active",
+        "version": "2026.04.04",
+        "discovered_at": "2026-04-04T19:06:20Z",
+        "last_scout": "2026-04-04T19:06:20Z",
+        "scout_score": 0.0,
+        "vetting_score": 85.0,
+        "vetted_at": "2026-04-06T12:27:37Z"
+      },
+      {
+        "slug": "openclaw-ui",
+        "source": "manual",
+        "status": "active",
+        "version": "0.1.0",
+        "discovered_at": "2026-04-06T19:21:39Z",
+        "last_scout": "2026-04-06T19:21:39Z",
+        "scout_score": 8.0,
+        "vetting_score": 80.0,
+        "vetted_at": "2026-04-06T19:21:39Z"
+      },
+      {
+        "slug": "account-upgrade",
+        "source": "openclaw-skills",
+        "status": "active",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-04T15:54:04Z",
+        "last_scout": "2026-04-09T17:03:59Z",
+        "scout_score": 8.0,
+        "vetting_score": 68.0,
+        "vetted_at": "2026-04-04T15:54:10Z"
+      },
+      {
+        "slug": "ai-mentor",
+        "source": "openclaw-skills",
+        "status": "active",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-04T15:59:54Z",
+        "last_scout": "2026-04-09T17:03:59Z",
+        "scout_score": 8.0,
+        "vetting_score": 78.0,
+        "vetted_at": "2026-04-04T15:59:55Z"
+      },
+      {
+        "slug": "clawcv",
+        "source": "openclaw-skills",
+        "status": "active",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-04T15:54:04Z",
+        "last_scout": "2026-04-09T17:03:59Z",
+        "scout_score": 8.0,
+        "vetting_score": 68.0,
+        "vetted_at": "2026-04-04T15:54:10Z"
+      },
+      {
+        "slug": "conatus",
+        "source": "openclaw-skills",
+        "status": "active",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-04T16:11:54Z",
+        "last_scout": "2026-04-09T17:03:59Z",
+        "scout_score": 8.0,
+        "vetting_score": 78.0,
+        "vetted_at": "2026-04-04T16:11:54Z"
+      },
+      {
+        "slug": "job-match",
+        "source": "openclaw-skills",
+        "status": "active",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-04T15:59:54Z",
+        "last_scout": "2026-04-09T17:03:59Z",
+        "scout_score": 8.0,
+        "vetting_score": 78.0,
+        "vetted_at": "2026-04-04T15:59:55Z"
+      },
+      {
+        "slug": "openclaw-version-monitor",
+        "source": "openclaw-skills",
+        "status": "active",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-04T15:54:04Z",
+        "last_scout": "2026-04-09T17:03:59Z",
+        "scout_score": 8.0,
+        "vetting_score": 68.0,
+        "vetted_at": "2026-04-04T15:54:11Z"
+      },
+      {
+        "slug": "order",
+        "source": "openclaw-skills",
+        "status": "active",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-04T16:11:54Z",
+        "last_scout": "2026-04-09T17:03:59Z",
+        "scout_score": 8.0,
+        "vetting_score": 78.0,
+        "vetted_at": "2026-04-04T16:11:55Z"
+      },
+      {
+        "slug": "pdf-export",
+        "source": "openclaw-skills",
+        "status": "active",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-04T16:11:54Z",
+        "last_scout": "2026-04-09T17:03:59Z",
+        "scout_score": 8.0,
+        "vetting_score": 78.0,
+        "vetted_at": "2026-04-04T16:11:56Z"
+      },
+      {
+        "slug": "resume-analysis",
+        "source": "openclaw-skills",
+        "status": "active",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-04T16:11:54Z",
+        "last_scout": "2026-04-09T17:03:59Z",
+        "scout_score": 8.0,
+        "vetting_score": 78.0,
+        "vetted_at": "2026-04-04T16:11:56Z"
+      },
+      {
+        "slug": "resume-rewrite",
+        "source": "openclaw-skills",
+        "status": "active",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-04T16:11:54Z",
+        "last_scout": "2026-04-09T17:03:59Z",
+        "scout_score": 8.0,
+        "vetting_score": 78.0,
+        "vetted_at": "2026-04-04T16:11:57Z"
+      },
+      {
+        "slug": "jiuwu-agent",
+        "source": "openclaw-skills",
+        "status": "active",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-04T16:11:54Z",
+        "last_scout": "2026-04-09T17:04:00Z",
+        "scout_score": 8.0,
+        "vetting_score": 78.0,
+        "vetted_at": "2026-04-04T16:11:55Z"
+      },
+      {
+        "slug": "jiuwu-message",
+        "source": "openclaw-skills",
+        "status": "active",
+        "version": "2026.04.09",
+        "discovered_at": "2026-04-04T16:11:54Z",
+        "last_scout": "2026-04-09T17:04:00Z",
+        "scout_score": 8.0,
+        "vetting_score": 78.0,
+        "vetted_at": "2026-04-04T16:11:55Z"
+      }
+    ]
+  },
+  "health": {
+    "freeze": {
+      "enabled": false,
+      "reason": "manual",
+      "changed_at": "2026-04-06T09:44:46Z"
+    },
+    "pending_blacklist": [],
+    "pending_blacklist_count": 0,
+    "canary_total": 71,
+    "canary_running": 49,
+    "canary_promoted": 22,
+    "risk_report_generated_at": "2026-04-09T18:44:49Z",
+    "high_risk_count": 0,
+    "canaries": [
+      {
+        "slug": "coding",
+        "status": "promoted",
+        "started_at": "2026-04-09T20:07:32Z",
+        "until": "2026-04-10T20:07:32Z",
+        "promoted_at": "2026-04-09T20:07:47Z"
+      },
+      {
+        "slug": "homelab-runbook",
+        "status": "running",
+        "started_at": "2026-04-09T17:04:01Z",
+        "until": "2026-04-10T17:04:01Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "wechat-automation",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:14Z",
+        "until": "2026-04-10T05:01:14Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "raspberry-pi-gpio",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:13Z",
+        "until": "2026-04-10T05:01:13Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "raspberry-pi-servo",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:13Z",
+        "until": "2026-04-10T05:01:13Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "rdk-x5-gpio",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:13Z",
+        "until": "2026-04-10T05:01:13Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "rdk-x5-tros",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:13Z",
+        "until": "2026-04-10T05:01:13Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "session-rotate-80",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:13Z",
+        "until": "2026-04-10T05:01:13Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "triple-layer-memory",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:13Z",
+        "until": "2026-04-10T05:01:13Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "ml-experiment-tracker",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:12Z",
+        "until": "2026-04-10T05:01:12Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "moltbot-ha",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:12Z",
+        "until": "2026-04-10T05:01:12Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "obsidian-cli-skills",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:12Z",
+        "until": "2026-04-10T05:01:12Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "productivity-automation-kit",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:12Z",
+        "until": "2026-04-10T05:01:12Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "raspberry",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:12Z",
+        "until": "2026-04-10T05:01:12Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "raspberry-pi-camera-service",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:12Z",
+        "until": "2026-04-10T05:01:12Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "homelab-ai",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:11Z",
+        "until": "2026-04-10T05:01:11Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "homelab-cluster",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:11Z",
+        "until": "2026-04-10T05:01:11Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "homeserver",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:11Z",
+        "until": "2026-04-10T05:01:11Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "iot",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:11Z",
+        "until": "2026-04-10T05:01:11Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "led-ctrl",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:11Z",
+        "until": "2026-04-10T05:01:11Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "mcp-hass",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:11Z",
+        "until": "2026-04-10T05:01:11Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "home-assistant-bridge-python",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:10Z",
+        "until": "2026-04-10T05:01:10Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "home-assistant-master",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:10Z",
+        "until": "2026-04-10T05:01:10Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "home-assistant-toolkit",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:10Z",
+        "until": "2026-04-10T05:01:10Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "homeassistant-assist",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:10Z",
+        "until": "2026-04-10T05:01:10Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "homeassistant-cli",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:10Z",
+        "until": "2026-04-10T05:01:10Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "docs-pipeline-automation",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:09Z",
+        "until": "2026-04-10T05:01:09Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "esp32",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:09Z",
+        "until": "2026-04-10T05:01:09Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "google-workspace-automation",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:09Z",
+        "until": "2026-04-10T05:01:09Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "ha-ultimate",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:09Z",
+        "until": "2026-04-10T05:01:09Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "home-assistant",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:09Z",
+        "until": "2026-04-10T05:01:09Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "home-assistant-agent-secure",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:09Z",
+        "until": "2026-04-10T05:01:09Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "cyber-ir-playbook",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:08Z",
+        "until": "2026-04-10T05:01:08Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "cyber-kev-triage",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:08Z",
+        "until": "2026-04-10T05:01:08Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "cyber-owasp-review",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:08Z",
+        "until": "2026-04-10T05:01:08Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "daily-health-report",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:08Z",
+        "until": "2026-04-10T05:01:08Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "dht11-temp",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:08Z",
+        "until": "2026-04-10T05:01:08Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "dl-transformer-finetune",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:08Z",
+        "until": "2026-04-10T05:01:08Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "automation-tool",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:07Z",
+        "until": "2026-04-10T05:01:07Z",
+        "promoted_at": ""
+      },
+      {
+        "slug": "automation-workflow-builder",
+        "status": "running",
+        "started_at": "2026-04-09T05:01:07Z",
+        "until": "2026-04-10T05:01:07Z",
+        "promoted_at": ""
+      }
+    ],
+    "high_risk_skills": []
+  },
+  "metrics": {
+    "weekly": {
+      "generated_at": "2026-04-05T07:49:18Z",
+      "runs": 2,
+      "avg_install_success_rate": 34.0,
+      "avg_rollback_rate": 3.4,
+      "avg_promotion_rate": 100.0,
+      "avg_time_to_decision": 7.93,
+      "avg_false_positive_rate": 10.3
+    },
+    "series": {
+      "timestamps": [
+        "2026-04-04T16:10:08Z",
+        "2026-04-04T16:11:58Z",
+        "2026-04-06T09:48:16Z",
+        "2026-04-06T09:48:23Z",
+        "2026-04-06T09:49:18Z",
+        "2026-04-06T09:50:09Z",
+        "2026-04-06T09:50:13Z",
+        "2026-04-06T12:00:00Z",
+        "2026-04-06T12:00:25Z",
+        "2026-04-06T13:20:18Z",
+        "2026-04-06T13:21:19Z",
+        "2026-04-06T13:25:47Z",
+        "2026-04-06T20:37:07Z",
+        "2026-04-07T05:02:50Z",
+        "2026-04-07T17:05:03Z",
+        "2026-04-08T05:01:31Z",
+        "2026-04-08T06:06:40Z",
+        "2026-04-08T17:01:38Z",
+        "2026-04-09T05:01:17Z",
+        "2026-04-09T17:04:01Z",
+        "2026-04-09T18:44:20Z"
+      ],
+      "install_success_pct": [
+        28.0,
+        40.0,
+        40.5,
+        40.5,
+        40.5,
+        40.5,
+        40.5,
+        40.5,
+        40.5,
+        37.8,
+        37.8,
+        37.8,
+        42.1,
+        42.1,
+        42.1,
+        42.1,
+        42.1,
+        42.1,
+        19.5,
+        19.3,
+        19.3
+      ],
+      "rollback_rate_pct": [
+        4.0,
+        2.9,
+        2.7,
+        2.7,
+        2.7,
+        2.7,
+        2.7,
+        2.7,
+        2.7,
+        2.7,
+        2.7,
+        2.7,
+        5.3,
+        5.3,
+        5.3,
+        5.3,
+        5.3,
+        5.3,
+        2.3,
+        2.3,
+        2.3
+      ],
+      "known_total": [
+        25,
+        35,
+        37,
+        37,
+        37,
+        37,
+        37,
+        37,
+        37,
+        37,
+        37,
+        37,
+        38,
+        38,
+        38,
+        38,
+        38,
+        38,
+        87,
+        88,
+        88
+      ],
+      "canary_total": [
+        1,
+        4,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        52,
+        53,
+        53
+      ]
+    },
+    "recent_runs": [
+      {
+        "ts": "2026-04-06T13:25:47Z",
+        "run_id": "orchestrate-1775481946",
+        "live": false,
+        "vet_score": 70.0,
+        "install_success_rate": 37.8,
+        "rollback_rate": 2.7,
+        "time_to_decision": 1.03,
+        "known_total": 37,
+        "canary_total": 4
+      },
+      {
+        "ts": "2026-04-06T20:37:07Z",
+        "run_id": "orchestrate-1775507820",
+        "live": true,
+        "vet_score": 70.0,
+        "install_success_rate": 42.1,
+        "rollback_rate": 5.3,
+        "time_to_decision": 6.81,
+        "known_total": 38,
+        "canary_total": 4
+      },
+      {
+        "ts": "2026-04-07T05:02:50Z",
+        "run_id": "orchestrate-1775538163",
+        "live": true,
+        "vet_score": 80.0,
+        "install_success_rate": 42.1,
+        "rollback_rate": 5.3,
+        "time_to_decision": 6.66,
+        "known_total": 38,
+        "canary_total": 4
+      },
+      {
+        "ts": "2026-04-07T17:05:03Z",
+        "run_id": "orchestrate-1775581494",
+        "live": true,
+        "vet_score": 80.0,
+        "install_success_rate": 42.1,
+        "rollback_rate": 5.3,
+        "time_to_decision": 8.8,
+        "known_total": 38,
+        "canary_total": 4
+      },
+      {
+        "ts": "2026-04-08T05:01:31Z",
+        "run_id": "orchestrate-1775624484",
+        "live": true,
+        "vet_score": 80.0,
+        "install_success_rate": 42.1,
+        "rollback_rate": 5.3,
+        "time_to_decision": 6.54,
+        "known_total": 38,
+        "canary_total": 4
+      },
+      {
+        "ts": "2026-04-08T06:06:40Z",
+        "run_id": "orchestrate-1775628399",
+        "live": true,
+        "vet_score": 80.0,
+        "install_success_rate": 42.1,
+        "rollback_rate": 5.3,
+        "time_to_decision": 1.38,
+        "known_total": 38,
+        "canary_total": 4
+      },
+      {
+        "ts": "2026-04-08T17:01:38Z",
+        "run_id": "orchestrate-1775667691",
+        "live": true,
+        "vet_score": 80.0,
+        "install_success_rate": 42.1,
+        "rollback_rate": 5.3,
+        "time_to_decision": 6.9,
+        "known_total": 38,
+        "canary_total": 4
+      },
+      {
+        "ts": "2026-04-09T05:01:17Z",
+        "run_id": "orchestrate-1775710833",
+        "live": true,
+        "vet_score": 80.0,
+        "install_success_rate": 19.5,
+        "rollback_rate": 2.3,
+        "time_to_decision": 44.64,
+        "known_total": 87,
+        "canary_total": 52
+      },
+      {
+        "ts": "2026-04-09T17:04:01Z",
+        "run_id": "orchestrate-1775754226",
+        "live": true,
+        "vet_score": 80.0,
+        "install_success_rate": 19.3,
+        "rollback_rate": 2.3,
+        "time_to_decision": 14.9,
+        "known_total": 88,
+        "canary_total": 53
+      },
+      {
+        "ts": "2026-04-09T18:44:20Z",
+        "run_id": "orchestrate-1775760259",
+        "live": false,
+        "vet_score": 80.0,
+        "install_success_rate": 19.3,
+        "rollback_rate": 2.3,
+        "time_to_decision": 0.82,
+        "known_total": 88,
+        "canary_total": 53
+      }
+    ],
+    "total_runs": 21
+  }
+}

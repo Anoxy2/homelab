@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "canary-evaluator output",
+  "type": "object",
+  "required": ["slug", "recommendation", "confidence", "evidence"],
+  "additionalProperties": false,
+  "properties": {
+    "slug": {
+      "type": "string",
+      "minLength": 1
+    },
+    "recommendation": {
+      "type": "string",
+      "enum": ["promote", "extend", "fail"]
+    },
+    "confidence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    }
+  }
+}

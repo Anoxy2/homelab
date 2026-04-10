@@ -1,0 +1,17 @@
+# USB Backup Stick - für backup-automation Skill
+# Füge diesen Eintrag zu /etc/fstab hinzu nachdem der USB-Stick angeschlossen ist:
+#
+# Schritte:
+# 1. USB-Stick anschließen
+# 2. lsblk ausführen um das Device zu finden (z.B. /dev/sda1)
+# 3. sudo blkid /dev/sda1 ausführen um UUID zu sehen
+# 4. sudo mkfs.ext4 /dev/sda1 (falls der Stick nicht ext4 formatiert ist)
+# 5. Diesen Eintrag mit der korrekten UUID zu /etc/fstab hinzufügen:
+
+# UUID=xxxx-xxxx /mnt/usb-backup ext4 defaults,noatime,nofail,x-systemd.automount 0 2
+
+# nofail = Boot nicht blockieren wenn Stick nicht da
+# x-systemd.automount = automatisch mounten wenn darauf zugegriffen wird
+
+# Oder alternativ mit LABEL (einfacher zu lesen):
+# LABEL=usb-backup /mnt/usb-backup ext4 defaults,noatime,nofail 0 2

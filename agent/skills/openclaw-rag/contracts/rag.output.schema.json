@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "openclaw-rag retrieve output",
+  "type": "object",
+  "required": ["query", "count", "results", "search_mode", "fallback_used"],
+  "additionalProperties": true,
+  "properties": {
+    "query": { "type": "string", "minLength": 1 },
+    "keywords": { "type": "array", "items": { "type": "string" } },
+    "search_mode": { "type": "string", "enum": ["fts", "like", "snapshot"] },
+    "db_used": { "type": "string" },
+    "fallback_used": { "type": "boolean" },
+    "timeout_ms": { "type": "integer", "minimum": 0 },
+    "query_rewrites": { "type": "array", "items": { "type": "string" } },
+    "warning": { "type": "string" },
+    "count": { "type": "integer", "minimum": 0 },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "chunk"],
+        "properties": {
+          "source": { "type": "string" },
+          "chunk": { "type": "string" },
+          "score": { "type": "number" }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}

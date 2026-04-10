@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ha-control check-entities output",
+  "type": "object",
+  "required": ["whitelist_total", "ok", "missing_count", "missing", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "whitelist_total": { "type": "integer", "minimum": 0 },
+    "ok": { "type": "integer", "minimum": 0 },
+    "missing_count": { "type": "integer", "minimum": 0 },
+    "missing": { "type": "array", "items": { "type": "string" } },
+    "status": { "type": "string", "enum": ["ok", "drift"] }
+  }
+}

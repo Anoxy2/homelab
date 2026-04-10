@@ -1,0 +1,5 @@
+# Placeholder for state directory
+# This directory will contain:
+# - last-backup.json
+# - last-verify.json
+# - errors.log

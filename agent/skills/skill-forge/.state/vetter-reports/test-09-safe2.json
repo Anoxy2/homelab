@@ -1,0 +1,13 @@
+{
+  "slug": "test-09-safe2",
+  "verdict": "PASS",
+  "risk_tier": "MEDIUM",
+  "scores": {
+    "input_score": 82,
+    "static_score": 82,
+    "semantic_score": 50,
+    "reputation_score": 82,
+    "final_score": 82
+  },
+  "timestamp": "2026-04-05T07:49:18Z"
+}

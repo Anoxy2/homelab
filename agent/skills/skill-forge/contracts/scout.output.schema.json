@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["kind", "timestamp", "total", "counts"],
+  "properties": {
+    "kind": {"const": "scout_summary"},
+    "timestamp": {"type": "string"},
+    "total": {"type": "integer", "minimum": 0},
+    "counts": {"type": "object"}
+  }
+}

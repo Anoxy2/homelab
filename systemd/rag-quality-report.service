@@ -1,0 +1,17 @@
+[Unit]
+Description=Wöchentlicher RAG-Qualitätsreport
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=steges
+WorkingDirectory=/home/steges
+ExecStart=/home/steges/scripts/rag-quality-report.sh
+TimeoutStartSec=300
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=rag-quality-report
+
+[Install]
+WantedBy=multi-user.target

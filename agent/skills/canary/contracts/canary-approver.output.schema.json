@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "canary-approver output",
+  "type": "object",
+  "required": ["slug", "verdict", "rationale", "evaluator_recommendation", "confidence"],
+  "additionalProperties": false,
+  "properties": {
+    "slug": {"type": "string", "minLength": 1},
+    "verdict": {"type": "string", "enum": ["Go", "No-Go", "Extend"]},
+    "rationale": {"type": "string", "minLength": 1},
+    "evaluator_recommendation": {"type": "string", "enum": ["promote", "extend", "fail"]},
+    "confidence": {"type": "integer", "minimum": 0, "maximum": 100}
+  }
+}

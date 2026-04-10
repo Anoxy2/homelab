@@ -1,0 +1,39 @@
+version: 2
+updated_at: 2026-04-09
+
+# Canary-Kriterien pro Skill (versioniert)
+# - default: gilt fuer alle Skills ohne eigenen Eintrag
+# - skills.<slug>: ueberschreibt default fuer den jeweiligen Skill
+#
+default:
+  window_hours: 24
+  hard_min_hours: 24
+  max_triggers_per_day: 5
+  require_no_high_or_extreme_events: true
+  require_no_trigger_conflict: true
+
+skills:
+  openclaw-rag:
+    window_hours: 24
+    hard_min_hours: 24
+    max_triggers_per_day: 3
+    require_no_high_or_extreme_events: true
+    require_no_trigger_conflict: true
+    # RAG quality gates (measured via evaluate-goldset.py, 30 questions, k=5)
+    # Baseline (FTS-only, 20 questions): P@5=0.32, R@5=0.32
+    # Phase 2 (hybrid search, 20 questions): P@5=0.38, R@5=0.48
+    # Phase 3 (hybrid+dedup+aliases+doc-improvements, 30 questions): P@5=0.24, R@5=0.70
+    # Note: P@5 drops with max-1-per-source dedup and 2-file expected sets (max achievable ~0.35)
+    # Minimum thresholds for promotion:
+    rag_quality:
+      min_precision_at_5: 0.22
+      min_recall_at_5: 0.64
+      max_p95_latency_ms: 450
+      gold_set_questions: 30
+
+  openclaw-ui:
+    window_hours: 24
+    hard_min_hours: 24
+    max_triggers_per_day: 5
+    require_no_high_or_extreme_events: true
+    require_no_trigger_conflict: true

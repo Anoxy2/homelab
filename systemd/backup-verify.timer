@@ -1,0 +1,11 @@
+[Unit]
+Description=Backup-Verifikation (wöchentlich, Sonntag 09:00)
+Requires=backup-verify.service
+
+[Timer]
+OnCalendar=Sun *-*-* 09:00:00 Europe/Berlin
+Persistent=true
+RandomizedDelaySec=5min
+
+[Install]
+WantedBy=timers.target

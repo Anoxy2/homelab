@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "vetting-reviewer output",
+  "type": "object",
+  "required": ["slug", "verdict", "rationale"],
+  "additionalProperties": false,
+  "properties": {
+    "slug": {"type": "string"},
+    "verdict": {"type": "string", "enum": ["PASS", "REJECT", "REVIEW"]},
+    "rationale": {"type": "string"},
+    "risk_tier": {"type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "EXTREME"]},
+    "scores": {
+      "type": "object",
+      "properties": {
+        "final_score": {"type": "number"}
+      },
+      "additionalProperties": true
+    }
+  }
+}

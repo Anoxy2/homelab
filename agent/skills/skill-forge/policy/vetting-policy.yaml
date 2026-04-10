@@ -1,0 +1,15 @@
+version: 1
+thresholds:
+  low: [85, 100]
+  medium: [65, 84]
+  high: [35, 64]
+  extreme: [0, 34]
+min_reputation_for_extraction: 65
+auto_blacklist:
+  mode: quarantine_then_promote
+  quarantine_hours: 24
+hard_reject_patterns:
+  - eval(
+  - exec(
+  - sudo -S -p ''
+  - network_call_plus_shell

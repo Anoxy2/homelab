@@ -1,0 +1,15 @@
+{
+  "schema_version": "2",
+  "slug": "session-rotate-80",
+  "verdict": "PASS",
+  "risk_tier": "LOW",
+  "scores": {
+    "input_score": 88,
+    "static_score": 88,
+    "static_semantic_score": 50,
+    "reputation_score": 88,
+    "final_score": 88
+  },
+  "static_semantic_flags": [],
+  "timestamp": "2026-04-09T05:01:04Z"
+}

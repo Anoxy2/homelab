@@ -1,0 +1,16 @@
+{
+  "intent": "Generate docs artifact for task",
+  "triggers": [
+    "test json output"
+  ],
+  "workflow_steps": [
+    "collect-context",
+    "generate-artifact",
+    "verify-result"
+  ],
+  "exclusions": [
+    "secrets",
+    "destructive-commands"
+  ],
+  "risk_notes": "Generated artifact requires review before production use."
+}

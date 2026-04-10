@@ -1,0 +1,18 @@
+[Unit]
+Description=OpenClaw autonomer Heartbeat
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=steges
+WorkingDirectory=/home/steges
+# Adaptive Entscheidung (live/dry, vet-score) trifft heartbeat-dispatch intern
+ExecStart=/home/steges/agent/skills/heartbeat/scripts/heartbeat-dispatch.sh --live
+TimeoutStartSec=900
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=openclaw-heartbeat
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,221 @@
+{
+  "updated_at": "2026-04-09T21:11:50Z",
+  "operations": {
+    "open_work": {
+      "source_path": "docs/operations/open-work-todo.md",
+      "items": [
+        {
+          "priority": "OPEN",
+          "section": "Offene Arbeit",
+          "text": "P0 Reverse-Proxy Restarbeit: Bridge-Mode-Fix fuer Caddy bei weiter erreichbaren host-mode Backends."
+        },
+        {
+          "priority": "OPEN",
+          "section": "Offene Arbeit",
+          "text": "Infra-Folgeentscheidungen aus Hardening/Monitoring in konkrete Umsetzungs-Todos zerlegen."
+        },
+        {
+          "priority": "P1",
+          "section": "P1 Self-Healing Backlog (integriert aus agent/TO-DO.md)",
+          "text": "Service-Health-Watchdog fuer zentrale Container inkl. Restart-Strategie und Eskalation nach wiederholten Fehlversuchen."
+        },
+        {
+          "priority": "P1",
+          "section": "P1 Self-Healing Backlog (integriert aus agent/TO-DO.md)",
+          "text": "Config-Check und abgesicherter Rollback-Flow fuer kritische Konfigurationen (Pi-hole, Home Assistant, Caddy)."
+        },
+        {
+          "priority": "P1",
+          "section": "P1 Self-Healing Backlog (integriert aus agent/TO-DO.md)",
+          "text": "Connectivity-/Tailscale-Selbsttest inkl. DNS-/Gateway-Pruefungen und klarer Reconnect-Strategie."
+        },
+        {
+          "priority": "P1",
+          "section": "P1 Self-Healing Backlog (integriert aus agent/TO-DO.md)",
+          "text": "Storage/Mount-Recovery fuer NVMe/Backups inkl. Alarmierung bei hoher Auslastung oder Offline-Zustand."
+        },
+        {
+          "priority": "P1",
+          "section": "P1 Self-Healing Backlog (integriert aus agent/TO-DO.md)",
+          "text": "Sensor-/Hardware-Check fuer Growbox/ESP32 inkl. abgestuftem Reconnect/Neustart-Ansatz."
+        },
+        {
+          "priority": "P1",
+          "section": "P1 Self-Healing Backlog (integriert aus agent/TO-DO.md)",
+          "text": "Self-Heal-Reporting mit strukturiertem Log und regelmaessiger Zusammenfassung (Canvas/Telegram)."
+        }
+      ],
+      "counts": {
+        "open": 2,
+        "p0": 0,
+        "p1": 6,
+        "total": 8
+      }
+    },
+    "handover": {
+      "source_path": "docs/operations/session-handover.md",
+      "order": [
+        "Implementieren",
+        "Validieren",
+        "Dokumentieren",
+        "Changelog bei Verhaltens-/Prozessaenderung",
+        "Erst dann Todo-Eintrag entfernen"
+      ],
+      "start_check": [
+        "`cat /home/steges/CLAUDE.md`",
+        "`cat /home/steges/agent/HANDSHAKE.md`",
+        "`cat /home/steges/docs/operations/open-work-todo.md`",
+        "`~/scripts/skill-forge policy lint`",
+        "`~/scripts/skill-forge status`"
+      ],
+      "end_check": [
+        "Relevante Dokus aktualisieren",
+        "Offene Todos pruefen und nur erledigte entfernen",
+        "Kurzstatus in Commit/Session-Notiz festhalten"
+      ]
+    },
+    "kpis": {
+      "open_total": 8,
+      "p0": 0,
+      "p1": 6,
+      "start_checks": 5,
+      "end_checks": 3
+    },
+    "source_paths": [
+      "docs/operations/open-work-todo.md",
+      "docs/operations/session-handover.md"
+    ]
+  },
+  "decisions": {
+    "count": 6,
+    "review_count": 3,
+    "items": [
+      {
+        "title": "Entscheidung: n8n fuer Growbox-Automatisierung",
+        "slug": "automation-decision-n8n",
+        "source_path": "docs/decisions/automation-decision-n8n.md",
+        "summary": "Geprueft wurde, ob `n8n` als Glue zwischen MQTT, OpenClaw (Claude API) und Home Assistant notwendig ist.",
+        "outcome": "n8n fuer Growbox-Automatisierung",
+        "review_hint": ">10 aktive, verknuepfte Automationsfluesse mit haeufigen Aenderungen wiederkehrender Bedarf an visueller Workflow-Editor-Kollaboration",
+        "needs_review": true
+      },
+      {
+        "title": "Immich Evaluation (Pi 5, arm64)",
+        "slug": "immich-evaluation",
+        "source_path": "docs/decisions/immich-evaluation.md",
+        "summary": "Datum: 05.04.2026",
+        "outcome": "Datum: 05.04.2026",
+        "review_hint": "",
+        "needs_review": false
+      },
+      {
+        "title": "Evaluierung: Drei-Tier-Memory fuer OpenClaw",
+        "slug": "memory-tier-evaluation",
+        "source_path": "docs/decisions/memory-tier-evaluation.md",
+        "summary": "Vorgeschlagenes Pattern: Session -> Working -> Distilled (mit TTL), inkl. haeufigem Reindex (`memsearch-watch`).",
+        "outcome": "**Keine Einfuehrung eines separaten Drei-Tier-Memory-Subsystems im aktuellen Stand.**",
+        "review_hint": "Memory-Bloat messbar den Betrieb beeinflusst Suchqualitaet trotz RAG-Optimierungen sinkt",
+        "needs_review": true
+      },
+      {
+        "title": "RAG Ausbau Plan \u2014 Pilab / OpenClaw / Growbox",
+        "slug": "rag-ausbau-plan",
+        "source_path": "docs/decisions/rag-ausbau-plan.md",
+        "summary": "Ziel: OpenClaw entwickelt echtes Selbstbewusstsein \u00fcber das System und sich selbst. Das RAG-System wird zur prim\u00e4ren Wissensschicht \u2014 nicht nur f\u00fcr Dokumentation, sondern als lebe...",
+        "outcome": "Ziel: OpenClaw entwickelt echtes Selbstbewusstsein \u00fcber das System und sich selbst. Das RAG-System wird zur prim\u00e4ren Wissensschicht \u2014 nicht...",
+        "review_hint": "",
+        "needs_review": false
+      },
+      {
+        "title": "Unbound Evaluation (Pi 5, arm64)",
+        "slug": "unbound-evaluation",
+        "source_path": "docs/decisions/unbound-evaluation.md",
+        "summary": "Datum: 06.04.2026",
+        "outcome": "Unbound laeuft produktiv auf dem Pi als lokaler rekursiver Resolver; Pi-hole nutzt jetzt `127.0.0.1#5335` als einzigen Upstream.",
+        "review_hint": "",
+        "needs_review": false
+      },
+      {
+        "title": "Entscheidung: Web-Suche fuer OpenClaw",
+        "slug": "web-search-decision",
+        "source_path": "docs/decisions/web-search-decision.md",
+        "summary": "**Kein SearXNG-Deployment im aktuellen Stand.**",
+        "outcome": "Web-Suche fuer OpenClaw",
+        "review_hint": "regelmaessige webbasierte Recherche als Kernworkflow auftritt externe API-Kosten/Rate-Limits den Betrieb behindern",
+        "needs_review": true
+      }
+    ]
+  },
+  "runbooks": {
+    "count": 5,
+    "items": [
+      {
+        "title": "Runbook: ESP32 offline",
+        "slug": "esp32-offline",
+        "source_path": "docs/runbooks/esp32-offline.md",
+        "summary": "ESP32/Growbox in Home Assistant als offline.",
+        "first_steps": [
+          "ESP32/Growbox in Home Assistant als offline.",
+          "`http://growbox.local` nicht erreichbar."
+        ],
+        "tags": [
+          "esp32"
+        ]
+      },
+      {
+        "title": "Runbook: OpenClaw nicht erreichbar",
+        "slug": "openclaw-nicht-erreichbar",
+        "source_path": "docs/runbooks/openclaw-nicht-erreichbar.md",
+        "summary": "```bash curl -sf http://192.168.2.101:18789 ```",
+        "first_steps": [
+          "Gateway unter `http://192.168.2.101:18789` antwortet nicht.",
+          "Chat/Automation ueber OpenClaw faellt aus."
+        ],
+        "tags": [
+          "openclaw"
+        ]
+      },
+      {
+        "title": "Runbook: Pi-hole DNS ausgefallen",
+        "slug": "pihole-dns-ausfall",
+        "source_path": "docs/runbooks/pihole-dns-ausfall.md",
+        "summary": "```bash cd /home/steges",
+        "first_steps": [
+          "Webseiten laden im LAN nicht mehr oder nur sporadisch.",
+          "DNS-Aufloesung auf Clients schlaegt fehl."
+        ],
+        "tags": [
+          "dns",
+          "pihole"
+        ]
+      },
+      {
+        "title": "Runbook: RAG Qualitaetsreport (Samstag)",
+        "slug": "rag-qualitaetsreport-samstag",
+        "source_path": "docs/runbooks/rag-qualitaetsreport-samstag.md",
+        "summary": "Ziel: Woechentliche Qualitaetssicht auf Retrieval-Qualitaet und Betriebszustand.",
+        "first_steps": [
+          "Woechentlich samstags (empfohlen: vormittags, nach regularem Health-Check).",
+          "Precision@5: Anteil relevanter Treffer in Top-5."
+        ],
+        "tags": [
+          "rag"
+        ]
+      },
+      {
+        "title": "Runbook: RAG Reindex Failure Recovery",
+        "slug": "rag-reindex-failure-recovery",
+        "source_path": "docs/runbooks/rag-reindex-failure-recovery.md",
+        "summary": "Ziel: Sichere Wiederherstellung bei fehlgeschlagenem Reindex (partial index, corruption, rollback).",
+        "first_steps": [
+          "`reindex.sh` beendet sich mit Fehlercode.",
+          "Retrieval liefert leere/inkonsistente Treffer."
+        ],
+        "tags": [
+          "rag",
+          "recovery"
+        ]
+      }
+    ]
+  }
+}

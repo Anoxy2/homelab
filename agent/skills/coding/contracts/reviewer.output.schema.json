@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "reviewer output",
+  "type": "object",
+  "required": ["review_verdict", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "review_verdict": {"type": "string", "pattern": "^(pass|fail:.+)$"},
+    "status": {"type": "string", "enum": ["completed", "pending-review"]}
+  }
+}

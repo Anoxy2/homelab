@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "description": "scout_summary: deterministischer Summary-Output",
+      "type": "object",
+      "required": ["kind", "timestamp", "total", "counts"],
+      "properties": {
+        "kind": { "const": "scout_summary" },
+        "timestamp": { "type": "string" },
+        "total": { "type": "integer", "minimum": 0 },
+        "counts": { "type": "object" }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "scout_analyst: Relevanz-Scoring für entdeckte Kandidaten",
+      "type": "object",
+      "required": ["kind", "candidates"],
+      "properties": {
+        "kind": { "const": "scout_analyst" },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["slug", "source", "relevance_score", "rationale"],
+            "properties": {
+              "slug": { "type": "string" },
+              "source": { "type": "string" },
+              "relevance_score": { "type": "integer", "minimum": 0, "maximum": 10 },
+              "rationale": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "scout_curator: Suchbegriff- und Quellenvorschläge",
+      "type": "object",
+      "required": ["kind", "timestamp", "suggested_terms"],
+      "properties": {
+        "kind": { "const": "scout_curator" },
+        "timestamp": { "type": "string" },
+        "suggested_terms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["term", "frequency", "confidence"],
+            "properties": {
+              "term": { "type": "string" },
+              "frequency": { "type": "integer", "minimum": 1 },
+              "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "recommended_sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "active_skills", "confidence"],
+            "properties": {
+              "name": { "type": "string" },
+              "active_skills": { "type": "integer", "minimum": 0 },
+              "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "scout_semantic": {
+          "description": "Kombinierter Analyst+Curator Output",
+          "type": "object",
+          "properties": {
+            "kind": { "const": "scout_semantic" },
+            "analyst": { "type": "object" },
+            "curator": { "type": "object" }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  ]
+}

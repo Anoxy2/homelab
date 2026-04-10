@@ -1,0 +1,14 @@
+[Unit]
+Description=Nightly OpenClaw self-check
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/steges
+ExecStart=/home/steges/scripts/nightly-check.sh
+SuccessExitStatus=1
+TimeoutStartSec=600
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+{
+  "slug": "demo2",
+  "source": "manual",
+  "source_url": "https://example.invalid/demo2",
+  "upstream_fingerprint": "sha256:auto-demo2",
+  "vetting": {
+    "score": 87,
+    "risk_tier": "LOW",
+    "policy_version": "1"
+  },
+  "installed_at": "2026-04-04T15:28:01Z"
+}

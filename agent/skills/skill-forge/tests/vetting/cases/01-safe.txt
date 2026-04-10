@@ -1,0 +1,2 @@
+purpose: audit checks
+description: validate configs and report issues

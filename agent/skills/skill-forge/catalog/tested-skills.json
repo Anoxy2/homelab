@@ -1,0 +1,16 @@
+{
+  "templates": [
+    {
+      "name": "generic-ops",
+      "match_tags": ["ops", "maintenance", "runbook"],
+      "trust": "high"
+    }
+  ],
+  "tested_skills": [
+    {
+      "name": "skill-forge",
+      "health": 90,
+      "path": "/home/steges/agent/skills/skill-forge"
+    }
+  ]
+}

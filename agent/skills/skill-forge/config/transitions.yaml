@@ -1,0 +1,13 @@
+version: 1
+transitions:
+  drafted:
+    - canary
+  canary:
+    - active
+    - rollback
+  active:
+    - learned
+    - disabled
+    - rollback
+  pending-blacklist:
+    - blacklisted

@@ -1,0 +1,15 @@
+{
+  "schema_version": "2",
+  "slug": "coding",
+  "verdict": "PASS",
+  "risk_tier": "LOW",
+  "scores": {
+    "input_score": 85,
+    "static_score": 85,
+    "static_semantic_score": 50,
+    "reputation_score": 85,
+    "final_score": 85
+  },
+  "static_semantic_flags": [],
+  "timestamp": "2026-04-06T12:27:37Z"
+}

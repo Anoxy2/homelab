@@ -1,0 +1,10 @@
+[Unit]
+Description=GitHub status check every 6 hours
+
+[Timer]
+OnCalendar=*-*-* 00,06,12,18:00:00
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

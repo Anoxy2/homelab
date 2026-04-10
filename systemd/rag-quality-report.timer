@@ -1,0 +1,11 @@
+[Unit]
+Description=RAG-Qualitätsreport (wöchentlich, Samstag 10:00)
+Requires=rag-quality-report.service
+
+[Timer]
+OnCalendar=Sat *-*-* 10:00:00 Europe/Berlin
+Persistent=true
+RandomizedDelaySec=5min
+
+[Install]
+WantedBy=timers.target

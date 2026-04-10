@@ -1,0 +1,7 @@
+{
+  "slug": "test-suspicious",
+  "verdict": "REJECT",
+  "risk_tier": "EXTREME",
+  "reputation_score": 20,
+  "timestamp": "2026-04-04T15:13:45Z"
+}

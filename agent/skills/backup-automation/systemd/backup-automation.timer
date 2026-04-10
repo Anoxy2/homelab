@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily backup at 02:00 (GitHub + USB)
+
+[Timer]
+OnCalendar=02:00
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

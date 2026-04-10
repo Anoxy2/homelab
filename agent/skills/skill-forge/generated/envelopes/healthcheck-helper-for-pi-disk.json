@@ -1,0 +1,16 @@
+{
+  "intent": "Generate code artifact for task",
+  "triggers": [
+    "healthcheck helper for pi disk"
+  ],
+  "workflow_steps": [
+    "collect-context",
+    "generate-artifact",
+    "verify-result"
+  ],
+  "exclusions": [
+    "secrets",
+    "destructive-commands"
+  ],
+  "risk_notes": "Generated artifact requires review before production use."
+}

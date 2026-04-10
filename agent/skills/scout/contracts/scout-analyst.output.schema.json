@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "scout-analyst output",
+  "type": "object",
+  "required": ["kind", "candidates"],
+  "additionalProperties": false,
+  "properties": {
+    "kind": {"type": "string", "const": "scout_analyst"},
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["slug", "source", "relevance_score", "rationale"],
+        "additionalProperties": false,
+        "properties": {
+          "slug": {"type": "string"},
+          "source": {"type": "string"},
+          "relevance_score": {"type": "integer", "minimum": 0, "maximum": 10},
+          "rationale": {"type": "string"}
+        }
+      }
+    }
+  }
+}

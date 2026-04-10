@@ -1,0 +1,13 @@
+{
+  "slug": "test-08-mismatch",
+  "verdict": "REJECT",
+  "risk_tier": "EXTREME",
+  "scores": {
+    "input_score": 72,
+    "static_score": 72,
+    "semantic_score": 20,
+    "reputation_score": 72,
+    "final_score": 22
+  },
+  "timestamp": "2026-04-05T07:49:17Z"
+}
