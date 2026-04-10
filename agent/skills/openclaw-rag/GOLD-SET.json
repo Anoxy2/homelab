@@ -231,6 +231,16 @@
       "id": "container-metrics",
       "query": "Wie erhalte ich Container-Metriken und wie sind sie in Prometheus verfügbar?",
       "expected_evidence": ["docs/infrastructure/cadvisor-containers.md", "docs/infrastructure/prometheus-metrics.md"]
+    },
+    {
+      "id": "pihole-dns",
+      "query": "Wie konfiguriere ich Pi-hole für DNS und Ad-Blocking und wie verwalte ich Blocklisten?",
+      "expected_evidence": ["docs/infrastructure/pihole-adblocking.md", "docs/infrastructure/docker-compose-stack.md"]
+    },
+    {
+      "id": "homeassistant-smarthome",
+      "query": "Wie richte ich Home Assistant ein und wie integriere ich ESP32 Sensoren und Automations?",
+      "expected_evidence": ["docs/infrastructure/homeassistant-smarthome.md", "docs/infrastructure/esphome-firmware.md"]
     }
   ]
 }

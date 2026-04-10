@@ -1,9 +1,43 @@
 {
-  "timestamp": "20260410_032442",
+  "timestamp": "20260410_034337",
   "date": "20260410",
-  "github": [2026-04-10 03:24:42] === GitHub Backup (via github-automation skill) ===
-[2026-04-10 03:24:42] GitHub: clean and up-to-date, nothing to do
-{"success": true, "commit": "none", "action": "none"},
+  "github": [2026-04-10 03:43:37] === GitHub Backup (via github-automation skill) ===
+[2026-04-10 03:43:37] Changes detected, committing...
+[master 69eaf3e] backup: automated 20260410_034337
+ 20 files changed, 5105 insertions(+), 22 deletions(-)
+ create mode 100644 docs/infrastructure/alertmanager-routing.md
+ create mode 100644 docs/infrastructure/authelia-sso.md
+ create mode 100644 docs/infrastructure/caddy-reverse-proxy.md
+ create mode 100644 docs/infrastructure/cadvisor-containers.md
+ create mode 100644 docs/infrastructure/esphome-firmware.md
+ create mode 100644 docs/infrastructure/homepage-dashboard.md
+ create mode 100644 docs/infrastructure/influxdb-timeseries.md
+ create mode 100644 docs/infrastructure/loki-logging.md
+ create mode 100644 docs/infrastructure/mqtt-mosquitto.md
+ create mode 100644 docs/infrastructure/node-exporter.md
+ create mode 100644 docs/infrastructure/ntfy-notifications.md
+ create mode 100644 docs/infrastructure/prometheus-metrics.md
+ create mode 100644 docs/infrastructure/scrutiny-nvme.md
+ create mode 100644 docs/infrastructure/searxng-search.md
+ create mode 100644 docs/infrastructure/tailscale-vpn.md
+ create mode 100644 docs/infrastructure/unbound-dns.md
+ create mode 100644 docs/infrastructure/vaultwarden-setup.md
+{
+  "success": true,
+  "commit_hash": "69eaf3e368ef30f71c82a80bea4ac3d2b542a844",
+  "short_hash": "69eaf3e",
+  "files_changed": 20,
+  "message": "backup: automated 20260410_034337"
+}
+{
+  "success": true,
+  "remote": "origin",
+  "branch": "master",
+  "remote_url": "https://github.com/Anoxy2/homelab.git",
+  "forced": false
+}
+[2026-04-10 03:43:38] GitHub commit+push successful: 69eaf3e
+{"success": true, "commit": "69eaf3e", "action": "commit+push"},
   "usb": {"success": false, "skipped": true},
   "overall_success": false
 }

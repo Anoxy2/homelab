@@ -32,7 +32,7 @@ docs/
 │   ├── experimente.md
 │   ├── skill-ideen.md
 │   └── hardware-upgrades.md
-├── infrastructure/           # ⭐ Infra-Doku (32 Dateien)
+├── infrastructure/           # ⭐ Infra-Doku (34 Dateien)
 │   ├── README.md
 │   ├── hardware-nvme.md
 │   ├── network-firewall.md
@@ -128,6 +128,8 @@ KI-Gateway für den Pi – lokale AI-Assistant.
 | [infrastructure/node-exporter.md](infrastructure/node-exporter.md) | ⭐ **System Metrics** |
 | [infrastructure/cadvisor-containers.md](infrastructure/cadvisor-containers.md) | ⭐ **Container Metrics** |
 | [infrastructure/scrutiny-nvme.md](infrastructure/scrutiny-nvme.md) | ⭐ **Drive Health** |
+| [infrastructure/pihole-adblocking.md](infrastructure/pihole-adblocking.md) | ⭐ **DNS & Ad-Blocking** |
+| [infrastructure/homeassistant-smarthome.md](infrastructure/homeassistant-smarthome.md) | ⭐ **Smart Home Hub** |
 | [infrastructure/directory-structure.md](infrastructure/directory-structure.md) | Komplette Struktur |
 
 ### 💡 Ideen & Roadmap
@@ -237,7 +239,9 @@ Diese Dateien werden vom `openclaw-rag` Skill indexiert:
     "infrastructure/influxdb-timeseries.md",
     "infrastructure/node-exporter.md",
     "infrastructure/cadvisor-containers.md",
-    "infrastructure/scrutiny-nvme.md"
+    "infrastructure/scrutiny-nvme.md",
+    "infrastructure/pihole-adblocking.md",
+    "infrastructure/homeassistant-smarthome.md"
   ]
 }
 ```
