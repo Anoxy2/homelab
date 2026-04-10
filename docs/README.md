@@ -32,7 +32,7 @@ docs/
 │   ├── experimente.md
 │   ├── skill-ideen.md
 │   └── hardware-upgrades.md
-├── infrastructure/           # ⭐ Infra-Doku (34 Dateien)
+├── infrastructure/           # ⭐ Infra-Doku (39 Dateien)
 │   ├── README.md
 │   ├── hardware-nvme.md
 │   ├── network-firewall.md
@@ -72,7 +72,10 @@ docs/
 │   ├── backup-monitoring.md      # ⭐ NEU
 │   └── skill-health-dashboard.md # ⭐ NEU
 ├── openclaw/                 # OpenClaw-Doku (18 Dateien)
-├── operations/               # ⭐ NEU: Betrieb (6 Dateien)
+├── operations/               # ⭐ Betrieb (9 Dateien)
+│   ├── service-dependencies.md   # ⭐ NEU: Start Order
+│   ├── capacity-planning.md      # ⭐ NEU: Scaling
+│   └── secret-rotation.md        # ⭐ NEU: Security
 ├── runbooks/                 # ⭐ NEU: Notfall-Prozeduren (9 Dateien)
 ├── setup/                    # ⭐ NEU: Setup-Guides (7 Dateien)
 ├── skills/                   # Skill-Entwicklung (5 Dateien)
@@ -128,8 +131,13 @@ KI-Gateway für den Pi – lokale AI-Assistant.
 | [infrastructure/node-exporter.md](infrastructure/node-exporter.md) | ⭐ **System Metrics** |
 | [infrastructure/cadvisor-containers.md](infrastructure/cadvisor-containers.md) | ⭐ **Container Metrics** |
 | [infrastructure/scrutiny-nvme.md](infrastructure/scrutiny-nvme.md) | ⭐ **Drive Health** |
-| [infrastructure/pihole-adblocking.md](infrastructure/pihole-adblocking.md) | ⭐ **DNS & Ad-Blocking** |
-| [infrastructure/homeassistant-smarthome.md](infrastructure/homeassistant-smarthome.md) | ⭐ **Smart Home Hub** |
+| [infrastructure/pihole-adblocking.md](infrastructure/pihole-adblocking.md) | **DNS & Ad-Blocking** |
+| [infrastructure/homeassistant-smarthome.md](infrastructure/homeassistant-smarthome.md) | **Smart Home Hub** |
+| [infrastructure/portainer-management.md](infrastructure/portainer-management.md) | ⭐ **Container Management** |
+| [infrastructure/uptime-kuma.md](infrastructure/uptime-kuma.md) | ⭐ **Uptime Monitoring** |
+| [infrastructure/glances-monitor.md](infrastructure/glances-monitor.md) | ⭐ **System Monitor** |
+| [infrastructure/watchtower-updates.md](infrastructure/watchtower-updates.md) | ⭐ **Auto-Updates** |
+| [infrastructure/docker-socket-proxy.md](infrastructure/docker-socket-proxy.md) | ⭐ **Socket Security** |
 | [infrastructure/directory-structure.md](infrastructure/directory-structure.md) | Komplette Struktur |
 
 ### 💡 Ideen & Roadmap
@@ -168,6 +176,9 @@ Notfall-Prozeduren & Troubleshooting.
 | [runbooks/skill-dependency-check.md](runbooks/skill-dependency-check.md) | ⭐ **Skill Health Check** |
 | [runbooks/pihole-dns-ausfall.md](runbooks/pihole-dns-ausfall.md) | DNS Ausfall |
 | [runbooks/openclaw-nicht-erreichbar.md](runbooks/openclaw-nicht-erreichbar.md) | OpenClaw Down |
+| [runbooks/vaultwarden-lockout-recovery.md](runbooks/vaultwarden-lockout-recovery.md) | **Vaultwarden Recovery** |
+| [runbooks/homeassistant-restore.md](runbooks/homeassistant-restore.md) | **HA Restore** |
+| [runbooks/mqtt-broker-restart.md](runbooks/mqtt-broker-restart.md) | **MQTT Recovery** |
 
 ### 📊 Monitoring
 
@@ -179,6 +190,14 @@ Metriken, Alerts, Dashboards.
 | [monitoring/skill-health-dashboard.md](monitoring/skill-health-dashboard.md) | ⭐ **Skill Health** |
 | [monitoring/time-series-baseline.md](monitoring/time-series-baseline.md) | Prometheus/Loki Setup |
 | [monitoring/vuln-log.md](monitoring/vuln-log.md) | Vulnerability Tracking |
+
+### 🔍 Troubleshooting
+
+Häufige Probleme und Lösungen.
+
+| Dokument | Beschreibung |
+|----------|--------------|
+| [troubleshooting/common-issues.md](troubleshooting/common-issues.md) | **Top 20 Probleme** |
 
 ---
 
@@ -241,7 +260,12 @@ Diese Dateien werden vom `openclaw-rag` Skill indexiert:
     "infrastructure/cadvisor-containers.md",
     "infrastructure/scrutiny-nvme.md",
     "infrastructure/pihole-adblocking.md",
-    "infrastructure/homeassistant-smarthome.md"
+    "infrastructure/homeassistant-smarthome.md",
+    "infrastructure/portainer-management.md",
+    "infrastructure/uptime-kuma.md",
+    "infrastructure/glances-monitor.md",
+    "infrastructure/watchtower-updates.md",
+    "infrastructure/docker-socket-proxy.md"
   ]
 }
 ```
