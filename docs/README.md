@@ -32,7 +32,7 @@ docs/
 │   ├── experimente.md
 │   ├── skill-ideen.md
 │   └── hardware-upgrades.md
-├── infrastructure/           # ⭐ Infra-Doku (15 Dateien)
+├── infrastructure/           # ⭐ Infra-Doku (32 Dateien)
 │   ├── README.md
 │   ├── hardware-nvme.md
 │   ├── network-firewall.md
@@ -41,13 +41,30 @@ docs/
 │   ├── installed-software.md
 │   ├── firmware-boot.md
 │   ├── skills-overview.md
-│   ├── skill-dependencies.md     # ⭐ NEU
-│   ├── github-automation-skill.md # ⭐ NEU
+│   ├── skill-dependencies.md
+│   ├── github-automation-skill.md
 │   ├── cods-playbooks.md
 │   ├── scripts-reference.md
 │   ├── backup-strategy.md
 │   ├── backup-automation-skill.md
-│   └── directory-structure.md
+│   ├── directory-structure.md
+│   ├── vaultwarden-setup.md      # Password Manager
+│   ├── homepage-dashboard.md     # Service Dashboard
+│   ├── tailscale-vpn.md          # VPN Setup
+│   ├── caddy-reverse-proxy.md    # Reverse Proxy
+│   ├── esphome-firmware.md       # ESP32 Firmware
+│   ├── ntfy-notifications.md     # Push Notifications
+│   ├── mqtt-mosquitto.md         # MQTT Broker
+│   ├── searxng-search.md         # Web Search
+│   ├── authelia-sso.md           # 2FA/SSO
+│   ├── unbound-dns.md            # DNS Resolver
+│   ├── prometheus-metrics.md     # ⭐ NEU: Metrics Collection
+│   ├── alertmanager-routing.md   # ⭐ NEU: Alert Routing
+│   ├── loki-logging.md           # ⭐ NEU: Log Aggregation
+│   ├── scrutiny-nvme.md          # ⭐ NEU: Drive Health
+│   ├── cadvisor-containers.md    # ⭐ NEU: Container Metrics
+│   ├── influxdb-timeseries.md    # ⭐ NEU: Time-Series DB
+│   └── node-exporter.md          # ⭐ NEU: System Metrics
 ├── monitoring/               # ⭐ Monitoring (5 Dateien)
 │   ├── time-series-baseline.md
 │   ├── time-series-decision.md
@@ -83,18 +100,35 @@ KI-Gateway für den Pi – lokale AI-Assistant.
 | Dokument | Beschreibung |
 |----------|--------------|
 | [infrastructure/README.md](infrastructure/README.md) | Einstieg |
-| [hardware-nvme.md](infrastructure/hardware-nvme.md) | Pi, NVMe, SMART |
-| [network-firewall.md](infrastructure/network-firewall.md) | UFW, Ports, Netzwerk |
-| [docker-compose-stack.md](infrastructure/docker-compose-stack.md) | Alle Container |
-| [systemd-services.md](infrastructure/systemd-services.md) | Timer & Services |
-| [skills-overview.md](infrastructure/skills-overview.md) | Alle 20+ Skills |
-| [cods-playbooks.md](infrastructure/cods-playbooks.md) | Playbooks & Runbooks |
-| [scripts-reference.md](infrastructure/scripts-reference.md) | Alle Scripts |
-| [backup-strategy.md](infrastructure/backup-strategy.md) | **GitHub + USB Backup** |
-| [backup-automation-skill.md](infrastructure/backup-automation-skill.md) | **Backup Skill (skill-forge)** |
-| [skill-dependencies.md](infrastructure/skill-dependencies.md) | ⭐ **Skill Dependency Graph** |
-| [github-automation-skill.md](infrastructure/github-automation-skill.md) | ⭐ **GitHub Skill Doku** |
-| [directory-structure.md](infrastructure/directory-structure.md) | Komplette Struktur |
+| [infrastructure/hardware-nvme.md](infrastructure/hardware-nvme.md) | Pi, NVMe, SMART |
+| [infrastructure/network-firewall.md](infrastructure/network-firewall.md) | UFW, Ports, Netzwerk |
+| [infrastructure/docker-compose-stack.md](infrastructure/docker-compose-stack.md) | Alle Container |
+| [infrastructure/systemd-services.md](infrastructure/systemd-services.md) | Timer & Services |
+| [infrastructure/skills-overview.md](infrastructure/skills-overview.md) | Alle 20+ Skills |
+| [infrastructure/cods-playbooks.md](infrastructure/cods-playbooks.md) | Playbooks & Runbooks |
+| [infrastructure/scripts-reference.md](infrastructure/scripts-reference.md) | Alle Scripts |
+| [infrastructure/backup-strategy.md](infrastructure/backup-strategy.md) | **GitHub + USB Backup** |
+| [infrastructure/backup-automation-skill.md](infrastructure/backup-automation-skill.md) | **Backup Skill (skill-forge)** |
+| [infrastructure/skill-dependencies.md](infrastructure/skill-dependencies.md) | **Skill Dependency Graph** |
+| [infrastructure/github-automation-skill.md](infrastructure/github-automation-skill.md) | **GitHub Skill Doku** |
+| [infrastructure/vaultwarden-setup.md](infrastructure/vaultwarden-setup.md) | **Password Manager** |
+| [infrastructure/homepage-dashboard.md](infrastructure/homepage-dashboard.md) | **Service Dashboard** |
+| [infrastructure/tailscale-vpn.md](infrastructure/tailscale-vpn.md) | **VPN & Exit-Node** |
+| [infrastructure/caddy-reverse-proxy.md](infrastructure/caddy-reverse-proxy.md) | **LAN-URLs & Proxy** |
+| [infrastructure/esphome-firmware.md](infrastructure/esphome-firmware.md) | ⭐ **ESP32 Firmware** |
+| [infrastructure/mqtt-mosquitto.md](infrastructure/mqtt-mosquitto.md) | ⭐ **MQTT Broker** |
+| [infrastructure/ntfy-notifications.md](infrastructure/ntfy-notifications.md) | ⭐ **Push Notifications** |
+| [infrastructure/searxng-search.md](infrastructure/searxng-search.md) | ⭐ **Web Search** |
+| [infrastructure/authelia-sso.md](infrastructure/authelia-sso.md) | ⭐ **2FA & SSO** |
+| [infrastructure/unbound-dns.md](infrastructure/unbound-dns.md) | **DNS Resolver** |
+| [infrastructure/prometheus-metrics.md](infrastructure/prometheus-metrics.md) | ⭐ **Metrics Collection** |
+| [infrastructure/alertmanager-routing.md](infrastructure/alertmanager-routing.md) | ⭐ **Alert Routing** |
+| [infrastructure/loki-logging.md](infrastructure/loki-logging.md) | ⭐ **Log Aggregation** |
+| [infrastructure/influxdb-timeseries.md](infrastructure/influxdb-timeseries.md) | ⭐ **Time-Series DB** |
+| [infrastructure/node-exporter.md](infrastructure/node-exporter.md) | ⭐ **System Metrics** |
+| [infrastructure/cadvisor-containers.md](infrastructure/cadvisor-containers.md) | ⭐ **Container Metrics** |
+| [infrastructure/scrutiny-nvme.md](infrastructure/scrutiny-nvme.md) | ⭐ **Drive Health** |
+| [infrastructure/directory-structure.md](infrastructure/directory-structure.md) | Komplette Struktur |
 
 ### 💡 Ideen & Roadmap
 
@@ -186,7 +220,24 @@ Diese Dateien werden vom `openclaw-rag` Skill indexiert:
     "infrastructure/cods-playbooks.md",
     "infrastructure/scripts-reference.md",
     "infrastructure/firmware-boot.md",
-    "infrastructure/directory-structure.md"
+    "infrastructure/directory-structure.md",
+    "infrastructure/vaultwarden-setup.md",
+    "infrastructure/homepage-dashboard.md",
+    "infrastructure/tailscale-vpn.md",
+    "infrastructure/caddy-reverse-proxy.md",
+    "infrastructure/esphome-firmware.md",
+    "infrastructure/mqtt-mosquitto.md",
+    "infrastructure/ntfy-notifications.md",
+    "infrastructure/searxng-search.md",
+    "infrastructure/authelia-sso.md",
+    "infrastructure/unbound-dns.md",
+    "infrastructure/prometheus-metrics.md",
+    "infrastructure/alertmanager-routing.md",
+    "infrastructure/loki-logging.md",
+    "infrastructure/influxdb-timeseries.md",
+    "infrastructure/node-exporter.md",
+    "infrastructure/cadvisor-containers.md",
+    "infrastructure/scrutiny-nvme.md"
   ]
 }
 ```

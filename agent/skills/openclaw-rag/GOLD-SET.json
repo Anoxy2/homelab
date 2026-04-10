@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated_at": "2026-04-09",
+  "updated_at": "2026-04-10",
   "questions": [
     {
       "id": "services-ports",
@@ -151,6 +151,86 @@
       "id": "growbox-diary-how",
       "query": "Wie und wann wird das Growbox-Tagebuch automatisch erstellt?",
       "expected_evidence": ["agent/skills/growbox/SKILL.md", "growbox/GROW-SUMMARY.md"]
+    },
+    {
+      "id": "vaultwarden-setup",
+      "query": "Wie richte ich Vaultwarden ein und wie funktioniert der Password Manager?",
+      "expected_evidence": ["docs/infrastructure/vaultwarden-setup.md", "docs/infrastructure/docker-compose-stack.md"]
+    },
+    {
+      "id": "homepage-dashboard",
+      "query": "Wie ist das Service Dashboard (Homepage) konfiguriert und welche Services sind darin sichtbar?",
+      "expected_evidence": ["docs/infrastructure/homepage-dashboard.md", "docs/infrastructure/caddy-reverse-proxy.md"]
+    },
+    {
+      "id": "tailscale-vpn",
+      "query": "Wie funktioniert der Tailscale VPN Zugang zum Homelab?",
+      "expected_evidence": ["docs/infrastructure/tailscale-vpn.md", "docs/core/security-baseline.md"]
+    },
+    {
+      "id": "caddy-proxy",
+      "query": "Wie sind die LAN-URLs via Caddy konfiguriert und welche URLs gibt es?",
+      "expected_evidence": ["docs/infrastructure/caddy-reverse-proxy.md", "docs/core/services-and-ports.md"]
+    },
+    {
+      "id": "esphome-firmware",
+      "query": "Wie flashe ich ESP32 Firmware mit ESPhome und wie ist die Device-Konfiguration?",
+      "expected_evidence": ["docs/infrastructure/esphome-firmware.md", "docs/infrastructure/docker-compose-stack.md"]
+    },
+    {
+      "id": "mqtt-broker",
+      "query": "Wie ist der MQTT Broker (Mosquitto) konfiguriert und wie nutze ich ihn?",
+      "expected_evidence": ["docs/infrastructure/mqtt-mosquitto.md", "docs/infrastructure/docker-compose-stack.md"]
+    },
+    {
+      "id": "ntfy-notifications",
+      "query": "Wie sende ich Push Notifications mit ntfy und wie integriere ich sie?",
+      "expected_evidence": ["docs/infrastructure/ntfy-notifications.md", "docs/infrastructure/docker-compose-stack.md"]
+    },
+    {
+      "id": "searxng-search",
+      "query": "Wie nutze ich die selbstgehostete SearxNG Suche und was sind die Features?",
+      "expected_evidence": ["docs/infrastructure/searxng-search.md", "docs/decisions/web-search-decision.md"]
+    },
+    {
+      "id": "authelia-auth",
+      "query": "Wie funktioniert die Authelia 2FA-Authentifizierung für Services?",
+      "expected_evidence": ["docs/infrastructure/authelia-sso.md", "docs/core/security-baseline.md"]
+    },
+    {
+      "id": "unbound-dns",
+      "query": "Wie funktioniert der Unbound DNS Resolver und wie ist er mit Pi-hole verbunden?",
+      "expected_evidence": ["docs/infrastructure/unbound-dns.md", "docs/infrastructure/docker-compose-stack.md"]
+    },
+    {
+      "id": "prometheus-metrics",
+      "query": "Wie funktioniert die Prometheus Metrics Collection und wie frage ich Daten ab?",
+      "expected_evidence": ["docs/infrastructure/prometheus-metrics.md", "docs/monitoring/time-series-baseline.md"]
+    },
+    {
+      "id": "alertmanager-routing",
+      "query": "Wie funktioniert das Alert Routing mit Alertmanager und wie konfiguriere ich Notifications?",
+      "expected_evidence": ["docs/infrastructure/alertmanager-routing.md", "docs/infrastructure/ntfy-notifications.md"]
+    },
+    {
+      "id": "loki-logging",
+      "query": "Wie funktioniert die Log-Aggregation mit Loki und wie suche ich Logs?",
+      "expected_evidence": ["docs/infrastructure/loki-logging.md", "docs/infrastructure/docker-compose-stack.md"]
+    },
+    {
+      "id": "influxdb-metrics",
+      "query": "Wie ist InfluxDB konfiguriert und wie speichert Home Assistant Daten darin?",
+      "expected_evidence": ["docs/infrastructure/influxdb-timeseries.md", "docs/infrastructure/docker-compose-stack.md"]
+    },
+    {
+      "id": "nvme-health",
+      "query": "Wie überwache ich die NVMe Laufwerk-Gesundheit und welche S.M.A.R.T. Werte sind wichtig?",
+      "expected_evidence": ["docs/infrastructure/scrutiny-nvme.md", "docs/infrastructure/hardware-nvme.md"]
+    },
+    {
+      "id": "container-metrics",
+      "query": "Wie erhalte ich Container-Metriken und wie sind sie in Prometheus verfügbar?",
+      "expected_evidence": ["docs/infrastructure/cadvisor-containers.md", "docs/infrastructure/prometheus-metrics.md"]
     }
   ]
 }
