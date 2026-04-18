@@ -73,7 +73,7 @@ do_github_backup() {
         local ahead=$(echo "$status_output" | grep -o '"ahead": [0-9]*' | grep -o '[0-9]*' || echo "0")
         if [[ "$ahead" -gt 0 ]]; then
             log "$ahead commits ahead, pushing..."
-            if "$GITHUB_SKILL/git-push.sh" 2>/dev/null; then
+            if "$GITHUB_SKILL/git-push.sh" >/dev/null 2>&1; then
                 local commit_hash=$(cd /home/steges && git rev-parse --short HEAD)
                 github_result="{\"success\": true, \"commit\": \"$commit_hash\", \"action\": \"push\"}"
                 log "GitHub push successful: $commit_hash"
@@ -88,8 +88,8 @@ do_github_backup() {
     else
         # Need to commit
         log "Changes detected, committing..."
-        if "$GITHUB_SKILL/git-commit.sh" -m "$commit_msg" 2>/dev/null; then
-            if "$GITHUB_SKILL/git-push.sh" 2>/dev/null; then
+        if "$GITHUB_SKILL/git-commit.sh" -m "$commit_msg" >/dev/null 2>&1; then
+            if "$GITHUB_SKILL/git-push.sh" >/dev/null 2>&1; then
                 local commit_hash=$(cd /home/steges && git rev-parse --short HEAD)
                 github_result="{\"success\": true, \"commit\": \"$commit_hash\", \"action\": \"commit+push\"}"
                 log "GitHub commit+push successful: $commit_hash"
@@ -112,7 +112,7 @@ do_usb_backup() {
     
     local usb_result="{\"success\": false}"
     
-    if "$SCRIPT_DIR/backup-usb.sh"; then
+    if "$SCRIPT_DIR/backup-usb.sh" 1>&2; then
         # Get backup stats
         local backup_path="/mnt/usb-backup/backups/$DATE"
         local size_mb=$(du -sm "$backup_path" 2>/dev/null | cut -f1)
