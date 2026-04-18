@@ -1,95 +1,14 @@
 {
-  "timestamp": "20260418_072435",
+  "timestamp": "20260418_072943",
   "date": "20260418",
-  "github": [2026-04-18 07:24:35] === GitHub Backup (via github-automation skill) ===
-[2026-04-18 07:24:35] Changes detected, committing...
-[master 90bbd40] backup: automated 20260418_072435
- 140 files changed, 10430 insertions(+), 2115 deletions(-)
- create mode 100644 agent/LEARNINGS.md
- create mode 100644 agent/docs/ROADMAP-INDEX.md
- create mode 100644 agent/skills/autodoc/SKILL.md
- create mode 100755 agent/skills/autodoc/scripts/autodoc-dispatch.sh
- create mode 100644 agent/skills/memory/SKILL.md
- create mode 100755 agent/skills/memory/scripts/memory-dispatch.sh
- create mode 100644 agent/skills/openclaw-rag/scripts/modules/doc_keeper.sh
- create mode 100644 agent/skills/openclaw-rag/scripts/modules/status.sh
- create mode 100644 agent/skills/openclaw-rag/scripts/rag-common.sh
- create mode 100644 agent/skills/openclaw-ui/html/skill-pages.latest.json
- create mode 100644 agent/skills/skill-forge/.state/learnings.jsonl
- create mode 100644 agent/skills/skill-forge/.state/learnings.jsonl.lock
- create mode 100644 agent/skills/skill-forge/.state/memory.jsonl
- create mode 100644 agent/skills/skill-forge/.state/memory.jsonl.lock
- create mode 100644 agent/skills/skill-forge/.state/vetter-reports/home-assistant-skill.json
- create mode 100644 agent/skills/skill-forge/.state/vetter-reports/homeassistant-selora.json
- create mode 100644 agent/skills/skill-forge/.state/vetter-reports/pi-admin.json
- create mode 100644 agent/skills/skill-forge/.state/vetter-reports/pi-health.json
- create mode 100644 agent/skills/skill-forge/.state/vetter-reports/pinets.json
- create mode 100644 agent/skills/skill-forge/.state/vetter-reports/truenas-skill.json
- delete mode 100755 agent/skills/skill-forge/generated/code/health-check-helper.sh
- delete mode 100644 agent/skills/skill-forge/generated/envelopes/slug-collision-test-20260406122040.json
- delete mode 100644 agent/skills/skill-forge/generated/envelopes/slug-collision-test-20260406122046.json
- delete mode 100644 agent/skills/skill-forge/generated/envelopes/slug-collision-test.json
- delete mode 100644 agent/skills/skill-forge/generated/envelopes/test-json-output.json
- delete mode 100644 agent/skills/skill-forge/generated/envelopes/test-task-for-output-validation.json
- create mode 100644 agent/skills/skill-forge/scripts/modules/consolidate.sh
- create mode 100755 agent/skills/web-search/scripts/check
- create mode 100755 agent/skills/web-search/scripts/search
- create mode 100644 docs/decisions/caddy-network-mode.md
- create mode 100644 docs/decisions/learning-memory-architecture.md
- create mode 100644 docs/infrastructure/watchdog-setup.md
- create mode 100644 docs/infrastructure/watchdog.conf
- create mode 100644 docs/operations/roadmap/feedback-loop/plan.md
- create mode 100644 docs/operations/roadmap/integrity-tests/plan.md
- create mode 100644 docs/operations/roadmap/proactive-monitoring/event-driven-plan.md
- create mode 100644 docs/operations/roadmap/proactive-monitoring/plan.md
- create mode 100644 docs/operations/roadmap/quick-tools/multimodal-plan.md
- create mode 100644 docs/operations/roadmap/quick-tools/plan.md
- create mode 100644 docs/operations/roadmap/rag-skill/expansion-plan.md
- create mode 100644 docs/operations/roadmap/self-documenting/plan.md
- create mode 100644 docs/operations/roadmap/skill-learning/assessment-plan.md
- create mode 100644 docs/operations/roadmap/skill-learning/peer-collab-plan.md
- create mode 100644 docs/operations/roadmap/skill-learning/plan.md
- create mode 100644 docs/operations/roadmap/smart-escalation/context-plan.md
- create mode 100644 docs/operations/roadmap/smart-escalation/plan.md
- create mode 100644 docs/runbooks/docker-socket-proxy-audit.md
- create mode 100644 docs/runbooks/learning-memory-operations.md
- create mode 100644 docs/skills/learning-memory-file-room-mapping.md
- create mode 100644 docs/skills/learning-memory-integration-template.md
- create mode 100644 docs/skills/learning-memory-security-frame.md
- create mode 100644 docs/skills/learning-memory-validation-catalog.md
- create mode 100644 growbox/diary/10.04.2026.md
- create mode 100644 growbox/diary/11.04.2026.md
- create mode 100644 growbox/diary/12.04.2026.md
- create mode 100644 growbox/diary/13.04.2026.md
- create mode 100644 growbox/diary/14.04.2026.md
- create mode 100644 growbox/diary/15.04.2026.md
- create mode 100644 growbox/diary/16.04.2026.md
- create mode 100644 growbox/diary/17.04.2026.md
- create mode 100644 growbox/diary/18.04.2026.md
- create mode 100755 scripts/alertmanager-test.sh
- create mode 100755 scripts/canvas-skill-pages-brief.sh
- create mode 100755 scripts/cpu-governor-check.sh
- create mode 100644 scripts/cpu-governor-set.sh
- create mode 100755 scripts/esphome-ota-update.sh
- create mode 100755 scripts/pihole-blocklist-update.sh
- create mode 100755 scripts/skill-forge-cleanup.sh
- create mode 100755 scripts/swappiness-check.sh
- create mode 100644 scripts/tests/backup-verify.bats
- create mode 100755 scripts/thermal-monitor.sh
- create mode 100644 systemd/fstrim-weekly.service
- create mode 100644 systemd/fstrim-weekly.timer
- create mode 100644 systemd/pihole-blocklist-update.service
- create mode 100644 systemd/pihole-blocklist-update.timer
- create mode 100644 systemd/skill-forge-cleanup.service
- create mode 100644 systemd/skill-forge-cleanup.timer
- create mode 100644 systemd/thermal-monitor.service
- create mode 100644 systemd/thermal-monitor.timer
+  "github": [master 54e5b0c] fix: usb backup setup and path corrections
+ 2 files changed, 103 insertions(+), 33 deletions(-)
 {
   "success": true,
-  "commit_hash": "90bbd40a473eb38a8f0441a3000e72f661cca54f",
-  "short_hash": "90bbd40",
-  "files_changed": 140,
-  "message": "backup: automated 20260418_072435"
+  "commit_hash": "54e5b0cb0ae1cd6784ccee06ae09dec3eb110716",
+  "short_hash": "54e5b0c",
+  "files_changed": 2,
+  "message": "fix: usb backup setup and path corrections"
 }
 {
   "success": true,
@@ -98,16 +17,66 @@
   "remote_url": "https://github.com/Anoxy2/homelab.git",
   "forced": false
 }
-[2026-04-18 07:24:36] GitHub commit+push successful: 90bbd40
-{"success": true, "commit": "90bbd40", "action": "commit+push"},
-  "usb": [2026-04-18 07:24:36] === USB Backup ===
-[2026-04-18 07:24:36] [usb] === USB Backup Started ===
-[2026-04-18 07:24:36] [usb] USB mounted at /mnt/usb-backup
-[2026-04-18 07:24:36] [usb] USB mounted at /mnt/usb-backup
-[2026-04-18 07:24:36] [usb] USB Stats: 24K / 29G used (1%), 27G free
-[2026-04-18 07:24:36] [usb] Backup directory: /mnt/usb-backup/backups/20260418
-[2026-04-18 07:24:36] [usb] Backing up OpenClaw Memory...
+{"success": true, "commit": "54e5b0c", "action": "commit+push"},
+  "usb": [2026-04-18 07:29:45] [usb] === USB Backup Started ===
+[2026-04-18 07:29:45] [usb] USB mounted at /mnt/usb-backup
+[2026-04-18 07:29:45] [usb] USB mounted at /mnt/usb-backup
+[2026-04-18 07:29:45] [usb] USB Stats: 49M / 29G used (1%), 27G free
+[2026-04-18 07:29:45] [usb] Backup directory: /mnt/usb-backup/backups/20260418
+[2026-04-18 07:29:45] [usb] Backing up OpenClaw Memory...
 sending incremental file list
-{"success": false, "error": "usb backup script failed"},
-  "overall_success": false
+
+sent 83 bytes  received 12 bytes  190.00 bytes/sec
+total size is 69,632  speedup is 732.97
+[2026-04-18 07:29:45] [usb]   OpenClaw Memory: 1MB (partial, some files skipped)
+[2026-04-18 07:29:45] [usb] Backing up Pi-hole...
+sending incremental file list
+./
+pihole-FTL.db
+pihole-FTL.db-shm
+pihole-FTL.db-wal
+
+sent 30,671,194 bytes  received 101 bytes  20,447,530.00 bytes/sec
+total size is 50,794,435  speedup is 1.66
+[2026-04-18 07:29:46] [usb]   Pi-hole: 49MB (partial, some files skipped)
+[2026-04-18 07:29:46] [usb] Backing up Home Assistant...
+sending incremental file list
+config/
+config/home-assistant_v2.db
+config/home-assistant_v2.db-shm
+config/home-assistant_v2.db-wal
+
+sent 5,422,556 bytes  received 227 bytes  10,845,566.00 bytes/sec
+total size is 5,923,479  speedup is 1.09
+[2026-04-18 07:29:47] [usb]   Home Assistant: 7MB (partial, some files skipped)
+[2026-04-18 07:29:47] [usb] Backing up Grafana DB...
+sending incremental file list
+
+sent 72 bytes  received 35 bytes  214.00 bytes/sec
+total size is 1,564,672  speedup is 14,623.10
+[2026-04-18 07:29:47] [usb]   Grafana DB: 1MB (partial, some files skipped)
+[2026-04-18 07:29:47] [usb] Backing up Vaultwarden...
+sending incremental file list
+data/
+data/db.sqlite3-shm
+data/db.sqlite3-wal
+
+sent 33,159 bytes  received 61 bytes  66,440.00 bytes/sec
+total size is 284,299  speedup is 8.56
+[2026-04-18 07:29:47] [usb]   Vaultwarden: 1MB (partial, some files skipped)
+[2026-04-18 07:29:47] [usb]   Secrets: backed up
+[2026-04-18 07:29:47] [usb] Backing up SSH Keys...
+sending incremental file list
+
+sent 430 bytes  received 12 bytes  884.00 bytes/sec
+total size is 5,064  speedup is 11.46
+[2026-04-18 07:29:47] [usb]   SSH Keys: 1MB (partial, some files skipped)
+[2026-04-18 07:29:47] [usb]   Git config: backed up
+[2026-04-18 07:29:47] [usb] Creating checksums...
+[2026-04-18 07:29:47] [usb] Checksums created
+[2026-04-18 07:29:47] [usb] Cleaning up old backups (>14 days)...
+[2026-04-18 07:29:47] [usb] Removed 0 old backups
+[2026-04-18 07:29:47] [usb] === USB Backup Completed ===
+{"success": true, "path": "/mnt/usb-backup/backups/20260418", "size_mb": 56, "files": 130},
+  "overall_success": true
 }
