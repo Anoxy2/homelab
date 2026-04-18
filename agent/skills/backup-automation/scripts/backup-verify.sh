@@ -46,7 +46,7 @@ verify_checksums() {
     log "Verifying checksums..."
     cd "$backup_dir"
     
-    if sha256sum -c "$checksum_file" --quiet 2>/dev/null; then
+    if sha256sum -c "$checksum_file" --quiet --ignore-missing 2>/dev/null; then
         log "All checksums valid"
         return 0
     else

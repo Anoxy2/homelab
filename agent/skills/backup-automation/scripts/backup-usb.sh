@@ -94,19 +94,22 @@ backup_path() {
     mkdir -p "$(dirname "$dst")"
     
     # Use rsync with appropriate options
-    if rsync -av --delete \
+    # Exit code 23 = partial transfer (some files not readable, e.g. container-owned files) — acceptable for best-effort backup
+    local rsync_exit=0
+    rsync -av --delete --ignore-errors \
         --exclude='*.log' \
         --exclude='tmp/' \
         --exclude='temp/' \
         --exclude='node_modules/' \
         --exclude='__pycache__/' \
-        "$src" "$dst"; then
-        
+        "$src" "$dst" || rsync_exit=$?
+
+    if [[ "$rsync_exit" -eq 0 || "$rsync_exit" -eq 23 || "$rsync_exit" -eq 24 ]]; then
         local size=$(du -sm "$dst" 2>/dev/null | cut -f1)
-        log "  $name: ${size}MB"
+        log "  $name: ${size}MB${rsync_exit:+ (partial, some files skipped)}"
         return 0
     else
-        error "  Failed to backup $name"
+        error "  Failed to backup $name (rsync exit: $rsync_exit)"
         return 1
     fi
 }
@@ -138,7 +141,7 @@ run_backup() {
     
     # 2. Pi-hole
     backup_path \
-        "$SOURCE_DIR/pihole/etc-pihole/" \
+        "$SOURCE_DIR/pihole/config/" \
         "$backup_dir/pihole/" \
         "Pi-hole" \
         || ((errors++))
@@ -152,7 +155,7 @@ run_backup() {
     
     # 4. Grafana
     backup_path \
-        "$SOURCE_DIR/grafana/grafana.db" \
+        "$SOURCE_DIR/grafana/data/grafana.db" \
         "$backup_dir/grafana/" \
         "Grafana DB" \
         || ((errors++))
@@ -185,10 +188,10 @@ run_backup() {
     # Sync to ensure writes complete
     sync
     
-    # Create checksums
+    # Create checksums (exclude the checksum file itself to avoid self-reference)
     log "Creating checksums..."
     cd "$backup_dir"
-    find . -type f -exec sha256sum {} \; > "$backup_dir/.checksums.sha256"
+    find . -type f ! -name '.checksums.sha256' -exec sha256sum {} \; > "$backup_dir/.checksums.sha256"
     log "Checksums created"
     
     # Cleanup old backups
