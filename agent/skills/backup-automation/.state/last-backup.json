@@ -1,33 +1,95 @@
 {
-  "timestamp": "20260410_034337",
-  "date": "20260410",
-  "github": [2026-04-10 03:43:37] === GitHub Backup (via github-automation skill) ===
-[2026-04-10 03:43:37] Changes detected, committing...
-[master 69eaf3e] backup: automated 20260410_034337
- 20 files changed, 5105 insertions(+), 22 deletions(-)
- create mode 100644 docs/infrastructure/alertmanager-routing.md
- create mode 100644 docs/infrastructure/authelia-sso.md
- create mode 100644 docs/infrastructure/caddy-reverse-proxy.md
- create mode 100644 docs/infrastructure/cadvisor-containers.md
- create mode 100644 docs/infrastructure/esphome-firmware.md
- create mode 100644 docs/infrastructure/homepage-dashboard.md
- create mode 100644 docs/infrastructure/influxdb-timeseries.md
- create mode 100644 docs/infrastructure/loki-logging.md
- create mode 100644 docs/infrastructure/mqtt-mosquitto.md
- create mode 100644 docs/infrastructure/node-exporter.md
- create mode 100644 docs/infrastructure/ntfy-notifications.md
- create mode 100644 docs/infrastructure/prometheus-metrics.md
- create mode 100644 docs/infrastructure/scrutiny-nvme.md
- create mode 100644 docs/infrastructure/searxng-search.md
- create mode 100644 docs/infrastructure/tailscale-vpn.md
- create mode 100644 docs/infrastructure/unbound-dns.md
- create mode 100644 docs/infrastructure/vaultwarden-setup.md
+  "timestamp": "20260418_072435",
+  "date": "20260418",
+  "github": [2026-04-18 07:24:35] === GitHub Backup (via github-automation skill) ===
+[2026-04-18 07:24:35] Changes detected, committing...
+[master 90bbd40] backup: automated 20260418_072435
+ 140 files changed, 10430 insertions(+), 2115 deletions(-)
+ create mode 100644 agent/LEARNINGS.md
+ create mode 100644 agent/docs/ROADMAP-INDEX.md
+ create mode 100644 agent/skills/autodoc/SKILL.md
+ create mode 100755 agent/skills/autodoc/scripts/autodoc-dispatch.sh
+ create mode 100644 agent/skills/memory/SKILL.md
+ create mode 100755 agent/skills/memory/scripts/memory-dispatch.sh
+ create mode 100644 agent/skills/openclaw-rag/scripts/modules/doc_keeper.sh
+ create mode 100644 agent/skills/openclaw-rag/scripts/modules/status.sh
+ create mode 100644 agent/skills/openclaw-rag/scripts/rag-common.sh
+ create mode 100644 agent/skills/openclaw-ui/html/skill-pages.latest.json
+ create mode 100644 agent/skills/skill-forge/.state/learnings.jsonl
+ create mode 100644 agent/skills/skill-forge/.state/learnings.jsonl.lock
+ create mode 100644 agent/skills/skill-forge/.state/memory.jsonl
+ create mode 100644 agent/skills/skill-forge/.state/memory.jsonl.lock
+ create mode 100644 agent/skills/skill-forge/.state/vetter-reports/home-assistant-skill.json
+ create mode 100644 agent/skills/skill-forge/.state/vetter-reports/homeassistant-selora.json
+ create mode 100644 agent/skills/skill-forge/.state/vetter-reports/pi-admin.json
+ create mode 100644 agent/skills/skill-forge/.state/vetter-reports/pi-health.json
+ create mode 100644 agent/skills/skill-forge/.state/vetter-reports/pinets.json
+ create mode 100644 agent/skills/skill-forge/.state/vetter-reports/truenas-skill.json
+ delete mode 100755 agent/skills/skill-forge/generated/code/health-check-helper.sh
+ delete mode 100644 agent/skills/skill-forge/generated/envelopes/slug-collision-test-20260406122040.json
+ delete mode 100644 agent/skills/skill-forge/generated/envelopes/slug-collision-test-20260406122046.json
+ delete mode 100644 agent/skills/skill-forge/generated/envelopes/slug-collision-test.json
+ delete mode 100644 agent/skills/skill-forge/generated/envelopes/test-json-output.json
+ delete mode 100644 agent/skills/skill-forge/generated/envelopes/test-task-for-output-validation.json
+ create mode 100644 agent/skills/skill-forge/scripts/modules/consolidate.sh
+ create mode 100755 agent/skills/web-search/scripts/check
+ create mode 100755 agent/skills/web-search/scripts/search
+ create mode 100644 docs/decisions/caddy-network-mode.md
+ create mode 100644 docs/decisions/learning-memory-architecture.md
+ create mode 100644 docs/infrastructure/watchdog-setup.md
+ create mode 100644 docs/infrastructure/watchdog.conf
+ create mode 100644 docs/operations/roadmap/feedback-loop/plan.md
+ create mode 100644 docs/operations/roadmap/integrity-tests/plan.md
+ create mode 100644 docs/operations/roadmap/proactive-monitoring/event-driven-plan.md
+ create mode 100644 docs/operations/roadmap/proactive-monitoring/plan.md
+ create mode 100644 docs/operations/roadmap/quick-tools/multimodal-plan.md
+ create mode 100644 docs/operations/roadmap/quick-tools/plan.md
+ create mode 100644 docs/operations/roadmap/rag-skill/expansion-plan.md
+ create mode 100644 docs/operations/roadmap/self-documenting/plan.md
+ create mode 100644 docs/operations/roadmap/skill-learning/assessment-plan.md
+ create mode 100644 docs/operations/roadmap/skill-learning/peer-collab-plan.md
+ create mode 100644 docs/operations/roadmap/skill-learning/plan.md
+ create mode 100644 docs/operations/roadmap/smart-escalation/context-plan.md
+ create mode 100644 docs/operations/roadmap/smart-escalation/plan.md
+ create mode 100644 docs/runbooks/docker-socket-proxy-audit.md
+ create mode 100644 docs/runbooks/learning-memory-operations.md
+ create mode 100644 docs/skills/learning-memory-file-room-mapping.md
+ create mode 100644 docs/skills/learning-memory-integration-template.md
+ create mode 100644 docs/skills/learning-memory-security-frame.md
+ create mode 100644 docs/skills/learning-memory-validation-catalog.md
+ create mode 100644 growbox/diary/10.04.2026.md
+ create mode 100644 growbox/diary/11.04.2026.md
+ create mode 100644 growbox/diary/12.04.2026.md
+ create mode 100644 growbox/diary/13.04.2026.md
+ create mode 100644 growbox/diary/14.04.2026.md
+ create mode 100644 growbox/diary/15.04.2026.md
+ create mode 100644 growbox/diary/16.04.2026.md
+ create mode 100644 growbox/diary/17.04.2026.md
+ create mode 100644 growbox/diary/18.04.2026.md
+ create mode 100755 scripts/alertmanager-test.sh
+ create mode 100755 scripts/canvas-skill-pages-brief.sh
+ create mode 100755 scripts/cpu-governor-check.sh
+ create mode 100644 scripts/cpu-governor-set.sh
+ create mode 100755 scripts/esphome-ota-update.sh
+ create mode 100755 scripts/pihole-blocklist-update.sh
+ create mode 100755 scripts/skill-forge-cleanup.sh
+ create mode 100755 scripts/swappiness-check.sh
+ create mode 100644 scripts/tests/backup-verify.bats
+ create mode 100755 scripts/thermal-monitor.sh
+ create mode 100644 systemd/fstrim-weekly.service
+ create mode 100644 systemd/fstrim-weekly.timer
+ create mode 100644 systemd/pihole-blocklist-update.service
+ create mode 100644 systemd/pihole-blocklist-update.timer
+ create mode 100644 systemd/skill-forge-cleanup.service
+ create mode 100644 systemd/skill-forge-cleanup.timer
+ create mode 100644 systemd/thermal-monitor.service
+ create mode 100644 systemd/thermal-monitor.timer
 {
   "success": true,
-  "commit_hash": "69eaf3e368ef30f71c82a80bea4ac3d2b542a844",
-  "short_hash": "69eaf3e",
-  "files_changed": 20,
-  "message": "backup: automated 20260410_034337"
+  "commit_hash": "90bbd40a473eb38a8f0441a3000e72f661cca54f",
+  "short_hash": "90bbd40",
+  "files_changed": 140,
+  "message": "backup: automated 20260418_072435"
 }
 {
   "success": true,
@@ -36,8 +98,16 @@
   "remote_url": "https://github.com/Anoxy2/homelab.git",
   "forced": false
 }
-[2026-04-10 03:43:38] GitHub commit+push successful: 69eaf3e
-{"success": true, "commit": "69eaf3e", "action": "commit+push"},
-  "usb": {"success": false, "skipped": true},
+[2026-04-18 07:24:36] GitHub commit+push successful: 90bbd40
+{"success": true, "commit": "90bbd40", "action": "commit+push"},
+  "usb": [2026-04-18 07:24:36] === USB Backup ===
+[2026-04-18 07:24:36] [usb] === USB Backup Started ===
+[2026-04-18 07:24:36] [usb] USB mounted at /mnt/usb-backup
+[2026-04-18 07:24:36] [usb] USB mounted at /mnt/usb-backup
+[2026-04-18 07:24:36] [usb] USB Stats: 24K / 29G used (1%), 27G free
+[2026-04-18 07:24:36] [usb] Backup directory: /mnt/usb-backup/backups/20260418
+[2026-04-18 07:24:36] [usb] Backing up OpenClaw Memory...
+sending incremental file list
+{"success": false, "error": "usb backup script failed"},
   "overall_success": false
 }

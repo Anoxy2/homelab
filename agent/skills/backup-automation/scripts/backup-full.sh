@@ -15,13 +15,13 @@ readonly DATE=$(date +%Y%m%d)
 # Ensure state dir exists
 mkdir -p "$STATE_DIR"
 
-# Logging function
+# Logging function (stderr so subshell captures don't pollute JSON results)
 log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE" >&2
 }
 
 error() {
-    log "ERROR: $*" >&2
+    log "ERROR: $*"
 }
 
 # OpenClaw notification
