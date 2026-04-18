@@ -6,7 +6,6 @@ SM_ROOT="/home/steges/agent/skills/skill-forge"
 STATE_DIR="$SM_ROOT/.state"
 POLICY_DIR="$SM_ROOT/policy"
 AUDIT_LOG="$STATE_DIR/audit-log.jsonl"
-LEGACY_AUDIT_LOG="$STATE_DIR/audit.log"
 
 # Canonical exit codes for wrapper and lifecycle scripts.
 EXIT_USAGE=2

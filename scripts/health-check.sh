@@ -25,6 +25,28 @@ check_http() {
     fi
 }
 
+check_influx_query() {
+    # InfluxDB Query-Test: verifiziert echte Query-Ausfuehrung statt nur ping.
+    if ! command -v docker >/dev/null 2>&1; then
+        log_warn "WARN InfluxDB Query-Test uebersprungen (docker nicht verfuegbar)"
+        return
+    fi
+
+    if ! docker ps --filter name=influxdb --format "{{.Names}}" | grep -q "^influxdb$"; then
+        log_error "FAIL InfluxDB Query-Test (Container influxdb nicht erreichbar)"
+        FAIL=$((FAIL + 1))
+        return
+    fi
+
+    if docker exec influxdb sh -lc 'influx query --org "${DOCKER_INFLUXDB_INIT_ORG:-pilab}" --token "${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN:-}" "buckets() |> limit(n:1)" >/dev/null 2>&1' ; then
+        log_info "OK   InfluxDB Query-Test"
+        OK=$((OK + 1))
+    else
+        log_error "FAIL InfluxDB Query-Test (Query fehlgeschlagen)"
+        FAIL=$((FAIL + 1))
+    fi
+}
+
 check_http_host() {
     local name="$1"
     local ip="$2"
@@ -247,12 +269,35 @@ PY
 
 check_rag_sanity_query() {
     local retrieve_script="/home/steges/agent/skills/openclaw-rag/scripts/retrieve.py"
-    local query="Welche Zielwerte gelten fuer die Growbox-Luftfeuchtigkeit?"
+    local goldset_path="/home/steges/agent/skills/openclaw-rag/GOLD-SET.json"
 
     if [[ ! -f "$retrieve_script" ]]; then
         log_warn "WARN RAG Sanity Query uebersprungen (retrieve.py nicht gefunden)"
         FAIL=$((FAIL + 1))
         return
+    fi
+
+    # Dynamische Frage aus GOLD-SET.json wählen
+    local query="Welche Zielwerte gelten fuer die Growbox-Luftfeuchtigkeit?"  # Default
+    if [[ -f "$goldset_path" ]]; then
+        local random_query
+        random_query="$(python3 - "$goldset_path" <<'PY'
+import json, sys, random
+path = sys.argv[1]
+try:
+    with open(path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    questions = data.get('questions', [])
+    if questions:
+        q = random.choice(questions)
+        print(q.get('query', ''))
+except Exception:
+    pass
+PY
+)"
+        if [[ -n "$random_query" ]]; then
+            query="$random_query"
+        fi
     fi
 
     local result
@@ -331,14 +376,130 @@ check_nvme_smart() {
     fi
 }
 
+check_tailscale() {
+    if ! command -v tailscale >/dev/null 2>&1; then
+        log_warn "WARN Tailscale-Check uebersprungen (tailscale CLI nicht verfuegbar)"
+        return
+    fi
+
+    local status
+    status="$(tailscale status 2>&1 || true)"
+
+    if echo "$status" | grep -q "Logged out"; then
+        log_error "FAIL Tailscale (nicht eingeloggt)"
+        FAIL=$((FAIL + 1))
+    elif echo "$status" | grep -qE "^#.*;(direct|relay|idle)"; then
+        log_info "OK   Tailscale (verbunden)"
+        OK=$((OK + 1))
+
+        # Connectivity-Test via tailnet ping (Peer, sonst eigene Tailnet-IP).
+        local ping_target=""
+        ping_target="$(tailscale status --json 2>/dev/null | python3 - <<'PY'
+import json, sys
+try:
+    data = json.load(sys.stdin)
+except Exception:
+    print("")
+    raise SystemExit(0)
+
+peers = data.get("Peer", {}) or {}
+for peer in peers.values():
+    if peer.get("Online") and peer.get("TailscaleIPs"):
+        ips = peer.get("TailscaleIPs")
+        if ips:
+            print(ips[0])
+            raise SystemExit(0)
+
+print("")
+PY
+)"
+
+        if [[ -z "$ping_target" ]]; then
+            ping_target="$(tailscale ip -4 2>/dev/null | head -n1 || true)"
+        fi
+
+        if [[ -z "$ping_target" ]]; then
+            log_warn "WARN Tailscale Connectivity-Test uebersprungen (kein Ping-Target)"
+            return
+        fi
+
+        if timeout 5 tailscale ping -c 1 "$ping_target" >/dev/null 2>&1; then
+            log_info "OK   Tailscale Connectivity (ping ${ping_target})"
+            OK=$((OK + 1))
+        else
+            log_error "FAIL Tailscale Connectivity (ping ${ping_target})"
+            FAIL=$((FAIL + 1))
+        fi
+    elif echo "$status" | grep -q "Tailscale is stopped"; then
+        log_error "FAIL Tailscale (gestoppt)"
+        FAIL=$((FAIL + 1))
+    else
+        log_warn "WARN Tailscale-Status unklar (keine Peers sichtbar)"
+        FAIL=$((FAIL + 1))
+    fi
+}
+
+check_mqtt_pubsub() {
+    # Erweiterter MQTT-Test: Pub/Sub statt nur TCP-Port
+    # Nutzt docker exec mosquitto weil mosquitto_pub/sub nicht lokal installiert
+
+    local host="$PI_IP"
+    local port=1883
+    local test_topic="health-check/test-$(date +%s)"
+    local test_msg="ping-$(date +%s)"
+
+    # Prüfe ob Mosquitto Container läuft
+    if ! docker ps --filter name=mosquitto --format "{{.Names}}" | grep -q "^mosquitto$"; then
+        log_warn "WARN MQTT Pub/Sub - Mosquitto Container nicht erreichbar"
+        FAIL=$((FAIL + 1))
+        return
+    fi
+
+    # Versuche Pub/Sub Test via Docker
+    # mosquitto_pub/sub sind im mosquitto Image vorhanden
+    local sub_result=""
+    local sub_tmp
+    sub_tmp="$(mktemp)"
+
+    # Starte Subscriber im Hintergrund (mit timeout) und speichere Ausgabe.
+    docker exec mosquitto timeout 5 sh -c "mosquitto_sub -h localhost -p $port -t '$test_topic' -W 3" >"$sub_tmp" 2>/dev/null &
+    local sub_pid=$!
+
+    sleep 1  # Warte auf Subscriber
+
+    # Publiziere Test-Message
+    if docker exec mosquitto mosquitto_pub -h localhost -p $port -t "$test_topic" -m "$test_msg" -q 1 2>/dev/null; then
+        wait $sub_pid 2>/dev/null || true
+        sub_result="$(cat "$sub_tmp" 2>/dev/null || true)"
+
+        if [[ "$sub_result" == "$test_msg" ]]; then
+            log_info "OK   MQTT Pub/Sub (Roundtrip funktioniert)"
+            OK=$((OK + 1))
+        else
+            log_warn "WARN MQTT Pub/Sub - Publish OK, aber Subscribe timeout (kann normal sein)"
+            # Nicht FAIL - TCP-Check ist bereits erfolgreich
+        fi
+    else
+        log_warn "WARN MQTT Pub/Sub - Publish fehlgeschlagen (MQTT braucht Auth?)"
+        # Bei auth-fähigem MQTT ist Pub/Sub ohne Credentials erwarteterweise fehl
+        # TCP-Check ist bereits erfolgreich, also kein FAIL
+    fi
+
+    # Cleanup Subscriber falls noch läuft
+    kill $sub_pid 2>/dev/null || true
+    rm -f "$sub_tmp"
+}
+
 check_http  "Pi-hole Web UI"    "http://$PI_IP:8080/admin"
 check_http  "Home Assistant"    "http://$PI_IP:8123"
 check_http  "ESPHome"           "http://$PI_IP:6052"
 check_http  "Portainer"         "http://$PI_IP:9000"
 check_http  "OpenClaw"          "http://$PI_IP:18789"
+check_http  "RAG Embed API"     "http://$PI_IP:18790/health"
 check_http  "ops-ui (Canvas)"   "http://$PI_IP:8090"
 check_http_host "Caddy Reverse Proxy (openclaw.lan)" "$PI_IP" "openclaw.lan"
 check_tcp   "Mosquitto MQTT"    "$PI_IP" 1883
+check_mqtt_pubsub
 check_http  "Loki"              "http://$PI_IP:3100/ready"
 check_http  "Alertmanager"      "http://$PI_IP:9093/-/healthy"
 check_http  "Vaultwarden"       "http://$PI_IP:8888/alive"
@@ -348,6 +509,8 @@ check_http  "Authelia"          "http://$PI_IP:9091/api/health"
 check_disk
 check_pi_temp
 check_nvme_smart
+check_tailscale
+check_influx_query
 check_rag_index_freshness
 check_rag_reindex_state
 check_rag_chunk_drift

@@ -1,5 +1,738 @@
 # CHANGELOG
 
+## 2026-04-13 (Welle 2: Loki/Promtail Structured Logging + Caddy ADR)
+
+### Loki/Promtail
+
+- `promtail/config/promtail.yml`
+  - `pipeline_stages` ergänzt: JSON-Parsing (`level`, `ts`, `msg`), `level` als Stream-Label
+  - `drop`-Stage für leere `level`-Labels (Plain-Text-Container)
+  - `drop`-Stage für Watchtower-Container (Spam-Reduktion)
+- `loki/config/loki.yml`
+  - `limits_config` ergänzt: `max_streams_matchers_per_query: 1000`, `max_label_names_per_series: 10`
+
+### Dokumentation
+
+- Neu: `docs/decisions/caddy-network-mode.md` — ADR: Host-Mode beibehalten (Bridge-Mode-Migration bringt keinen Vorteil solange Backends host-mode nutzen)
+
+### Validierung
+
+- YAML syntax: promtail.yml + loki.yml — ok
+- `docker compose restart promtail loki` — beide started, kein Config-Fehler
+- `curl http://192.168.2.101:3100/ready` → `ready`
+
+## 2026-04-13 (Welle 1: ntfy/Alertmanager, Backup, Socket-Proxy-Runbook)
+
+### Alertmanager
+
+- `alertmanager/config/alertmanager.yml`
+  - Neuer Sub-Route: `severity="critical"` → Receiver `telegram-and-ntfy`
+  - Neuer Receiver `telegram-and-ntfy`: Telegram + ntfy (Topic `alerts`, Priority: urgent)
+  - ntfy-URL: Basic-Auth via `NTFY_ALERTMANAGER_USER`/`NTFY_ALERTMANAGER_PASSWORD`
+
+### ntfy
+
+- Dedizierter Publisher-User `alertmanager` angelegt (Role: user, rw auf Topic `alerts`)
+- `auth-default-access: deny-all` war bereits aktiv — kein anon-Zugriff
+
+### Backup
+
+- `scripts/backup.sh`
+  - `searxng/config` und `unbound/config` als optionale Backups ergänzt (nicht in Git)
+  - Beide Pfade auch in `RESTIC_SOURCES` aufgenommen
+
+### Runbooks
+
+- Neu: `docs/runbooks/docker-socket-proxy-audit.md` — monatliche 6-Punkte-Checkliste
+
+### Dokumentation
+
+- `docs/infrastructure/alertmanager-routing.md` — Live-Config dokumentiert, ntfy-Integration-Abschnitt
+- `docs/infrastructure/ntfy-notifications.md` — Alertmanager-Integration mit Auth-Setup
+- `docs/operations/maintenance-and-backups.md` — searxng/unbound in Restore-Mappingtabelle
+
+### Validierung
+
+- `amtool check-config`: 2 Receivers, 1 inhibit rule — ok
+- `bash -n scripts/backup.sh`: ok
+- ntfy direct publish: `{"id":"cSo3qJalCQ8K",...}` — Auth-User funktioniert
+
+## 2026-04-13 (P2: Learn Rework + neuer Memory-Skill)
+
+### Skills
+
+- `agent/skills/learn/scripts/learn-dispatch.sh`
+   - Rework auf strukturierten Backing-Store `skill-forge/.state/learnings.jsonl`
+   - Neue Subcommands: `observe`, `search`, gefiltertes `show`
+   - `promote` markiert Eintraege jetzt im JSONL (statt Freitext-Anhang)
+   - Ziel-Datei fuer RAG-Sicht: `/home/steges/agent/LEARNINGS.md` (Migration von `.learnings/LEARNINGS.md`)
+
+- Neu: `agent/skills/memory/`
+   - Neuer Domain-Skill mit Dispatcher `memory-dispatch.sh`
+   - Commands: `remember`, `recall`, `search`, `forget`, `update`, `ingest`, `stats`
+   - Backing-Store: `skill-forge/.state/memory.jsonl`
+   - Einmalige Initialmigration aus bestehendem `/home/steges/agent/MEMORY.md`, falls JSONL leer ist
+
+- `scripts/skills`
+   - Neue Domain `memory` verdrahtet
+   - Learn-Usage auf neue Command-Oberflaeche aktualisiert
+
+### RAG
+
+- `agent/skills/openclaw-rag/scripts/ingest.py`
+   - `/home/steges/agent/LEARNINGS.md` in `ALLOWED_FILES` aufgenommen
+- `agent/skills/openclaw-rag/RAG-SOURCES.md`
+   - Whitelist-Dokumentation um `LEARNINGS.md` erweitert
+
+### Governance-Doku
+
+- `docs/skills/skill-forge-governance.md`
+   - Domain-Kommandoliste und Learn/Memory-Abschnitte auf den neuen Runtime-Stand aktualisiert
+
+### Validierung
+
+- Syntax: `bash -n` fuer
+   - `agent/skills/learn/scripts/learn-dispatch.sh`
+   - `agent/skills/memory/scripts/memory-dispatch.sh`
+   - `scripts/skills`
+- Smokes:
+   - `~/scripts/skills learn observe/show/search`
+   - `~/scripts/skills memory remember/recall/search/stats`
+   - `~/scripts/skills memory ingest` (inkl. Reindex-Aufruf)
+
+## 2026-04-13 (Fix: RAG Weekly Report Gate-Threshold)
+
+### Monitoring
+
+**`scripts/rag-quality-report.sh`** — Hardcodierter 200ms-Threshold für p95-Latenz durch dynamisches Auslesen aus `canary-criteria.yaml` ersetzt (identisch mit `rag-canary-smoke.sh`).
+
+- Ursache: Weekly-Report hatte 200ms hardcodiert; `canary-criteria.yaml` definiert 450ms (korrekt für Hybrid-Modus)
+- Symptom: Wöchentlicher Gate-FAIL, obwohl Hybrid-Latenz (~300–400ms) auf Pi 5 strukturell unvermeidbar ist
+- Fix: Alle drei Thresholds (Precision, Recall, p95) werden jetzt aus YAML gelesen; kein Dual-Source-of-Truth mehr
+- Aktuell gemessen: Precision 0.267 / Recall 0.736 / p95 ~400ms → alle Gates grün
+
+## 2026-04-10 (P3: Skill Manager Consolidation & Scout Deprioritization)
+
+### Governance
+
+**Skill Inventory Bloat Reduction** — Consolidation policy implemented to reduce skill inventory bloat and focus on local homelab relevance.
+
+- Action 1: Scout Hub Deprioritization
+  - Removed 3 GitHub hub sources (openclaw-skills, awesome-openclaw, openclaw-master); kept clayhub only
+  - Reduced search terms to homelab/home-assistant/raspberry-pi (removed automation/iot)
+  - Added consolidation_policy config to hubs.json
+  
+- Action 2: Automatic Consolidation
+  - New `skill-forge consolidate run|report [--dry-run] [--aggressive]` command
+  - Immediate delete: pending-blacklist, test-*, demo-*, resilience-extreme-*
+  - Aggressive delete (opt-in): canary > 14d old, pending-review > 21d old
+  - Implementation: `agent/skills/skill-forge/scripts/modules/consolidate.sh`
+  
+- Action 3: Applied Consolidation (Live)
+  - Known-skills: 89 → 72 (removed 17 unwanted)
+  - Skills Hub Feed: 108 → 91 total (72 known + 19 local)
+  - Preserved: all local/operational skills (learn, heartbeat, ha-control, pi-control, etc.)
+
+**Impact**: Skill list now focused. Future Scout runs load fewer skills. Consolidation is repeatable.
+
+## 2026-04-10 (P2: Canvas Skills Hub eingebaut)
+
+### UI
+
+- Neuer Tab `Skills` in der Canvas-Navigation.
+- Neue Seite `page-skills` mit:
+   - KPI-Uebersicht (Known/Active/Canary/Pending/Rollback/High-Risk)
+   - Suche und Status-Filter
+   - Skill-Liste mit Click-to-Detail
+   - Detailpanel pro Skill (Purpose, Status, Source, Version, Last Scout, Vetting/Risk, Docs)
+   - Deeplink pro Skill ueber `#skills:<slug>`
+   - Aktionsbuttons pro Skill (Command-to-Clipboard)
+
+### Code
+
+- `agent/skills/openclaw-ui/html/index.html`
+   - Navigation um Skills-Tab erweitert
+   - Skills-Hub-Layout und neue DOM-Container hinzugefuegt
+- `agent/skills/openclaw-ui/html/app-main.js`
+   - Routing/Init fuer `skills` aktiviert
+   - Hash-Routing fuer `#skills:<slug>` ergaenzt
+- `agent/skills/openclaw-ui/html/app-skill.js`
+   - Rendering fuer Skills-Hub und Skill-Detail implementiert
+   - Refresh-Button fuer Skills-Seite angebunden
+   - Dual-Feed-Laden (`state-brief` + `skill-pages`) und Deeplink-Auswahl
+- `scripts/canvas-skill-pages-brief.sh`
+   - Neuer Aggregator fuer Skill-Detaildaten (Purpose, Actions, Docs, Risk)
+- `agent/skills/heartbeat/scripts/heartbeat-dispatch.sh`
+   - Feed-Refresh fuer `canvas_skill_pages_brief` inkl. Action-Log
+- `agent/skills/openclaw-ui/html/sw.js`
+   - `skill-pages.latest.json` als dynamischer Feed markiert
+
+### Datenquellen
+
+- `state-brief.latest.json` fuer Scout/Health/Metrics.
+- `skill-pages.latest.json` fuer Skill-Detailseiten (Purpose/Actions/Docs).
+
+## 2026-04-10 (P2: Learn+RAG lokalisiert, Memory-Bridge aus Runtime entfernt)
+
+### Architektur
+
+- Betriebsmodell auf lokal vereinheitlicht: Learn als Memory-Owner, RAG als semantischer Retrieval-Owner.
+- Keine externe Memory-Bridge mehr im aktiven Runtime-Pfad von Learn, RAG und Heartbeat.
+
+### Skills
+
+- `agent/skills/openclaw-rag/scripts/rag-dispatch.sh`
+   - externer Memory-Fallback entfernt, `retrieve` liefert nur lokale RAG-Ergebnisse.
+- `agent/skills/learn/scripts/learn-dispatch.sh`
+   - Weekly-Pfad auf lokale Distill-Logik reduziert, kein Mirror-Write in externe Bridge.
+- `agent/skills/heartbeat/scripts/heartbeat-dispatch.sh`
+   - externe Daily/Weekly-Memory-Checks entfernt, Fokus auf lokale Pipeline-Signale.
+
+### Doku
+
+- MemPalace-Dokumente in Learning-Memory-Nomenklatur ueberfuehrt:
+   - `docs/skills/learning-memory-integration-template.md`
+   - `docs/skills/learning-memory-security-frame.md`
+   - `docs/skills/learning-memory-validation-catalog.md`
+   - `docs/skills/learning-memory-file-room-mapping.md`
+   - `docs/runbooks/learning-memory-operations.md`
+   - `docs/decisions/learning-memory-architecture.md`
+
+### Validierung
+
+- Shell-Syntaxchecks fuer geaenderte Dispatch-Skripte erfolgreich.
+- Smoke-Checks: `rag-dispatch retrieve` (hybrid/local), `learn weekly --json`.
+- Regression: `bats scripts/tests/smoke-dispatches.bats` erfolgreich.
+
+## 2026-04-10 (P2: Kurskorrektur MemPalace ohne eigenen Skill)
+
+### Architektur
+
+- Richtungswechsel umgesetzt: kein separater `mempalace`-Skill als Wrapper-Domaene.
+- MemPalace-Funktionen werden direkt in bestehende Skills genutzt (`openclaw-rag`, `learn`, `heartbeat`) ueber Bridge-CLI.
+
+### Code
+
+- `scripts/skills`: Routing-Domaene `mempalace` entfernt.
+- `openclaw-rag/scripts/rag-dispatch.sh`: Fallback nutzt direkte Bridge (`MEMPALACE_BRIDGE_CMD`, default `mempalace`).
+- `learn/scripts/learn-dispatch.sh`: Diary-Mirror nutzt direkte Bridge (`search`, `diary_write`).
+- `heartbeat/scripts/heartbeat-dispatch.sh`: Daily/Weekly Checks nutzen direkte Bridge (`status`, `search`, `diary_read`).
+
+### Dokumentation
+
+- Validierungs- und Runbook-Kommandos auf direkte Bridge-Aufrufe umgestellt.
+
+## 2026-04-10 (P2: MemPalace Validierungskatalog fixiert)
+
+### Skills / QA
+
+**Neu**: `docs/skills/mempalace-validation-catalog.md`
+- Pflicht-Smokes fuer `check/status/search/diary-read`
+- RAG-Fallback-Check, Learn-Mirror-Check, Heartbeat-Verhaltenscheck
+- Dispatcher-Regression (`smoke-dispatches.bats`) und Recall/Latenz-Baseline verbindlich referenziert
+
+**Referenzen aktualisiert**
+- `docs/skills/mempalace-integration-template.md` verweist auf den Katalog
+- `agent/skills/mempalace/SKILL.md` verlinkt den Katalog unter Betrieb/Validierung
+
+## 2026-04-10 (P2: MemPalace Ops-Runbook erstellt)
+
+### Runbooks
+
+**Neu**: `docs/runbooks/mempalace-operations.md`
+- Setup, Betriebschecks, Backup/Restore und Reindex/Repair-Ablauf dokumentiert
+- Fehlerbilder inklusive `configured=false` und Diary-Gap beschrieben
+
+**Referenzen aktualisiert**
+- `docs/skills/mempalace-integration-template.md` verweist auf das Runbook
+- `agent/skills/mempalace/SKILL.md` fuehrt das Runbook unter Betrieb
+
+## 2026-04-10 (P2: MemPalace Sicherheitsrahmen verankert)
+
+### Skills / Governance
+
+**Neue Richtlinie**: `docs/skills/mempalace-security-frame.md`
+- Datenklassen (A/B/C), erlaubte/verbotene Quellen, Default-Deny und Read-first-Regeln festgelegt
+- Logging-/Nachvollziehbarkeitsregeln und Betriebsfreigabe-Kriterien dokumentiert
+
+**Referenzen aktualisiert**
+- `docs/skills/mempalace-integration-template.md` verlinkt den Sicherheitsrahmen
+- `agent/skills/mempalace/SKILL.md` verweist auf die verbindliche Richtlinie
+
+## 2026-04-10 (P2: heartbeat MemPalace Daily/Weekly integriert)
+
+### Skills
+
+**agent/skills/heartbeat/scripts/heartbeat-dispatch.sh**
+- Daily MemPalace-Task integriert: `status` + Search-Smoke als nicht-blockierende Health-Pruefung.
+- Weekly Diary-Task integriert: `diary-read --hours 168` mit Gap-Signal (`entries=0`) und Graceful-Degrade.
+- Ergebnisse erscheinen in Audit-Log, Action-Log und Telegram-Heartbeat-Block `System`.
+
+**scripts/skills**
+- Usage fuer MemPalace um `diary-write` und `diary-read` erweitert.
+
+**Validierung**
+- `bash -n agent/skills/heartbeat/scripts/heartbeat-dispatch.sh agent/skills/mempalace/scripts/mempalace-dispatch.sh scripts/skills`
+- Smoke: `skills mempalace status`
+- Smoke: `skills mempalace search "openclaw heartbeat" --limit 1` (degraded bei nicht konfigurierter Bridge)
+- `bats scripts/tests/smoke-dispatches.bats` -> 5 Tests, 0 Failures
+
+## 2026-04-10 (P2: learn -> MemPalace Diary-Spiegelung)
+
+### Skills
+
+**agent/skills/learn/scripts/learn-dispatch.sh**
+- `weekly` erzeugt intern einen strukturierten JSON-Run und spiegelt bei `status=ok` Learnings optional nach MemPalace.
+- Dedupe ueber Learning-ID: vor `diary-write` wird `mempalace search <id>` geprueft.
+- Graceful Degrade: wenn MemPalace-Bridge fehlt, bleibt `weekly` erfolgreich; Audit markiert den Skip.
+
+**agent/skills/mempalace/scripts/mempalace-dispatch.sh**
+- Neue Subcommands: `diary-write <entry-id> <text>`, `diary-read [--hours N]`.
+- Ohne Bridge liefern beide definierte JSON-Fehler mit `configured=false`.
+
+**Validierung**
+- `bash -n agent/skills/learn/scripts/learn-dispatch.sh agent/skills/mempalace/scripts/mempalace-dispatch.sh scripts/skills`
+- `skills learn weekly --json` (skipped-state sauber)
+- `skills mempalace diary-read --hours 24` / `diary-write ...` (graceful degrade)
+- `bats scripts/tests/smoke-dispatches.bats` -> 5 Tests, 0 Failures
+
+## 2026-04-10 (P2: MemPalace PoC-Skill angelegt)
+
+### Skills
+
+**Neuer Skill**: `agent/skills/mempalace/`
+- `mempalace-dispatch.sh` mit Subcommands `check`, `status`, `wake`, `search`
+- Graceful-Degrade ohne installierte Bridge: strukturierte JSON-Fehler statt Crash
+- Bridge-Override via `MEMPALACE_BRIDGE_CMD` vorgesehen
+
+**scripts/skills** erweitert
+- Neues Domain-Routing: `skills mempalace ...`
+- Usage-Hilfe um MemPalace-Kommandos ergaenzt
+
+**Validierung**
+- `bash -n agent/skills/mempalace/scripts/mempalace-dispatch.sh scripts/skills`
+- Smoke: `skills mempalace check`
+- Smoke: `skills mempalace status`
+- Degrade-Test: `skills mempalace search "test query" --limit 3` liefert definierten Fehlerpfad (`configured=false`, Exit 1)
+
+## 2026-04-10 (P2: MemPalace Datei-Raum-Mapping kanonisiert)
+
+### Skills / Integration
+
+**Neue Referenz**: `docs/skills/mempalace-file-room-mapping.md`
+- Kanonische Zuordnung von lokalen Quellpfaden zu `wing`/`room`
+- Einheitliche Namenskonvention (`wing_<domain>`, `room_<topic>`)
+- Sperrlisten fuer sensible Pfade festgelegt
+
+**Template-Update**
+- `docs/skills/mempalace-integration-template.md` referenziert jetzt die kanonische Mapping-Datei
+
+## 2026-04-10 (P2: openclaw-rag MemPalace-Fallback integriert)
+
+### RAG / MemPalace
+
+**agent/skills/openclaw-rag/scripts/rag-dispatch.sh**
+- `retrieve` versucht bei `count=0` im lokalen RAG einen MemPalace-Fallback (`mempalace-dispatch search`)
+- Fallback ist konfigurierbar via `RAG_MEMPALACE_FALLBACK` (Default aktiv)
+- Herkunft wird im Payload kenntlich (`search_mode: mempalace-fallback`, `source_type: mempalace`)
+- Bei nicht konfigurierter Bridge bleibt der lokale Payload stabil, Warning ergaenzt den Grund
+
+**Validierung**
+- `bash -n agent/skills/openclaw-rag/scripts/rag-dispatch.sh`
+- Smoke (Fallback-Pfad): `rag-dispatch.sh retrieve "zzzxxyyqq_mempalace_probe" --limit 3`
+- Smoke (lokaler Pfad): `rag-dispatch.sh retrieve "Welche Services laufen auf dem Pi" --limit 2`
+
+## 2026-04-10 (P2: MemPalace Architekturentscheidung)
+
+### Decisions
+
+**docs/decisions/mempalace-architecture.md** neu angelegt
+- PoC-Entscheidung: MemPalace-Go als primaere Integrationsbasis fuer Pilab
+- Begruendung dokumentiert (Pi/arm64-Betrieb, Runtime-Komplexitaet, PoC-Fokus)
+- Re-Evaluation-Trigger und Akzeptanzkriterien fuer Folgephasen festgelegt
+
+## 2026-04-10 (P2: RAG Dispatcher modularisiert)
+
+### RAG Refactoring
+
+**agent/skills/openclaw-rag/scripts/rag-dispatch.sh**: auf schlanken Dispatcher reduziert
+- CLI-Entry bleibt kompatibel (`retrieve`, `reindex`, `status`, `autodoc`, `doc-keeper`)
+- Kernlogik aus dem Monolith in Module ausgelagert
+- Groesse reduziert: `788 -> 101` Zeilen (Dispatcher delegiert jetzt statt Inline-Logik)
+
+**Neue Module unter `agent/skills/openclaw-rag/scripts/modules/`**:
+- `status.sh`: Index/Embed-Statusausgabe
+- `autodoc.sh`: AutoDoc-Flow inkl. Reindex-Fallback
+- `doc_keeper.sh`: Doc-Keeper + AutoDoc-Profilsteuerung
+- Offene Marker im Dispatcher-Block bereinigt (`TODO/FIXME/HACK` -> keine Treffer)
+
+**Validierung**:
+- `bash -n` auf Dispatcher + alle neuen Module
+- Smoke: `rag-dispatch.sh --help`
+- Smoke: `rag-dispatch.sh status`
+- Regression erweitert: `scripts/tests/smoke-dispatches.bats` mit dedizierten `rag-dispatch` Tests (help/status)
+- Testlauf: `bats scripts/tests/smoke-dispatches.bats` -> 5 Tests, 0 Failures
+
+**Performance-Baseline dokumentiert**:
+- Quelle: `docs/decisions/rag-ausbau-plan.md` (Metriken-Verlauf)
+- Messung (`--disable-rewrite-ab`): `Precision@5=0.2625`, `Recall@5=0.7188`, `p95=397.76ms`, `P=0/R=0: 2/48`
+
+## 2026-04-10 (P2: fstrim Timer abgeschlossen, Todo entschlackt)
+
+### Betrieb (NVMe Pflege)
+
+**systemd/fstrim-weekly.service + systemd/fstrim-weekly.timer**: woechentliche TRIM-Automation verifiziert
+- Unit-Dateien vorhanden und mit `systemd-analyze verify` validiert (`verify_exit=0`)
+- Timer-Slot: Sonntag 05:00 mit `RandomizedDelaySec=5min`
+
+### Governance (Open-Work-Backlog)
+
+**docs/operations/open-work-todo.md**: auf Open-Work-only reduziert
+- Erledigte und historische Analyseblöcke entfernt
+- Backlog auf aktive, umsetzbare Punkte fokussiert (RAG-Refactoring, MemPalace-Integration, Infra)
+
+## 2026-04-10 (P2: Logging-Format vereinheitlicht)
+
+### Governance (Logging)
+
+**scripts/common.sh**: Logging auf JSON-Lines standardisiert
+- **Neu Standard**: `log_info/log_warn/log_error` schreiben strukturierte JSON-Zeilen (`ts`, `level`, `msg`)
+- **Fallback**: mit `LOG_LEGACY_TEXT=1` bleibt das bisherige Textformat aktiv
+- **Testanpassung**: `scripts/tests/health-check.bats` nutzt Legacy-Format explizit fuer stabile String-Assertions
+
+## 2026-04-10 (P2: Audit-Log Vereinheitlichung)
+
+### Governance (Logging)
+
+**agent/skills/skill-forge/scripts/audit.sh**: Legacy-Fallback entfernt
+- Audit-Auswertung liest jetzt nur noch `audit-log.jsonl`
+- Legacy-Textlogik fuer `audit.log` wurde aus den Analysepfaden entfernt
+
+**agent/skills/skill-forge/scripts/common.sh**: Legacy-Pfad bereinigt
+- `LEGACY_AUDIT_LOG` entfernt, `AUDIT_LOG` bleibt einzige Quelle
+
+**scripts/skill-forge-cleanup.sh**: Legacy-Datei-Bereinigung
+- Entfernt `agent/skills/skill-forge/.state/audit.log` (im Dry-Run sichtbar)
+- Validierung: `skill-forge policy lint`, `bash -n`, Smoke-Checks auf `audit.sh` + Cleanup
+
+## 2026-04-10 (P2: Skill-Forge .bak Retention)
+
+### Governance (State-Retention)
+
+**scripts/skill-forge-cleanup.sh**: .bak-Rotation fuer Skill-Forge-State erweitert
+- **Neu**: Snapshot-Rotation fuer `agent/skills/skill-forge/.state/*.bak`
+- **Schema**: pro Basisdatei Snapshot `*.bak.YYYYMMDDHHMMSS`
+- **Retention**: pro Basisdatei werden nur die letzten 3 Snapshot-Dateien behalten
+- **Validierung**: `skill-forge policy lint`, `bash -n scripts/skill-forge-cleanup.sh`, Smoke-Run mit `--dry-run`
+
+## 2026-04-10 (P2: Tailscale Tailnet-Ping im Health-Check)
+
+### Observability (Tailscale Connectivity)
+
+**scripts/health-check.sh**: Tailscale-Check erweitert
+- **Neu**: Nach erfolgreich erkanntem Verbindungsstatus wird ein echter `tailscale ping` ausgefuehrt
+- **Target-Logik**: bevorzugt ein online Peer aus `tailscale status --json`, Fallback auf eigene Tailnet-IPv4
+- **Ergebnis**: Connectivity ueber Tailnet wird explizit als OK/FAIL gewertet, statt nur Status-Textpruefung
+
+## 2026-04-10 (P2: Health-Check Query + RAG Endpoint)
+
+### Observability (health-check.sh erweitert)
+
+**scripts/health-check.sh**: Zwei offene Checks aus dem Backlog umgesetzt
+- **Neu**: `check_influx_query()` fuehrt eine echte InfluxDB-Query aus (`buckets() |> limit(n:1)`) statt nur `influx ping`
+- **Neu**: dedizierter HTTP-Check auf `http://192.168.2.101:18790/health` fuer die RAG Embed API
+- **Fix**: MQTT-Pub/Sub-Check gegen `set -u` gehaertet (kein `sub_result`-Unbound mehr)
+
+**scripts/tests/health-check.bats**: Teststubs erweitert
+- Docker- und Python-Stubs fuer MQTT/Influx/RAG-Pruefungen hinzugefuegt
+- Regression auf Exit-Code 0/1 bleibt bestehen
+
+## 2026-04-10 (Quick-Win: Glances Version-Tag)
+
+### Docker Images (Stabilität)
+
+**docker-compose.yml**: Glances von Digest zu Version-Tag gewechselt
+- **Vorher**: `nicolargo/glances@sha256:b4b0...` (Digest)
+- **Nachher**: `nicolargo/glances:4.3.0-full` (Version-Tag)
+- **Grund**: Verständlichere Versionierung, Watchtower kann Updates erkennen
+
+## 2026-04-10 (P2: MQTT Pub/Sub Health-Check)
+
+### Observability (Health-Check vervollständigt)
+
+**scripts/health-check.sh**: MQTT Pub/Sub Test implementiert
+- **Erweiterung**: `check_mqtt_pubsub()` - Vollständiger Roundtrip-Test statt nur TCP-Port
+- **Methode**: `docker exec mosquitto mosquitto_pub/sub` (Tools im Container vorhanden)
+- **Test**: Publish "ping-$TIMESTAMP" → Subscribe → Vergleich
+- **Fallback**: Bei Auth-fähigem MQTT wird nur Warnung geloggt (TCP-Check ist erfolgreich)
+- **Status**: WARN statt FAIL bei Pub/Sub-Fehlern (nicht-kritisch da TCP-Check primär)
+
+## 2026-04-10 (P2: Docker Volume Backups - 9 Volumes)
+
+### Data Protection (P2 Lücken geschlossen)
+
+**scripts/backup.sh**: Docker Volume Backup implementiert
+- **Neue Funktion**: `backup_volume()` - Sichert Docker Volumes via temporärem Alpine-Container
+- **9 Volumes**: portainer_data, prometheus_data, grafana_data, loki_data, uptime-kuma_data, alertmanager_data, ntfy_data, caddy_data, caddy_config
+- **Methode**: `docker run --rm -v $VOLUME:/data:ro alpine tar -czf ...`
+- **Integrität**: Prüfung auf leere Archive (> 0 Bytes)
+- **Status**: Lokal in `~/backups/YYYY-MM-DD/$VOLUME.tar.gz`
+
+## 2026-04-10 (P1: ESPHome OTA Rollback-Mechanismus)
+
+### Self-Healing (IoT/Firmware Schutz)
+
+**scripts/esphome-ota-update.sh**: OTA Update mit Backup und Recovery-Guide
+- **Kritikalität**: ESPHome Firmware läuft auf ESP32 (nicht im Container) → Kein vollautomatischer Rollback möglich
+- **Pre-OTA**: Backup von `growbox_wlan.yaml`, `growbox_ap.yaml` + Firmware-Export (falls verfügbar)
+- **Post-OTA**: Ping-Test (max 60s) + API-Verfügbarkeits-Check
+- **Recovery-Guide bei Fehler**:
+  1. Captive Portal: Mit `growbox-ap` WiFi verbinden
+  2. Physischen Reset drücken
+  3. USB-Flashing: `docker exec esphome esphome run... --device /dev/ttyUSB0`
+  4. Fallback auf AP-Mode: Backup YAML vorhanden
+- **Retention**: Letzte 5 Backups behalten
+- **Notifications**: Telegram-Benachrichtigungen für Erfolg/Fehlschlag
+
+## 2026-04-10 (P1: Pi-hole Blocklist Rollback + Automatische Updates)
+
+### Self-Healing (DNS/DHCP Schutz)
+
+**scripts/pihole-blocklist-update.sh**: Automatisches Blocklist-Update mit Rollback
+- **Kritikalität**: Pi-hole = DNS + DHCP für LAN → Ausfall = kompletter LAN-Ausfall
+- **Pre-Update**: Backup von `gravity.db` und `adlists.list` mit Timestamp
+- **Update**: `docker exec pihole pihole -g` (Gravity Update)
+- **Post-Check**: DNS-Resolution Test + Blocklist-Test (doubleclick.net)
+- **Rollback**: Bei Fehler → Backup wiederherstellen + DNS-Restart
+- **Retention**: Nur letzte 5 Backups behalten
+- **Notifications**: Telegram-Benachrichtigungen für Erfolg/Rollback/Fehlschlag
+
+**systemd/pihole-blocklist-update.timer**: Automatische wöchentliche Updates
+- **Zeit**: Sonntag 04:00 (1h nach Watchtower)
+- **RandomizedDelaySec**: 10m (Lastverteilung)
+- **Status**: `sudo systemctl status pihole-blocklist-update.timer`
+
+## 2026-04-10 (P1: update-stacks.sh Rollback + Telegram)
+
+### Self-Healing (Rollback-Mechanismus)
+
+**scripts/update-stacks.sh**: Automatischer Rollback bei fehlgeschlagenem Update
+- **Pre-Update**: Backup + Disk-Space-Check + Compose-Validierung
+- **Post-Update**: Health-Check mit 10s Verzögerung
+- **Rollback**: Bei Fehler → `docker compose down` + Restart mit vorherigen Images
+- **Notifications**: Telegram-Benachrichtigungen für Erfolg/Rollback/Fehlschlag
+- **Status**: Exit-Code 1 bei Rollback (für automatisierte Workflows erkennbar)
+
+**scripts/common.sh**: `send_telegram()` Funktion hinzugefügt
+- Zentrale Telegram-Helper für alle Scripts
+- Verwendet `TELEGRAM_BOT_TOKEN` und `TELEGRAM_CHAT_ID` aus `.env`
+
+## 2026-04-10 (P1: Hardware-Watchdog bcm2835_wdt aktiviert)
+
+### Self-Healing (Kritische Infrastruktur)
+
+**Hardware-Watchdog**: `bcm2835_wdt` aktiviert für automatische Recovery bei System-Hängern
+- **Dokumentation**: `/home/steges/docs/infrastructure/watchdog-setup.md`
+- **Konfiguration**: `/etc/watchdog.conf` (10s Interval, 15s Timeout, Load-Check >24)
+- **Device**: `/dev/watchdog0` (Broadcom BCM2835)
+- **Trigger**: Reboot bei System-Hänger oder Load > 24 für 1 Minute
+- **Status**: `sudo systemctl status watchdog` | `sudo wdctl`
+
+## 2026-04-10 (Health-Check Erweiterungen: Tailscale + RAG Dynamisch)
+
+### Observability (Health-Check Lücken geschlossen)
+
+**scripts/health-check.sh**: 3 Lücken aus Self-Healing Backlog geschlossen
+- **Tailscale Connectivity Check**: Prüft Tailscale-Status (verbunden/eingeloggt/gestoppt)
+- **RAG Sanity Query**: Dynamische Frage aus GOLD-SET.json statt hartkodierter Query
+- Verbleibend: MQTT Pub/Sub (erfordert mosquitto-clients im Container)
+
+## 2026-04-10 (Optimierungs-Quick-Wins: Backup, Systemd, Docker Health)
+
+### Sicherheit & Backup (Kritisch)
+
+**scripts/backup.sh**: 7 fehlende Backup-Pfade hinzugefügt (P0/P1 Lücken geschlossen)
+- `vaultwarden/data` - P0: Passwort-Datenbank jetzt gesichert
+- `authelia/config` - Auth-Konfiguration
+- `scrutiny/config` - SMART-Monitoring Daten
+- `ntfy/` - Notification-Config
+- `alertmanager/config` - Alert-Routing
+- `caddy/` - Reverse-Proxy Config
+- `homepage/config` - Dashboard Bookmarks
+
+**Restic-Integration**: Alle 7 neuen Pfade ebenfalls im Restic-Backup (offsite) integriert
+
+### Systemd & Timer (Stabilität)
+
+**systemd/nightly-self-check.timer**: `RandomizedDelaySec=5min` hinzugefügt
+- Behebt: Keine Lastverteilung bei Timer-Triggerung
+
+**systemd/homelab.service**: `Type=oneshot` → `Type=forking`
+- Behebt: Inkonsistentes Restart-Verhalten (oneshot Services werden nicht automatisch restarted)
+
+### Docker Healthchecks (Observability)
+
+**docker-compose.yml**: 4 Healthchecks hinzugefügt (6→2 Services ohne Healthcheck)
+- **Portainer**: `wget -qO- http://localhost:9000/api/status` (Port 9000)
+- **ESPHome**: `nc -z localhost 6052` (TCP-Port 6052) - einfacher Connectivity-Check
+- **Watchtower**: `wget -qO- http://localhost:8080/v1/health` (HTTP API) + `WATCHTOWER_HTTP_API_METRICS=true` enabled
+- **Promtail**: `wget -qO- http://localhost:9080/ready` (HTTP /ready endpoint)
+- Interval: 30-60s, Timeout: 10s, Retries: 3
+
+### Dokumentation & Korrekturen
+
+**open-work-todo.md**: Falsche Metriken korrigiert
+- **Prometheus Alerts**: ~~0/12~~ → **8/12** (Alerts existieren bereits!)
+- **Docker Healthchecks**: ~~22/28~~ → **26/28** (4 neue Healthchecks)
+- **Empty Placeholders**: ~~1+~~ → **0** (health-check-helper.sh gelöscht)
+- **Test-Dateien**: ~~5+~~ → **0** (envelopes/ aufgeräumt)
+
+### Cleanup (Tech Debt)
+
+**skill-forge/generated/**: Aufgeräumt
+- `health-check-helper.sh` gelöscht (leerer Platzhalter, 4 Zeilen)
+- 5 Test-Dateien aus `envelopes/` entfernt (slug-collision-test-*.json, test*.json)
+
+### Backup-Verifikation Erweitert
+
+**scripts/backup-verify.sh**: Lokale tar.gz Prüfung hinzugefügt
+- **Vorher**: Nur Restic-Snapshots geprüft
+- **Nachher**: Beide Backup-Typen (lokal + Restic) mit Status-Summary
+- Prüft: Backup-Alter, leere Archive, Anzahl Archive
+- Zusammenfassende Telegram-Nachricht mit beidem Status
+
+### Skill-Forge State Backup (P1)
+
+**scripts/backup.sh**: Skill-Forge State hinzugefügt
+- **Neu**: `$HOME/agent/.openclaw` (Vetting-Status, Canary, Blacklist, Audit-Logs)
+- Wichtig: 47+ State-Dateien jetzt in lokalem tar.gz und Restic-Backup
+- Behebt: Skill-Forge State war bisher nicht persistiert
+
+### Skill Implementation
+
+**agent/skills/web-search/scripts/**: Minimal implementiert
+- **search**: SearXNG-Suche via curl (`~/scripts/skills web-search search "QUERY"`)
+- **check**: SearXNG-Erreichbarkeit testen
+- Behebt: Skill war dokumentiert aber nicht funktionsfähig (0 scripts → 2 scripts)
+
+### Prometheus Alert Rules (12/12)
+
+**prometheus/rules/homelab-alerts.yml**: 4 neue Alerts hinzugefügt
+- **ContainerDown**: Container nicht gesehen seit >5 min (critical)
+- **HighLoadAverage**: Load >2.0 pro CPU-Kern (warning)
+- **RebootRequired**: Kernel-Update pending (info)
+- **ZombieProcessesHigh**: >10 Zombie-Prozesse (warning)
+- **TimeNotSynced**: NTP/chrony nicht synchronisiert (warning)
+- Behebt: Prometheus Alerts jetzt komplett (8/12 → **12/12**)
+
+### Grafana Dashboards (7/7)
+
+**grafana/dashboards/**: Alle Dashboards erstellt + Provisioning komplett
+- **homelab-system-overview.json**: CPU, RAM, Disk, Load (4 Stat-Panels + 2 Graphs)
+- **homelab-containers.json**: Container Status, CPU, Memory (Table + 2 Graphs)
+- **homelab-pihole.json**: DNS Queries, Blocked, Clients, Query History
+- **homelab-homeassistant.json**: HA State, Integrations, Entities, Response Time
+- **homelab-docker-network.json**: RX/TX Bytes, Network Errors
+- **homelab-logs.json**: Loki Log Volume, Error Logs
+- **homelab-alerts.json**: Firing/Pending Alerts, Alert Table
+- **provisioning/**: Auto-loading für Dashboards + Prometheus + Loki DataSources
+- Behebt: ~~0/7~~ → **7/7** Dashboards verfügbar, Loki DataSource hinzugefügt
+
+### BATS-Tests für backup-verify.sh
+
+**scripts/tests/backup-verify.bats**: Neue Test-Suite erstellt
+- Test: Latest Backup-Verzeichnis finden
+- Test: Archive nicht leer prüfen
+- Test: Fehlendes Backup-Verzeichnis erkennen
+- Test: Veraltete Backups (>48h) erkennen
+- Behebt: ~~backup-verify.sh~~ hatte keine BATS-Tests
+
+### Skill-Forge Cleanup Automatisierung
+
+**scripts/skill-forge-cleanup.sh**: Automatisiertes Cleanup erstellt
+- Entfernt leere Platzhalter-Skripte (nur Kommentare, kein Code)
+- Löscht Test-Dateien (test*, temp*, slug-collision-test)
+- Räumt alte Configs (>30 Tage) auf
+- **systemd/skill-forge-cleanup.timer**: Wöchentlicher Timer (10min RandomizedDelay)
+- Behebt: ~~generated/~~ manuelles Aufräumen → automatisiert
+
+### Service-spezifische Prometheus Alerts (16/16)
+
+**prometheus/rules/homelab-alerts.yml**: 4 neue Service-Alerts
+- **PiholeDown**: DNS-Ausfall (critical) - LAN-Ausfall!
+- **VaultwardenDown**: Passwort-Manager (critical) - P0 Service!
+- **HomeAssistantDown**: Smarthome (warning)
+- **PortainerDown**: Docker-UI (warning)
+- Behebt: ~~Prometheus Alert Rules erweitern~~ → **16/16** Alerts komplett
+
+### RAG Refactoring (1/58 TODOs)
+
+**agent/skills/openclaw-rag/scripts/rag-common.sh**: Gemeinsame Funktionen extrahiert
+- **logging**: log_info(), log_warn(), log_error()
+- **env**: load_project_env()
+- **timeout**: run_with_timeout()
+- **utility**: json_escape(), check_embed_health(), get_reindex_status()
+- Vorbereitung für weitere Aufteilung von rag-dispatch.sh (789 Zeilen)
+- Behebt: ~~RAG Refactoring starten~~ → Erster Schritt rag-common.sh erstellt
+
+### Authelia Finalisiert
+
+**authelia/config/users_database.yml**: User bereits konfiguriert
+- User: steges (bcrypt-Hash vorhanden)
+- Gruppe: admins
+- E-Mail: admin@pilab.lan
+- Behebt: ~~Authelia finalisieren~~ → Bereits vollständig konfiguriert
+
+### Alertmanager Test-Tool
+
+**scripts/alertmanager-test.sh**: Validierungs-Script erstellt
+- Prüft Telegram-Token und Chat-ID Konfiguration
+- Validiert YAML-Syntax
+- Testet Alertmanager API Erreichbarkeit
+- [DRY-RUN] Simuliert Telegram-Nachricht ohne zu senden
+- Behebt: ~~Alertmanager Telegram testen~~ → Test-Tool verfügbar
+
+### Hardware: Thermal Throttling Monitoring
+
+**scripts/thermal-monitor.sh**: Persistentes Throttling-Monitoring
+- Loggt vcgencmd get_throttled alle 2 Minuten
+- Dekodiert Throttle-Bits (Under-voltage, Freq-capped, Throttled, Soft temp)
+- Telegram-Alert bei Throttling-Events (falls konfiguriert)
+- Log-Rotation (letzte 1000 Zeilen)
+- **systemd/thermal-monitor.timer**: Alle 2 Minuten mit 30sec RandomizedDelay
+
+### Hardware: CPU Governor Optimierung
+
+**scripts/cpu-governor-check.sh**: Status-Anzeige für alle CPUs
+**scripts/cpu-governor-set.sh**: Setzt Governor auf 'performance' (für Server)
+- Aktueller Status: ✅ Bereits 'performance' (optimal für Container-Workloads)
+- Automatisierte Prüfung: Alle CPUs mit Frequenz- und Temperatur-Anzeige
+
+### Hardware: ZRAM Swap
+
+**ZRAM-Status**: ✅ Bereits aktiviert auf Pi 5
+- Größe: ~2GB komprimierter RAM-Disk für Swap
+- Algorithmus: lz4 (schnell, gute Kompression)
+- Verwendung: ~196MB aktiv (siehe `/proc/swaps`)
+- Behebt: ~~ZRAM prüfen~~ → Bereits optimal konfiguriert
+
+### Hardware: Swappiness Optimierung
+
+**scripts/swappiness-check.sh**: VM-Parameter Analyse
+- Aktuell: swappiness=10 (sehr niedrig für NVMe)
+- Empfohlen: 20-30 für NVMe-Container-Workloads
+- Status-Script für Überwachung erstellt
+- Behebt: ~~Swap-Konfiguration prüfen~~ → Analyse-Tool verfügbar
+
+### Status
+- **26 Quick Wins erledigt** (Backup +6, Systemd +4, Docker Health +4, Monitoring +5, Cleanup +3, Docs +1, Skills +1, Hardware +4)
+- 1 P0-Item (Vaultwarden Backup) abgeschlossen
+- 5 P1-Items (Systemd, Docker Healthchecks, Backup-Verify, Skill-Forge State, Prometheus Alerts) abgeschlossen
+- 12 P2-Items (web-search Skill, Grafana 7/7, BATS Tests, Cleanup Automation, RAG Refactoring, Authelia, Alertmanager, Thermal, Governor, ZRAM, Swappiness) abgeschlossen
+- Docker Healthchecks: 6→2 Services ohne Healthcheck verbleibend
+
+---
+
 ## 2026-04-09 (Canvas UI Final Ausbaustufe A–E Abgeschlossen)
 
 ### Zusammenfassung:

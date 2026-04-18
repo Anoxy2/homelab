@@ -105,6 +105,20 @@ Use when users ask for:
 - Chips use existing `.chip` class styling; responsive horizontal flex layout with overflow capability
 - New event listeners in `app-rag.js` for `[data-rag-quick]` buttons
 
+#### 2.9: Skills Hub + Deep Links
+- Added dedicated Skills tab with searchable/filterable skill inventory and detail pane
+- Skills page consumes both `/state-brief.latest.json` and `/skill-pages.latest.json`
+- Skill detail supports docs links (`SKILL.md` / runbook) and action command copy buttons
+- Added hash deeplink support for per-skill detail selection (`#skills:<slug>`)
+- Main router dispatches skill-select events so links from other modules can open exact skill detail
+
+#### 2.10: Skill Pages Feed + Heartbeat Integration
+- New feed generator `scripts/canvas-skill-pages-brief.sh` builds enriched skill detail payload
+- Feed merges known-skills state with local `agent/skills/*` directories to avoid blind spots
+- Local-only skills get explicit fallback status/source (`local`) if not present in known-skills state
+- Heartbeat dispatch now refreshes `/skill-pages.latest.json` and logs `canvas_skill_pages_brief updated/failed`
+- Service worker treats `/skill-pages.latest.json` as dynamic network-first content
+
 ## Steps
 1. Validate UI change scope and affected integrations.
 2. Keep UI resilient under bridge/API failures.
@@ -219,3 +233,22 @@ Use when users ask for:
 - [ ] Clicking a chip triggers search automatically
 - [ ] Chips are styled with `.chip` class and display horizontally
 - [ ] Chips are responsive and scrollable on small screens
+
+### Phase 2.9: Skills Hub + Deep Links
+- [ ] Skills tab is visible and opens `page-skills` without console errors
+- [ ] Skills KPIs render from feed data
+- [ ] Search filters list rows by slug/source/version text
+- [ ] Status filter narrows list correctly (`all`, `active`, `canary`, etc.)
+- [ ] Row click opens detail pane with purpose/status/source/version fields
+- [ ] Docs links appear when `skill_md`/runbook paths are available
+- [ ] Action buttons copy command to clipboard and show user feedback
+- [ ] URL hash updates to `#skills:<slug>` on selection
+- [ ] Loading URL with `#skills:<slug>` restores and opens matching detail row
+
+### Phase 2.10: Skill Pages Feed + Heartbeat
+- [ ] `skill-pages.latest.json` is generated and valid JSON
+- [ ] Feed contains both known skills and local-only skills
+- [ ] Local-only skills use fallback `status=local` and `source=local`
+- [ ] Heartbeat logs `canvas_skill_pages_brief updated` on successful run
+- [ ] Heartbeat logs `canvas_skill_pages_brief failed` with non-zero rc on failure
+- [ ] Service worker bypasses stale cache for `/skill-pages.latest.json`

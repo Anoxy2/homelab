@@ -43,6 +43,11 @@ Incremental reindex:
 ~/agent/skills/openclaw-rag/scripts/reindex.sh
 ```
 
+Dispatcher-Struktur (modularisiert):
+- `scripts/rag-dispatch.sh` = schlanker CLI-Dispatcher
+- `scripts/modules/status.sh` = Status/Health-Ausgabe
+- `scripts/modules/doc_keeper.sh` = Doc-Keeper-Adapter (delegiert AutoDoc an autodoc-Skill)
+
 Gold-Set Evaluation:
 
 ```bash
@@ -61,15 +66,19 @@ Doc-Keeper (integriert in RAG):
 ~/scripts/skills rag doc-keeper run --daily --autodoc
 ```
 
-Auto-Doc (Topic-Synthese):
+Auto-Doc (Topic-Synthese) – **eigenständiger Skill, nicht mehr Teil von RAG**:
 
 ```bash
-~/scripts/skills rag autodoc "system-state" --output /home/steges/agent/SYSTEM-STATE.md
-~/scripts/skills rag autodoc "system-state" --output /home/steges/agent/SYSTEM-STATE.md --provider copilot --model gpt-4.1
+# Direktaufruf über autodoc-Skill:
+~/scripts/skills autodoc "system-state" --output /home/steges/agent/SYSTEM-STATE.md
+~/scripts/skills autodoc profile daily
+~/scripts/skills autodoc profile daily --provider copilot --model gpt-4.1
+
+# Doc-Keeper mit AutoDoc-Delegation (unverändertes Interface):
 ~/scripts/skills rag doc-keeper run --daily --autodoc --autodoc-provider copilot --autodoc-model gpt-4.1
 ```
 
-Nach erfolgreichem Live-Write fuehrt Auto-Doc automatisch einen direkten Index-Refresh aus, damit neue Marker-Bloecke sofort retrieval-faehig sind. Standardpfad ist `reindex.sh --changed-only`; faellt nur das Post-Canary-Gate, nutzt Auto-Doc transparent `ingest.py --changed-only` als Fallback.
+AutoDoc nutzt RAG nur lesend (retrieve). Der autodoc-Skill liegt unter `agent/skills/autodoc/`.
 
 ## Boundaries
 - No secrets in outputs.
@@ -93,6 +102,11 @@ Nach erfolgreichem Live-Write fuehrt Auto-Doc automatisch einen direkten Index-R
 - `/home/steges/agent/skills/openclaw-rag/GOLD-SET.json`
 - `/home/steges/agent/skills/openclaw-rag/RAG-SOURCES.md`
 - `/home/steges/agent/skills/openclaw-rag/TEST-QUESTIONS.md`
+
+## Learn + RAG Modell
+- `rag-dispatch retrieve` nutzt lokale semantische Suche (BM25 + Vector), ohne externen Fallback.
+- Learnings aus dem Learn-Skill werden lokal geschrieben und durch RAG indexiert.
+- Ergebnis-Herkunft bleibt ueber `source` und `section` transparent nachvollziehbar.
 
 ## Lifecycle
 - Author via: `~/scripts/skill-forge author skill openclaw-rag --mode auto --reason "RAG capability"`

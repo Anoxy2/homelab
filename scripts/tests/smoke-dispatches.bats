@@ -57,3 +57,18 @@ discover_dispatches() {
   done < <(discover_dispatches)
   [[ $failed -eq 0 ]]
 }
+
+@test "rag-dispatch liefert Usage bei --help" {
+  run bash /home/steges/agent/skills/openclaw-rag/scripts/rag-dispatch.sh --help
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Usage:"* ]]
+  [[ "$output" == *"rag-dispatch.sh status"* ]]
+}
+
+@test "rag-dispatch status liefert valides JSON mit Kernfeldern" {
+  run bash /home/steges/agent/skills/openclaw-rag/scripts/rag-dispatch.sh status
+  [ "$status" -eq 0 ]
+
+  run python3 -c 'import json,sys; d=json.loads(sys.stdin.read()); assert "db_exists" in d; assert "embed_service" in d' <<<"$output"
+  [ "$status" -eq 0 ]
+}

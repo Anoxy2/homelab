@@ -67,6 +67,12 @@ services:
     network_mode: host
     volumes:
       - ./esphome/config:/config
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:6052 > /dev/null || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     labels:
       com.centurylinklabs.watchtower.enable: "true"
     cpus: '0.75'
@@ -135,7 +141,9 @@ services:
       - "192.168.2.101:9000:9000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
+      - ./portainer/data:/data
+    healthcheck:
+      disable: true
     labels:
       com.centurylinklabs.watchtower.enable: "true"
     cpus: '0.50'
@@ -152,8 +160,8 @@ services:
     network_mode: host
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
+      - ./caddy/data:/data
+      - ./caddy/config-cache:/config
     depends_on:
       - pihole
       - homeassistant
@@ -194,8 +202,16 @@ services:
       WATCHTOWER_CLEANUP: "true"
       WATCHTOWER_LABEL_ENABLE: "true"
       WATCHTOWER_NOTIFICATIONS_LEVEL: warn
+      WATCHTOWER_HTTP_API_METRICS: "true"
+      WATCHTOWER_HTTP_API_TOKEN: "watchtower"
       TZ: Europe/Berlin
       DOCKER_API_VERSION: "1.41"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- --header='Authorization: Bearer $$WATCHTOWER_HTTP_API_TOKEN' http://localhost:8080/v1/health || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     labels:
       com.centurylinklabs.watchtower.enable: "true"
     cpus: '0.25'
@@ -253,7 +269,7 @@ services:
     ports:
       - "192.168.2.101:3001:3001"
     volumes:
-      - uptime-kuma_data:/app/data
+      - ./uptime-kuma/data:/app/data
     healthcheck:
       # wget nicht verfügbar in diesem Image → node HTTP-Check
       test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3001', r => process.exit(r.statusCode < 400 ? 0 : 1)).on('error', () => process.exit(1))\""]
@@ -271,9 +287,8 @@ services:
 
   # ─── System Metrics (Live) ──────────────────────────────────────────────────
   glances:
-    # aktuell: latest-full, Digest gepinnt: 2026-04-10
-    # TODO: auf feste Versionsnummer wechseln sobald upstream ein stabiles Tag liefert
-    image: nicolargo/glances@sha256:b4b0f059fa8064a0e8dae5530ce9334834ab07205269cfbf405d16b4d40c0c66
+    # gepinnt: 4.3.0-full (2026-04-10) - stabiles Version-Tag statt latest-full
+    image: nicolargo/glances:4.3.0-full
     container_name: glances
     pid: host
     network_mode: host
@@ -338,8 +353,7 @@ services:
       NODE_COMPILE_CACHE: /home/node/.openclaw/.node-compile-cache
       OPENCLAW_NO_RESPAWN: "1"
       DOCKER_HOST: tcp://docker-socket-proxy:2375
-    ports:
-      - "192.168.2.101:18789:18789"
+    network_mode: host
     volumes:
       - ./infra/openclaw-data:/home/node/.openclaw
       - /home/steges:/home/steges
@@ -401,6 +415,9 @@ services:
     volumes:
       - /home/steges:/home/steges
       - ./infra/openclaw-data/rag:/data/rag
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:18790/health"]
       interval: 30s
@@ -509,7 +526,7 @@ services:
       - "192.168.2.101:9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus_data:/prometheus
+      - ./prometheus/data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -536,7 +553,7 @@ services:
     ports:
       - "192.168.2.101:3003:3000"
     volumes:
-      - grafana_data:/var/lib/grafana
+      - ./grafana/data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
     environment:
@@ -601,7 +618,7 @@ services:
       - "192.168.2.101:3100:3100"
     volumes:
       - ./loki/config/loki.yml:/etc/loki/loki.yml:ro
-      - loki_data:/loki
+      - ./loki/data:/loki
     command: -config.file=/etc/loki/loki.yml
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:3100/ready || exit 1"]
@@ -628,6 +645,12 @@ services:
     command: -config.file=/etc/promtail/promtail.yml
     depends_on:
       - loki
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9080/ready || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     labels:
       com.centurylinklabs.watchtower.enable: "true"
     cpus: '0.25'
@@ -645,12 +668,14 @@ services:
       - "192.168.2.101:9093:9093"
     volumes:
       - ./alertmanager/config/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
-      - alertmanager_data:/alertmanager
+      - ./alertmanager/data:/alertmanager
     env_file: .env
     command:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
       - '--storage.path=/alertmanager'
       - '--web.external-url=http://alertmanager.lan'
+      - '--cluster.listen-address=0.0.0.0:9094'
+      - '--cluster.advertise-address=192.168.2.101:9094'
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:9093/-/healthy"]
       interval: 30s
@@ -702,8 +727,8 @@ services:
       - "192.168.2.101:8900:80"
     volumes:
       - ./ntfy/server.yml:/etc/ntfy/server.yml:ro
-      - ntfy_cache:/var/cache/ntfy
-      - ntfy_data:/var/lib/ntfy
+      - ./ntfy/cache:/var/cache/ntfy
+      - ./ntfy/data:/var/lib/ntfy
     command: serve --config /etc/ntfy/server.yml
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:80/v1/health | grep -q 'healthy'"]
@@ -805,14 +830,3 @@ services:
     logging: *default-logging
     restart: unless-stopped
 
-volumes:
-  portainer_data:
-  caddy_data:
-  caddy_config:
-  uptime-kuma_data:
-  prometheus_data:
-  grafana_data:
-  loki_data:
-  alertmanager_data:
-  ntfy_cache:
-  ntfy_data:

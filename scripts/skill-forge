@@ -51,6 +51,7 @@ Usage (Governance & Lifecycle):
   skill-forge incident freeze on|off|status
   skill-forge provenance <slug>
   skill-forge provenance write <slug> <source> <url> <upstream_fingerprint> <score> <tier> <version>
+  skill-forge consolidate report|run [--dry-run] [--aggressive]
 
 Domain-Skills (use scripts/skills instead):
 
@@ -298,6 +299,13 @@ case "$cmd" in
         "$SCRIPTS/provenance-show.sh" "$sub"
         ;;
     esac
+    ;;
+  consolidate)
+    shift
+    sub="${1:-report}"
+    shift || true
+    source "$SCRIPTS/modules/consolidate.sh"
+    consolidate_cmd "$sub" "$@"
     ;;
   *)
     usage

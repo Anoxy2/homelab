@@ -1,0 +1,12 @@
+[Unit]
+Description=RPi5 Thermal Throttling Monitor
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/steges
+User=steges
+ExecStart=/home/steges/scripts/thermal-monitor.sh
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=thermal-monitor

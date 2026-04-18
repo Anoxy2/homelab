@@ -29,7 +29,7 @@ self.addEventListener("activate", (event) => {
 
 const isDynamicRequest = (url) => {
   const path = new URL(url).pathname;
-  return path.startsWith("/api/") || path === "/action-log.latest.json" || path === "/ops-brief.latest.json" || path === "/state-brief.latest.json";
+  return path.startsWith("/api/") || path === "/action-log.latest.json" || path === "/ops-brief.latest.json" || path === "/state-brief.latest.json" || path === "/skill-pages.latest.json";
 };
 
 self.addEventListener("fetch", (event) => {

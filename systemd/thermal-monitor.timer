@@ -1,0 +1,11 @@
+[Unit]
+Description=RPi5 Thermal Throttling Check (every 2 minutes)
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=2min
+RandomizedDelaySec=30sec
+Unit=thermal-monitor.service
+
+[Install]
+WantedBy=timers.target

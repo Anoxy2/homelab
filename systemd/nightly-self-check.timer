@@ -4,6 +4,7 @@ Description=Run nightly OpenClaw self-check
 [Timer]
 OnCalendar=*-*-* 03:15:00
 Persistent=true
+RandomizedDelaySec=5min
 Unit=nightly-self-check.service
 
 [Install]

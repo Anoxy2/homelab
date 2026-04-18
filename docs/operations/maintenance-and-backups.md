@@ -77,6 +77,8 @@ Mappung der Backup-Dateien zu Zielpfaden:
 - `openclaw-rag.tar.gz` -> `~/infra/openclaw-data/rag/`
 - `openclaw-ui-state.tar.gz` -> `~/infra/openclaw-data/ui-state/`
 - `influxdb-data.tar.gz` -> `~/influxdb/data/`
+- `searxng-config.tar.gz` -> `~/searxng/config/` (Optional: User-Config, nicht in Git)
+- `unbound-config.tar.gz` -> `~/unbound/config/` (Optional: User-Config, nicht in Git)
 
 Wichtig:
 - Immer nur den betroffenen Service stoppen, nicht blind alle Container.
@@ -261,7 +263,7 @@ Referenzmessung (2026-04-06):
 # Ungenutzte Images entfernen (VORSICHT: erst prüfen was läuft)
 docker image prune
 
-# Volumes prüfen
+# Volumes prüfen (sollte keine named volumes mehr zeigen – alle sind Bind Mounts)
 docker volume ls
 
 # Disk-Nutzung
@@ -298,6 +300,25 @@ Laufende Timer prüfen:
 systemctl list-timers
 ```
 
+NVMe-TRIM (woechentlich):
+
+```bash
+# Unit-Dateien installieren/aktivieren (einmalig, mit sudo)
+sudo cp ~/systemd/fstrim-weekly.service /etc/systemd/system/
+sudo cp ~/systemd/fstrim-weekly.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now fstrim-weekly.timer
+
+# Verifikation
+systemd-analyze verify ~/systemd/fstrim-weekly.service ~/systemd/fstrim-weekly.timer
+systemctl status fstrim-weekly.timer
+systemctl list-timers | grep fstrim-weekly
+```
+
+Zeitfenster:
+- Sonntag `05:00 Europe/Berlin`
+- zusaetzliche Jitter-Streuung: `RandomizedDelaySec=5min`
+
 RAG-Automation (neu):
 
 ```bash
@@ -329,6 +350,25 @@ Aktuell enthalten:
 - `health-check.bats`: prueft Exit-Code 0 bei healthy Stubs und Exit-Code 1 bei einem Probe-Fehler.
 - `backup.bats`: prueft Archiv-Erzeugung auf Mock-Verzeichnissen und Skip-Verhalten bei fehlendem Source-Ordner.
 
+## Skill-Forge State Cleanup
+
+`~/scripts/skill-forge-cleanup.sh` enthaelt zusaetzlich eine Rotation fuer Skill-Forge-State-Backups:
+- Snapshot-Rotation fuer `agent/skills/skill-forge/.state/*.bak`
+- Benennung: `*.bak.YYYYMMDDHHMMSS`
+- Retention: letzte 3 Snapshots pro Basisdatei
+- Dry-Run:
+  ```bash
+  ~/scripts/skill-forge-cleanup.sh --dry-run
+  ```
+
+Audit-Logging:
+- Skill-Forge nutzt `agent/skills/skill-forge/.state/audit-log.jsonl` als einzige Audit-Quelle.
+- Legacy-Datei `audit.log` wird durch den Cleanup entfernt.
+
+Script-Logging:
+- `scripts/common.sh` nutzt standardmaessig JSON-Lines (`ts`, `level`, `msg`).
+- Fuer klassische Textausgabe (z. B. ad-hoc Debug) kann `LOG_LEGACY_TEXT=1` gesetzt werden.
+
 ## RAG Retrieval / Reindex (Timeout + Fallback)
 
 Standardisierte RAG-Kommandos ueber den Skills-Wrapper:
@@ -350,6 +390,10 @@ Vertiefter RAG-Health-Check (`~/scripts/health-check.sh`):
 - Reindex-State aus `infra/openclaw-data/rag/.reindex.status` (FAIL bei `state=failed`)
 - Chunk/FTS-Drift (`chunks` vs `chunks_fts`) mit klaren FAIL-Schwellen
 - Sanity-Query gegen `retrieve.py` (mindestens ein Treffer, `search_mode != none`)
+
+Erweiterte Service-Checks (`~/scripts/health-check.sh`):
+- RAG Embed API Endpoint direkt per `http://192.168.2.101:18790/health`
+- InfluxDB Query-Test per `influx query` (liest Buckets statt reinem Ping)
 
 Gold-Set / Qualitaetsmessung:
 

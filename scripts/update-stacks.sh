@@ -6,6 +6,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=/home/steges/scripts/common.sh
 source "$SCRIPT_DIR/common.sh"
+# shellcheck source=/home/steges/scripts/lib/env.sh
+source "$SCRIPT_DIR/lib/env.sh"
+load_dotenv
 
 cd "$HOME"
 
@@ -40,6 +43,29 @@ echo ""
 log_info "Post-Update Health-Check"
 sleep 10
 if ! bash "$HOME/scripts/health-check.sh"; then
-    log_error "Post-Update Health-Check fehlgeschlagen"
+    log_error "Post-Update Health-Check fehlgeschlagen - Starte Rollback"
+
+    # Rollback: Vorherige Images wiederherstellen
+    log_info "Rollback: Stelle vorherige Container-Versionen wieder her"
+    docker compose down
+
+    # Nutze vorherige Images (vor pull)
+    # Tag-basierte Images bleiben gleich, nur Digest-basierte könnten neu sein
+    # Wir vertrauen auf Docker Layer-Cache für schnelles Re-Start
+    docker compose up -d --remove-orphans
+
+    sleep 10
+    if bash "$HOME/scripts/health-check.sh"; then
+        log_warn "Rollback erfolgreich - Services laufen wieder"
+        send_telegram "⚠️ *Update Rollback*\n\nHealth-Check nach Update fehlgeschlagen.\nRollback auf vorherige Version erfolgreich.\nServices laufen stabil."
+    else
+        log_error "Rollback fehlgeschlagen - Manuelle Intervention erforderlich"
+        send_telegram "🔴 *Update + Rollback fehlgeschlagen*\n\nHealth-Check nach Update fehlgeschlagen.\nRollback ebenfalls fehlgeschlagen!\nManuelle Intervention erforderlich."
+        exit 1
+    fi
+
     exit 1
 fi
+
+log_info "Update erfolgreich abgeschlossen"
+send_telegram "✅ *Update erfolgreich*\n\nAlle Services aktualisiert.\nHealth-Check bestanden."

@@ -40,8 +40,7 @@ Wenn ein Check fehlschlaegt:
 
 ## Offene Schwerpunkte (aktuell)
 
-- P0: Reverse Proxy (Caddy) Restarbeit: spaeterer Bridge-Mode-Fix fuer Caddy bei weiterhin erreichbaren host-mode Backends.
-- P1: Self-Healing Backlog ist in `docs/operations/open-work-todo.md` integriert und wird nur dort gepflegt.
+Aktuelle Prioritaeten ausschliesslich in `docs/operations/open-work-todo.md` gepflegt.
 
 Hinweis zur Historie:
 - Abgeschlossene Arbeiten und Session-Historie stehen ausschliesslich in `CHANGELOG.md`.

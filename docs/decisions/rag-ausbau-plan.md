@@ -607,9 +607,10 @@ Neu hinzu:
 | 2026-04-09 | 0.33 | 0.65 | 4/20 | 59ms | +CHANGELOG, +HANDSHAKE |
 | 2026-04-09 | 0.38 | 0.48 | 3/20 | 55ms | Hybrid Search aktiv (RRF k=60) |
 | 2026-04-09 | 0.24 | 0.70 | 3/30 | 394ms | +30 Fragen, max-1-dedup, doc-improvements, skill-forge rename |
+| 2026-04-10 | 0.2625 | 0.7188 | 2/48 | 397.76ms | Nach Dispatcher-Modularisierung; `evaluate-goldset.py --limit 5 --timeout-ms 1500 --disable-rewrite-ab` |
 
 Hinweis zu P@5 vs R@5: Mit max-1-per-source Deduplication und 2 erwarteten Belegen pro Frage ist P@5 max ~0.35 erreichbar. R@5=0.70 ist das primäre Qualitätsziel. Canary-Mindestanforderung: P@5≥0.22, R@5≥0.65.
 
 ---
 
-*Letzte Aktualisierung: 2026-04-09*
+*Letzte Aktualisierung: 2026-04-10*

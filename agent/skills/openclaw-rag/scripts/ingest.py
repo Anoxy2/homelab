@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 
 import argparse
+import fcntl
 import hashlib
 import json
+import os
 import re
 import sqlite3
 import struct
+import sys
 import urllib.request
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -15,6 +18,7 @@ from typing import Iterable
 
 DB_PATH = Path("/home/steges/infra/openclaw-data/rag/index.db")
 INGEST_STATE_PATH = Path("/home/steges/infra/openclaw-data/rag/ingest-state.json")
+INGEST_LOCK_PATH = Path("/home/steges/infra/openclaw-data/rag/.reindex.lock")
 TARGET_TOKENS = 420
 OVERLAP_TOKENS = 50
 CHUNK_SCHEMA_VERSION = "1.4"  # bump when chunking logic changes
@@ -30,6 +34,11 @@ ALLOWED_FILES = [
     Path("/home/steges/CLAUDE.md"),
     Path("/home/steges/README.md"),
     Path("/home/steges/CHANGELOG.md"),
+    Path("/home/steges/docker-compose.yml"),
+    Path("/home/steges/.env.example"),
+    Path("/home/steges/caddy/Caddyfile"),
+    Path("/home/steges/prometheus/prometheus.yml"),
+    Path("/home/steges/prometheus/rules/homelab-alerts.yml"),
     Path("/home/steges/agent/SOUL.md"),
     Path("/home/steges/agent/IDENTITY.md"),
     Path("/home/steges/agent/USER.md"),
@@ -37,6 +46,7 @@ ALLOWED_FILES = [
     Path("/home/steges/agent/HEARTBEAT.md"),
     Path("/home/steges/agent/HANDSHAKE.md"),
     Path("/home/steges/agent/MEMORY.md"),
+    Path("/home/steges/agent/LEARNINGS.md"),
     Path("/home/steges/agent/SELF-MODEL.md"),
     Path("/home/steges/agent/SKILL-INVENTORY.md"),
     Path("/home/steges/agent/HISTORY.md"),
@@ -114,6 +124,28 @@ def parse_args() -> argparse.Namespace:
         help="Generate embeddings for ALL chunks missing vectors (regardless of --changed-only)",
     )
     return parser.parse_args()
+
+
+def acquire_ingest_lock() -> tuple[object, int]:
+    """Acquire exclusive non-blocking lock; returns (file_handle, pid_from_file)."""
+    INGEST_LOCK_PATH.parent.mkdir(parents=True, exist_ok=True)
+    lock_fp = INGEST_LOCK_PATH.open("a+", encoding="utf-8")
+
+    lock_fp.seek(0)
+    existing = lock_fp.read().strip()
+    existing_pid = int(existing) if existing.isdigit() else 0
+
+    try:
+        fcntl.flock(lock_fp.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        lock_fp.close()
+        return None, existing_pid
+
+    lock_fp.seek(0)
+    lock_fp.truncate(0)
+    lock_fp.write(str(os.getpid()))
+    lock_fp.flush()
+    return lock_fp, existing_pid
 
 
 def utc_now() -> str:
@@ -432,14 +464,24 @@ def backfill_all_embeddings(conn: sqlite3.Connection, summary: dict) -> None:
         return
 
     stored_total = 0
+    batch_total = (len(rows) + EMBED_BATCH_SIZE - 1) // EMBED_BATCH_SIZE
     for i in range(0, len(rows), EMBED_BATCH_SIZE):
         batch = rows[i : i + EMBED_BATCH_SIZE]
         ids = [r[0] for r in batch]
         texts = [r[2] for r in batch]
         vectors = embed_texts(texts)
         if vectors is None:
+            print(
+                f"embed_backfill warning: embed service unreachable at batch {(i // EMBED_BATCH_SIZE) + 1}/{batch_total}",
+                file=sys.stderr,
+            )
             break
         stored_total += store_embeddings(conn, ids, vectors)
+        if ((i // EMBED_BATCH_SIZE) + 1) % 25 == 0:
+            print(
+                f"embed_backfill progress: {(i // EMBED_BATCH_SIZE) + 1}/{batch_total} batches, stored={stored_total}",
+                file=sys.stderr,
+            )
 
     summary["embed_backfill_chunks"] = stored_total
 
@@ -585,53 +627,71 @@ def upsert_partial_file_chunks(
 def main() -> int:
     args = parse_args()
     args.db.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(args.db)
-    conn.execute("PRAGMA journal_mode=WAL")
-    conn.execute("PRAGMA synchronous=NORMAL")
-    conn.execute("PRAGMA temp_store=MEMORY")
-    conn.execute("PRAGMA cache_size=-20000")
-    conn.execute("PRAGMA mmap_size=134217728")
-    conn.execute("PRAGMA foreign_keys=ON")
-    ensure_schema(conn)
 
-    # sqlite-vec laden wenn Embeddings gewünscht
-    do_embed = args.embed or args.embed_backfill
-    vec_available = False
-    if do_embed:
-        vec_available = load_sqlite_vec(conn)
-        if vec_available:
-            ensure_vec_schema(conn)
+    lock_fp, lock_pid = acquire_ingest_lock()
+    if lock_fp is None:
+        payload = {
+            "status": "skipped",
+            "reason": "ingest_locked",
+            "lock_file": str(INGEST_LOCK_PATH),
+            "owner_pid": lock_pid or None,
+        }
+        if args.json:
+            print(json.dumps(payload, ensure_ascii=True, indent=2))
+        else:
+            print(
+                f"Ingest skipped: lock active ({INGEST_LOCK_PATH}, owner_pid={lock_pid or 'unknown'}).",
+                file=sys.stderr,
+            )
+        return 0
 
-    embed_service_ok = False
-    if do_embed and vec_available:
-        embed_service_ok = check_embed_service()
-
-    summary: dict[str, object] = {
-        "db": str(args.db),
-        "indexed_files": 0,
-        "indexed_chunks": 0,
-        "skipped_files": 0,
-        "deferred_files": 0,
-        "resumed": False,
-        "max_chunks_per_run": args.max_chunks_per_run,
-        "embed_enabled": do_embed,
-        "embed_service_ok": embed_service_ok,
-        "embedded_chunks": 0,
-        "sources": [],
-    }
-
-    resume_state = load_ingest_state()
-    pending_source = str(resume_state.get("current_source", "") or "")
-    pending_chunk_offset = int(resume_state.get("next_chunk_offset", 0) or 0)
-    if args.resume and resume_state.get("remaining_sources"):
-        sources = [Path(p) for p in resume_state.get("remaining_sources", [])]
-        summary["resumed"] = True
-    else:
-        sources = collect_sources()
-        pending_source = ""
-        pending_chunk_offset = 0
-
+    conn = sqlite3.connect(args.db, timeout=15)
     try:
+        conn.execute("PRAGMA busy_timeout=15000")
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA synchronous=NORMAL")
+        conn.execute("PRAGMA temp_store=MEMORY")
+        conn.execute("PRAGMA cache_size=-20000")
+        conn.execute("PRAGMA mmap_size=134217728")
+        conn.execute("PRAGMA foreign_keys=ON")
+        ensure_schema(conn)
+
+        do_embed = args.embed or args.embed_backfill
+        vec_available = False
+        if do_embed:
+            vec_available = load_sqlite_vec(conn)
+            if vec_available:
+                ensure_vec_schema(conn)
+
+        embed_service_ok = False
+        if do_embed and vec_available:
+            embed_service_ok = check_embed_service()
+
+        summary: dict[str, object] = {
+            "db": str(args.db),
+            "indexed_files": 0,
+            "indexed_chunks": 0,
+            "skipped_files": 0,
+            "deferred_files": 0,
+            "resumed": False,
+            "max_chunks_per_run": args.max_chunks_per_run,
+            "embed_enabled": do_embed,
+            "embed_service_ok": embed_service_ok,
+            "embedded_chunks": 0,
+            "sources": [],
+        }
+
+        resume_state = load_ingest_state()
+        pending_source = str(resume_state.get("current_source", "") or "")
+        pending_chunk_offset = int(resume_state.get("next_chunk_offset", 0) or 0)
+        if args.resume and resume_state.get("remaining_sources"):
+            sources = [Path(p) for p in resume_state.get("remaining_sources", [])]
+            summary["resumed"] = True
+        else:
+            sources = collect_sources()
+            pending_source = ""
+            pending_chunk_offset = 0
+
         for idx, path in enumerate(sources):
             chunks, checksum, updated_at, profile_name = build_chunks(path)
             if args.changed_only and existing_checksum(conn, str(path)) == checksum:
@@ -696,10 +756,9 @@ def main() -> int:
             summary["indexed_files"] = int(summary["indexed_files"]) + 1
             summary["indexed_chunks"] = int(summary["indexed_chunks"]) + chunk_count
 
-            # Embeddings für diese Quelle generieren
             embedded = 0
             if do_embed and vec_available and embed_service_ok:
-                conn.commit()  # Chunks müssen committed sein für den JOIN
+                conn.commit()
                 embedded = generate_embeddings_for_source(conn, str(path))
                 summary["embedded_chunks"] = int(summary["embedded_chunks"]) + embedded
 
@@ -709,7 +768,6 @@ def main() -> int:
                 "partial": False, "embedded": embedded,
             })
 
-        # Index-Metadaten aktualisieren
         now = utc_now()
         for key, value in (
             ("chunk_schema_version", CHUNK_SCHEMA_VERSION),
@@ -720,7 +778,6 @@ def main() -> int:
                 (key, value),
             )
 
-        # Backfill: Embeddings für alle Chunks ohne Vektor generieren
         if args.embed_backfill and vec_available and embed_service_ok:
             conn.commit()
             backfill_all_embeddings(conn, summary)
@@ -730,7 +787,7 @@ def main() -> int:
                 (now,),
             )
 
-        if vec_available and (do_embed):
+        if vec_available and do_embed:
             conn.execute(
                 "INSERT INTO index_meta (key, value) VALUES ('vec_schema_version', '1.0') "
                 "ON CONFLICT(key) DO UPDATE SET value = excluded.value"
@@ -738,8 +795,24 @@ def main() -> int:
 
         conn.execute("PRAGMA optimize")
         conn.commit()
+    except sqlite3.OperationalError as exc:
+        payload = {
+            "status": "error",
+            "reason": "sqlite_operational_error",
+            "error": str(exc),
+        }
+        if args.json:
+            print(json.dumps(payload, ensure_ascii=True, indent=2))
+        else:
+            print(f"Ingest failed: {exc}", file=sys.stderr)
+        return 2
     finally:
         conn.close()
+        try:
+            fcntl.flock(lock_fp.fileno(), fcntl.LOCK_UN)
+            lock_fp.close()
+        except Exception:
+            pass
 
     if summary["deferred_files"] == 0:
         save_ingest_state({

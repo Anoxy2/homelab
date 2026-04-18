@@ -181,6 +181,7 @@ loki.lan {
 192.168.2.101    uptime.lan
 192.168.2.101    openclaw.lan
 192.168.2.101    ops.lan
+192.168.2.101    ui.lan
 192.168.2.101    search.lan
 192.168.2.101    auth.lan
 192.168.2.101    ntfy.lan

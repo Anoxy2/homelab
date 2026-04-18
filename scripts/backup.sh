@@ -44,6 +44,7 @@ backup_dir() {
     fi
 }
 
+
 # Config-Verzeichnisse der Stacks
 backup_dir "pihole-config"       "$HOME/pihole/config"
 backup_dir "homeassistant-config" "$HOME/homeassistant/config"
@@ -55,8 +56,14 @@ backup_dir "mosquitto-config"    "$HOME/mosquitto/config"
 # Tailscale State
 backup_dir "tailscale-state"     "$HOME/tailscale/state"
 
+# SSH Keys
+backup_dir "ssh-keys"           "$HOME/.ssh"
+
 # Agent Skills
 backup_dir "agent-skills"        "$HOME/agent/skills"
+
+# Skill-Forge State (wichtig: Vetting-Status, Canary, Blacklist, Audit-Logs)
+backup_dir "skill-forge-state"   "$HOME/agent/.openclaw"
 
 # OpenClaw RAG-Index und UI-State
 # Hinweis: rag/snapshots/ ist im rag/-Backup enthalten, kein separates Backup nötig
@@ -65,6 +72,30 @@ backup_dir "openclaw-ui-state"   "$HOME/infra/openclaw-data/ui-state"
 
 # InfluxDB 2 Zeitreihen-Daten
 backup_dir "influxdb-data"       "$HOME/influxdb/data"
+
+# Kritische fehlende Backups (P0/P1)
+# WARNUNG: Diese waren bisher nicht im Backup enthalten!
+backup_dir "vaultwarden-data"    "$HOME/vaultwarden/data"    # P0: Passwort-Datenbank!
+backup_dir "authelia-config"     "$HOME/authelia/config"     # Auth-Konfiguration
+backup_dir "scrutiny-config"     "$HOME/scrutiny/config"     # SMART-Monitoring Daten
+backup_dir "ntfy-config"         "$HOME/ntfy"                # Notification-Config
+backup_dir "alertmanager-config" "$HOME/alertmanager/config" # Alert-Routing
+backup_dir "caddy-config"        "$HOME/caddy"               # Reverse-Proxy Config
+backup_dir "homepage-config"     "$HOME/homepage/config"     # Dashboard Bookmarks
+# Optional: User-Config für searxng und unbound (nicht in Git)
+backup_dir "searxng-config"      "$HOME/searxng/config"
+backup_dir "unbound-config"      "$HOME/unbound/config"
+
+backup_dir "portainer-data"    "$HOME/portainer/data"       # Stack-Definitionen
+backup_dir "prometheus-data"   "$HOME/prometheus/data"      # 30d Metrics
+backup_dir "grafana-data"      "$HOME/grafana/data"         # Dashboards, Users
+backup_dir "loki-data"         "$HOME/loki/data"            # Logs
+backup_dir "uptime-kuma-data"  "$HOME/uptime-kuma/data"     # Monitor-Konfig
+backup_dir "alertmanager-data" "$HOME/alertmanager/data"    # Silences, History
+backup_dir "ntfy-data"         "$HOME/ntfy/data"            # User-Subscriptions
+backup_dir "ntfy-cache"        "$HOME/ntfy/cache"           # Message Cache
+backup_dir "caddy-data"        "$HOME/caddy/data"           # Zertifikate
+backup_dir "caddy-config"      "$HOME/caddy/config-cache"   # Caddy-Config
 
 echo ""
 if [ $ERRORS -eq 0 ]; then
@@ -98,9 +129,20 @@ if [[ -n "${RESTIC_REPOSITORY:-}" && -n "${RESTIC_PASSWORD:-}" ]]; then
         "$HOME/mosquitto/config"
         "$HOME/tailscale/state"
         "$HOME/agent/skills"
+        "$HOME/agent/.openclaw"
         "$HOME/infra/openclaw-data/rag"
         "$HOME/infra/openclaw-data/ui-state"
         "$HOME/influxdb/data"
+        # Kritische fehlende Backups (P0/P1)
+        "$HOME/vaultwarden/data"
+        "$HOME/authelia/config"
+        "$HOME/scrutiny/config"
+        "$HOME/ntfy"
+        "$HOME/alertmanager/config"
+        "$HOME/caddy"
+        "$HOME/homepage/config"
+        "$HOME/searxng/config"
+        "$HOME/unbound/config"
     )
     RESTIC_EXCLUDES=(
         "--exclude=*.pyc"

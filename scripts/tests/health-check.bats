@@ -63,6 +63,57 @@ fi
 exec /usr/bin/stat "$@"
 SH
 
+  cat > "$STUB_BIN/docker" <<'SH'
+#!/bin/bash
+if [[ "${1:-}" == "ps" ]]; then
+  # health-check erwartet hier den Containernamen auf stdout
+  if [[ "$*" == *"name=mosquitto"* ]]; then
+    echo "mosquitto"
+    exit 0
+  fi
+  if [[ "$*" == *"name=influxdb"* ]]; then
+    echo "influxdb"
+    exit 0
+  fi
+  exit 0
+fi
+
+if [[ "${1:-}" == "exec" ]]; then
+  # Fuer die Tests reicht ein erfolgreiches no-op Verhalten.
+  exit 0
+fi
+
+exit 0
+SH
+
+  cat > "$STUB_BIN/python3" <<'SH'
+#!/bin/bash
+# Stub fuer die verschiedenen python3-Aufrufe im health-check Script.
+if [[ "${1:-}" == "/home/steges/agent/skills/openclaw-rag/scripts/retrieve.py" ]]; then
+  echo '{"count":1,"search_mode":"semantic"}'
+  exit 0
+fi
+
+if [[ "${1:-}" == "-" ]]; then
+  case "${2:-}" in
+    /home/steges/infra/openclaw-data/rag/.reindex.status)
+      echo 'success||2026-01-01T00:00:00Z'
+      exit 0
+      ;;
+    /home/steges/infra/openclaw-data/rag/index.db)
+      echo '100|100|10'
+      exit 0
+      ;;
+    \{*)
+      echo '1|semantic|'
+      exit 0
+      ;;
+  esac
+fi
+
+exit 0
+SH
+
   chmod +x "$STUB_BIN"/*
 }
 
@@ -71,13 +122,16 @@ teardown() {
 }
 
 @test "health-check returns 0 when probes are healthy" {
-  run env PATH="$STUB_BIN:/usr/bin:/bin" /home/steges/scripts/health-check.sh
-  [ "$status" -eq 0 ]
+  run env PATH="$STUB_BIN:/usr/bin:/bin" LOG_LEGACY_TEXT=1 /home/steges/scripts/health-check.sh
+  if [ "$status" -ne 0 ]; then
+    echo "$output"
+    false
+  fi
   [[ "$output" == *"Result:"* ]]
 }
 
 @test "health-check returns 1 when one HTTP probe fails" {
-  run env PATH="$STUB_BIN:/usr/bin:/bin" CURL_FAIL_PATTERN=":18789" /home/steges/scripts/health-check.sh
+  run env PATH="$STUB_BIN:/usr/bin:/bin" LOG_LEGACY_TEXT=1 CURL_FAIL_PATTERN=":18789" /home/steges/scripts/health-check.sh
   [ "$status" -eq 1 ]
   [[ "$output" == *"FAIL OpenClaw"* ]]
 }

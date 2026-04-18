@@ -1,0 +1,6 @@
+{"id": "learn-20260413154248", "ts": "2026-04-13T15:42:48Z", "text": "Pi-hole DHCP darf nicht ohne Fallback gestoppt werden", "tags": ["pihole", "dhcp"], "source": "observe", "promoted": false}
+{"id": "learn-20260413154302", "ts": "2026-04-13T15:43:02Z", "text": "Pi-hole DHCP darf nicht ohne Fallback gestoppt werden", "tags": ["pihole", "dhcp"], "source": "observe", "promoted": false}
+{"id": "learn-20260413-01", "ts": "2026-04-13T15:50:32Z", "text": "Haerte den Pfad 'metrics_weekly' ab: 26 fehlgeschlagene Action-Events in den letzten 7 Tagen.", "tags": ["weekly-distill"], "source": "weekly-distill", "promoted": false}
+{"id": "learn-20260413-02", "ts": "2026-04-13T15:50:32Z", "text": "Pruefe die Fehlerklasse 'heartbeat': 31 auffaellige Audit-Events in den letzten 7 Tagen.", "tags": ["weekly-distill"], "source": "weekly-distill", "promoted": false}
+{"id": "learn-20260413-03", "ts": "2026-04-13T15:50:32Z", "text": "Priorisiere Risikoabbau fuer 'test-02-eval' (risk_score=100, status=pending-blacklist).", "tags": ["weekly-distill"], "source": "weekly-distill", "promoted": false}
+{"id": "learn-20260413185757", "ts": "2026-04-13T18:57:57Z", "text": "Pi-hole DHCP darf nicht ohne Fallback gestoppt werden", "tags": ["pihole", "dhcp"], "source": "observe", "promoted": false}

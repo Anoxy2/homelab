@@ -35,6 +35,7 @@ ACTION_LOG_PATH="/home/steges/infra/openclaw-data/action-log.jsonl"
 ACTION_LOG_CANVAS_JSON="/home/steges/agent/skills/openclaw-ui/html/action-log.latest.json"
 CANVAS_OPS_BRIEF_SCRIPT="/home/steges/scripts/canvas-ops-brief.sh"
 CANVAS_STATE_BRIEF_SCRIPT="/home/steges/scripts/canvas-state-brief.sh"
+CANVAS_SKILL_PAGES_BRIEF_SCRIPT="/home/steges/scripts/canvas-skill-pages-brief.sh"
 
 ensure_action_log() {
   mkdir -p "$(dirname "$ACTION_LOG_PATH")"
@@ -1121,6 +1122,12 @@ print('1' if 6 <= now.hour <= 10 else '0')
     append_action_log "heartbeat" "canvas_state_brief" "updated" "heartbeat"
   else
     append_action_log "heartbeat" "canvas_state_brief" "failed" "heartbeat"
+  fi
+
+  if "$CANVAS_SKILL_PAGES_BRIEF_SCRIPT" >/dev/null 2>&1; then
+    append_action_log "heartbeat" "canvas_skill_pages_brief" "updated" "heartbeat"
+  else
+    append_action_log "heartbeat" "canvas_skill_pages_brief" "failed" "heartbeat"
   fi
 
   refresh_action_log_canvas_snapshot

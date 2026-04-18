@@ -57,98 +57,76 @@ services:
       - '--web.external-url=http://alertmanager.lan'
 ```
 
-### alertmanager.yml
+### alertmanager.yml (Live-Konfiguration)
 
 ```yaml
 global:
-  smtp_smarthost: 'localhost:587'
-  smtp_from: 'alertmanager@localhost'
-  smtp_auth_username: ''
-  smtp_auth_password: ''
-  
-  # ntfy webhook defaults
-  http_config:
-    timeout: 10s
+  resolve_timeout: 5m
 
-templates:
-- '/etc/alertmanager/template/*.tmpl'
-
-# Routing tree
 route:
-  group_by: ['alertname', 'severity', 'instance']
+  group_by: ['alertname', 'instance']
   group_wait: 30s
   group_interval: 5m
-  repeat_interval: 4h
-  receiver: 'ntfy-default'
-  
+  repeat_interval: 12h
+  receiver: 'telegram'
   routes:
-    # Critical alerts: immediate
-    - match:
-        severity: critical
-      receiver: ntfy-critical
-      group_wait: 10s
-      repeat_interval: 30m
-      continue: true
-      
-    # Warning alerts: batched
-    - match:
-        severity: warning
-      receiver: ntfy-warning
-      group_wait: 5m
-      repeat_interval: 2h
-      
-    # System alerts: separate channel
-    - match:
-        job: node-exporter
-      receiver: ntfy-system
-      group_by: ['alertname']
+    - matchers:
+        - severity="critical"
+      receiver: 'telegram-and-ntfy'
+      continue: false
 
-# Receivers
 receivers:
-  - name: 'ntfy-default'
+  - name: 'telegram'
+    telegram_configs:
+      - bot_token: '<TELEGRAM_BOT_TOKEN>'
+        chat_id: <TELEGRAM_CHAT_ID>
+        parse_mode: HTML
+        message: |
+          {{ if eq .Status "firing" }}🔴{{ else }}✅{{ end }} <b>{{ .CommonLabels.alertname }}</b>
+          {{ range .Alerts }}
+          <b>Host:</b> {{ .Labels.instance | default "pilab" }}
+          <b>Info:</b> {{ .Annotations.summary }}
+          {{ if .Annotations.description }}<b>Detail:</b> {{ .Annotations.description }}{{ end }}
+          {{ end }}
+
+  - name: 'telegram-and-ntfy'
+    telegram_configs:
+      - bot_token: '<TELEGRAM_BOT_TOKEN>'
+        chat_id: <TELEGRAM_CHAT_ID>
+        parse_mode: HTML
+        message: |
+          🚨 <b>CRITICAL: {{ .CommonLabels.alertname }}</b>
+          {{ range .Alerts }}
+          <b>Host:</b> {{ .Labels.instance | default "pilab" }}
+          <b>Info:</b> {{ .Annotations.summary }}
+          {{ end }}
     webhook_configs:
-      - url: 'http://192.168.2.101:8900/alerts-default'
-        send_resolved: true
-        max_alerts: 5
-        
-  - name: 'ntfy-critical'
-    webhook_configs:
-      - url: 'http://192.168.2.101:8900/alerts-critical'
-        send_resolved: true
-        http_config:
-          headers:
-            Priority: '5'
-            Tags: 'rotating_light'
-            
-  - name: 'ntfy-warning'
-    webhook_configs:
-      - url: 'http://192.168.2.101:8900/alerts-warning'
-        send_resolved: true
-        http_config:
-          headers:
-            Priority: '3'
-            Tags: 'warning'
-            
-  - name: 'ntfy-system'
-    webhook_configs:
-      - url: 'http://192.168.2.101:8900/alerts-system'
+      - url: 'http://<NTFY_USER>:<NTFY_PASS>@192.168.2.101:8900/alerts?priority=urgent&tags=rotating_light,pilab'
         send_resolved: true
 
-# Inhibition: suppress warnings if critical firing
 inhibit_rules:
-  - source_match:
-      severity: 'critical'
-    target_match:
-      severity: 'warning'
+  - source_matchers:
+      - severity="critical"
+    target_matchers:
+      - severity="warning"
     equal: ['alertname', 'instance']
-    
-  # Inhibit info if warning firing
-  - source_match:
-      severity: 'warning'
-    target_match:
-      severity: 'info'
-    equal: ['alertname']
 ```
+
+### Routing-Logik
+
+| Severity | Empfänger | Kanal |
+|----------|-----------|-------|
+| `critical` | `telegram-and-ntfy` | Telegram + ntfy (Priority: urgent) |
+| alle anderen | `telegram` | Telegram |
+
+### ntfy-Integration
+
+- Empfänger: `telegram-and-ntfy` (nur bei `severity="critical"`)
+- ntfy-User: `alertmanager` (nur Schreibzugriff auf Topic `alerts`)
+- Credentials: `NTFY_ALERTMANAGER_USER` / `NTFY_ALERTMANAGER_PASSWORD` in `.env`
+- Topic: `alerts` — URL: `http://192.168.2.101:8900/alerts`
+- Priorität via Query-Parameter: `?priority=urgent&tags=rotating_light,pilab`
+- ntfy-Auth konfigurieren: `docker exec ntfy ntfy user list`
 
 ---
 

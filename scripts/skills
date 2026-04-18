@@ -21,9 +21,11 @@ LEARN_DISPATCH="/home/steges/agent/skills/learn/scripts/learn-dispatch.sh"
 HEALTH_DISPATCH="/home/steges/agent/skills/health/scripts/health-dispatch.sh"
 RUNBOOK_MAINTENANCE_DISPATCH="/home/steges/agent/skills/runbook-maintenance/scripts/runbook-maintenance-dispatch.sh"
 RAG_DISPATCH="/home/steges/agent/skills/openclaw-rag/scripts/rag-dispatch.sh"
+AUTODOC_DISPATCH="/home/steges/agent/skills/autodoc/scripts/autodoc-dispatch.sh"
 VULN_WATCH_DISPATCH="/home/steges/agent/skills/vuln-watch/scripts/vuln-watch-dispatch.sh"
 LOG_QUERY_SCRIPT="/home/steges/agent/skills/log-query/scripts/query-loki.sh"
 WEB_SEARCH_SCRIPT="/home/steges/agent/skills/web-search/scripts/search.sh"
+MEMORY_DISPATCH="/home/steges/agent/skills/memory/scripts/memory-dispatch.sh"
 
 usage() {
   cat <<'EOF'
@@ -38,11 +40,20 @@ Usage:
   skills rag retrieve <query> [--limit N] [--timeout-ms N] [--json]
   skills rag reindex [--changed-only] [--timeout-seconds N] [--json]
   skills profile show|add <keyword>|reset
-  skills learn show|weekly [--json]|promote <id>|extract <id>
+  skills learn observe "<text>" [--tags a,b] | show [--tag x] [--since 7d] [--json] | search "<q>" [--json] | weekly [--json] | promote <id> | extract <id>
+  skills memory remember "<text>" [--cat decision|pattern|config|incident|fact] [--tags x,y] [--actor <actor>]
+  skills memory recall [--cat x] [--tag y] [--since 30d] [--json]
+  skills memory search "<query>" [--json]
+  skills memory forget <id>
+  skills memory update <id> "<new text>"
+  skills memory ingest
+  skills memory stats [--json]
   skills health report|budget
   skills vuln-watch --weekly [--dry-run] [--json] | --summary | --json
   skills growbox diary|daily-report|flush-queue|should-report|mark-sent|status
   skills rag doc-keeper run [--reason <text>] [--daily] [--autodoc] [--autodoc-dry-run] [--autodoc-profile daily|post-promote|weekly] [--autodoc-provider auto|anthropic|copilot] [--autodoc-model <name>]
+  skills autodoc <topic> --output <path> [--force] [--dry-run] [--provider auto|anthropic|copilot] [--model <name>]
+  skills autodoc profile <daily|post-promote|weekly> [--dry-run] [--provider auto|anthropic|copilot] [--model <name>]
   skills runbook-maintenance weekly-check|checklist|failover <scenario> [--json]
   skills log-query query --service <name> [--lines N] [--since <duration>] [--grep <pattern>]
   skills log-query query --query '<logql>' [--lines N] [--since <duration>]
@@ -116,6 +127,11 @@ main() {
       require_exec "$LEARN_DISPATCH"
       exec "$LEARN_DISPATCH" "$@"
       ;;
+    memory)
+      shift
+      require_exec "$MEMORY_DISPATCH"
+      exec "$MEMORY_DISPATCH" "$@"
+      ;;
     health)
       shift
       require_exec "$HEALTH_DISPATCH"
@@ -139,6 +155,11 @@ main() {
       shift
       require_exec "$RUNBOOK_MAINTENANCE_DISPATCH"
       exec "$RUNBOOK_MAINTENANCE_DISPATCH" "$@"
+      ;;
+    autodoc)
+      shift
+      require_exec "$AUTODOC_DISPATCH"
+      exec "$AUTODOC_DISPATCH" "$@"
       ;;
     rag)
       shift

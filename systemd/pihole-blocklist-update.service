@@ -1,0 +1,20 @@
+[Unit]
+Description=Pi-hole Blocklist Update with Rollback
+Documentation=https://docs.pi-hole.net/core/pihole-command/
+After=docker.service
+
+[Service]
+Type=oneshot
+User=steges
+Group=steges
+WorkingDirectory=/home/steges
+Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+Environment="HOME=/home/steges"
+ExecStart=/home/steges/scripts/pihole-blocklist-update.sh
+
+# Sicherheit: Pi-hole ist kritisch (DNS + DHCP)
+# Bei Fehler soll der Service failed bleiben für Monitoring
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target

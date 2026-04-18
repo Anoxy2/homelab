@@ -11,7 +11,7 @@ main() {
   init_state_files
 
   if [[ "${1:-}" == "--top-failures" ]]; then
-  python3 - "$AUDIT_LOG" "$LEGACY_AUDIT_LOG" <<'PY'
+  python3 - "$AUDIT_LOG" <<'PY'
 import json
 import os
 import collections
@@ -49,7 +49,7 @@ PY
   fi
 
   if [[ "${1:-}" == "--blocked-promotions" ]]; then
-  python3 - "$AUDIT_LOG" "$LEGACY_AUDIT_LOG" <<'PY'
+  python3 - "$AUDIT_LOG" <<'PY'
 import json
 import os
 import sys
@@ -84,7 +84,7 @@ PY
   fi
 
   if [[ "${1:-}" == "--frequent-rejects" ]]; then
-  python3 - "$AUDIT_LOG" "$LEGACY_AUDIT_LOG" <<'PY'
+  python3 - "$AUDIT_LOG" <<'PY'
 import json
 import os
 import collections
@@ -122,15 +122,15 @@ PY
 
   if [[ "${1:-}" == "--ebusy-baseline" ]]; then
   local hours="${2:-24}"
-  python3 - "$AUDIT_LOG" "$LEGACY_AUDIT_LOG" "$hours" <<'PY'
+  python3 - "$AUDIT_LOG" "$hours" <<'PY'
 import json
 import os
 import re
 import sys
 from datetime import datetime, timedelta, timezone
 
-paths = sys.argv[1:3]
-hours = int(sys.argv[3])
+paths = [sys.argv[1]]
+hours = int(sys.argv[2])
 cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
 
 total = 0
@@ -184,7 +184,7 @@ PY
   fi
 
   if [[ "${1:-}" == "--rejected" ]]; then
-  python3 - "$AUDIT_LOG" "$LEGACY_AUDIT_LOG" <<'PY'
+  python3 - "$AUDIT_LOG" <<'PY'
 import json
 import os
 import sys
@@ -214,12 +214,12 @@ PY
   fi
 
   local limit="${2:-80}"
-  python3 - "$AUDIT_LOG" "$LEGACY_AUDIT_LOG" "$limit" <<'PY'
+  python3 - "$AUDIT_LOG" "$limit" <<'PY'
 import os
 import sys
 
-paths = sys.argv[1:3]
-limit = int(sys.argv[3])
+paths = [sys.argv[1]]
+limit = int(sys.argv[2])
 lines = []
 
 for path in paths:

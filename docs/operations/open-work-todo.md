@@ -1,37 +1,71 @@
 # Open Work Todo
 
-Aktueller Stand und nächste Schritte für OpenClaw, RAG, UI und Infrastruktur.
+Stand: 2026-04-13
 
-## KI-Regel (verbindlich)
+Diese Datei enthaelt nur offene Arbeit. Erledigte Punkte werden nach Implementierung, Validierung und Doku-Update entfernt.
 
-- Vor dem Entfernen erledigter Todos müssen zuerst die passenden Dokus aktualisiert werden (mindestens `docs/skills/skill-forge-governance.md` und `CHANGELOG.md`, je nach Thema zusätzlich Runbooks/Service-Doku).
-- Bei Skill-Forge/Lifecycle-Änderungen immer erst validieren (`skill-forge policy lint` + relevante Syntax-/Smoke-Checks), dann Todo-Eintrag entfernen.
-- Todo-Liste enthält nur offene Arbeit; erledigte Punkte werden nicht als `[x]` gesammelt, sondern aus der Liste gelöscht.
+## Verbindliche Reihenfolge
 
-## Offene Arbeit
+- Implementieren
+- Validieren
+- Dokumentieren (inkl. `CHANGELOG.md` und betroffener Fachdoku)
+- Erst danach Todo entfernen
 
-- P0 Reverse-Proxy Restarbeit: Bridge-Mode-Fix fuer Caddy bei weiter erreichbaren host-mode Backends.
-- Infra-Folgeentscheidungen aus Hardening/Monitoring in konkrete Umsetzungs-Todos zerlegen.
+---
 
-## P1 Self-Healing Backlog (integriert aus agent/TO-DO.md)
+## P2 Aktive Prioritaeten
 
-- Service-Health-Watchdog fuer zentrale Container inkl. Restart-Strategie und Eskalation nach wiederholten Fehlversuchen.
-- Config-Check und abgesicherter Rollback-Flow fuer kritische Konfigurationen (Pi-hole, Home Assistant, Caddy).
-- Connectivity-/Tailscale-Selbsttest inkl. DNS-/Gateway-Pruefungen und klarer Reconnect-Strategie.
-- Storage/Mount-Recovery fuer NVMe/Backups inkl. Alarmierung bei hoher Auslastung oder Offline-Zustand.
-- Sensor-/Hardware-Check fuer Growbox/ESP32 inkl. abgestuftem Reconnect/Neustart-Ansatz.
-- Self-Heal-Reporting mit strukturiertem Log und regelmaessiger Zusammenfassung (Canvas/Telegram)
+### Infrastruktur & Betrieb
 
-## P1 Neue Services (eingerichtet, manuelle Schritte ausstehend)
+- [ ] Caddy Bridge-Mode gegen Host-Mode bewerten (Risiko/Nutzen, Migrationsplan)
+- [ ] Docker-Volume-Backups fuer verbleibende optionale Pfade entscheiden und ggf. nachziehen (`searxng/config`, `unbound/config`, `loki/config`, `promtail/config`)
+- [ ] Loki/Promtail Structured-Logging-Pipeline verbessern (JSON-Parsing, Label-Extraktion, Query-Kosten senken)
+- [ ] Monatlichen Docker-Socket-Proxy-Audit definieren (Logs, Checkliste, Verantwortlichkeit)
 
-- Authelia: Passwort-Hash in `authelia/config/users_database.yml` setzen + Secrets in `.env` eintragen (AUTHELIA_JWT_SECRET, AUTHELIA_SESSION_SECRET, AUTHELIA_STORAGE_ENCRYPTION_KEY), dann `docker compose up -d authelia`.
-- Authelia: Forward-Auth in Caddyfile pro gewünschtem Service aktivieren (Vorlage am Ende des Caddyfile).
-- Ntfy: ersten User anlegen nach Start: `docker exec -it ntfy ntfy user add steges`
-- Scrutiny: nach Start unter http://scrutiny.lan prüfen ob NVMe erkannt wird.
-- Glances: bei nächstem Watchtower-Update Digest in docker-compose.yml manuell aktualisieren (TODO-Kommentar im File).
+---
 
-## P2 Monitoring-Optimierungen
+## P3 Backlog
 
-- Alertmanager-Telegram-Integration testen (TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID in .env nötig).
-- Grafana: Loki-Logs-Dashboard erstellen (Datasource ist bereits provisioniert).
-- Prometheus alert rules `prometheus/rules/homelab-alerts.yml` nach Bedarf anpassen (Schwellwerte).
+### Skill-Forge & Skills
+
+- [ ] Restliche Skill-Haertungen einzeln priorisieren und umsetzen (Timeouts, Retry, Failover, Input-Validierung)
+- [ ] Wiederkehrende TODO/FIXME-Hotspots in Skripten schrittweise abbauen
+- [ ] Skill-Assessment-Pipeline aufbauen: Smoke-, Regression-, Health- und Canary-Tests fuer alle aktiven Skills; Ergebnisprotokoll im Doc-Keeper
+- [ ] Verwaiste/ungenutzte Skills identifizieren, quarantaenisieren oder entfernen
+
+### Monitoring & Alerting
+
+- [ ] Proaktives Monitoring: periodische Self-Checks aus heartbeat/health-Skills orchestrieren, Pattern-Detection fuer Container-Crash-Loops und Ressourcenengpaesse einbauen
+- [ ] Smarte Eskalation: Eskalations-Schwellen nach Schweregrad und Tageszeit in Policy hinterlegen, Escalation-Skill bauen
+- [ ] Integrity & Recovery: Routine-Selftest fuer Skills, Cronjobs, Netzwerk; Probe-Backup/Restore-Simulation als periodische Routine einrichten
+
+### Self-Documentation
+
+- [ ] Auto-Doc Skill anlegen: Protokollformat und Rotationsregeln definieren, Hooks fuer Self-Heal/Incident/Audit in Skills einklinken
+- [ ] Digest/Reporting: Wochen-Report-Funktion via CLI/Canvas bereitstellen
+- [ ] RAG-SOURCES.md und ingest.py: auto-doc/ und event-logs aus Index ausschliessen (Noise-Bereinigung, nur promoted Eintraege indexieren)
+
+### RAG-System
+
+- [ ] Cold-Storage/Aging: Archivierungslogik fuer alte/verwaiste Chunks implementieren
+- [ ] Promoted-Tag-Workflow: ingest.py und reindex.sh unterstuetzen `promote`-Flag aus auto-doc
+- [ ] Index-Health-Monitoring: Chunk Count, Source Drift, Recency-Alerts automatisieren
+
+### Interfaces & Feedback
+
+- [ ] Quick-Actions-Skill: Standard-Tasks (Restart, Log, Health, Backup, Update) per Telegram und Canvas bedienbar machen
+- [ ] Feedback-Loop: periodischer Feedback-Prompt an steges; Fehler-/Timeout-Aggregation aus Logs ins Backlog
+
+### Dokumentation
+
+- [ ] Dokumentationskonsolidierung fortsetzen (Dubletten entfernen, Referenzen harmonisieren)
+
+---
+
+## P4 Vision / Langfristig
+
+- [ ] Event-Driven Intelligence: Event-Bus fuer System- und Sensor-Events, Trigger-Action-Engine fuer autonome Self-Heal-Aktionen, Energiemanagement-Policies
+- [ ] Context-Aware Policies: Policy-Anpassung nach Tageszeit, Userpraesenz und Last (Smart Quiet Mode, Notification-Tuning)
+- [ ] Adaptives Skill-Learning: Automatische Bedarfserkennung aus Logs, Skill-Recommendation-System, (halb-)autonomes Onboarding neuer Services
+- [ ] Multimodale Interaktion: Interface-Detection (Telegram/Canvas/Voice), adaptive Antwortlaenge und -form je Kanal
+- [ ] Peer Learning: anonymisierter Austausch von Best Practices mit anderen OpenClaw-Instanzen (benoetigt externe Infrastruktur)

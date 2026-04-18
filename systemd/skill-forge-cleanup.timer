@@ -1,0 +1,11 @@
+[Unit]
+Description=Weekly Skill-Forge Cleanup
+
+[Timer]
+OnCalendar=weekly
+Persistent=true
+RandomizedDelaySec=10min
+Unit=skill-forge-cleanup.service
+
+[Install]
+WantedBy=timers.target

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-09T18:44:49Z",
+  "generated_at": "2026-04-10T05:06:43Z",
   "skills": {
     "0protocol": {
       "slug": "0protocol",
@@ -228,7 +228,7 @@
     },
     "coding": {
       "slug": "coding",
-      "status": "vetted",
+      "status": "active",
       "risk_tier": "LOW",
       "vetting_score": 85,
       "quality_tier": "",
@@ -556,6 +556,21 @@
       "pass_count": 1,
       "risk_score": 10
     },
+    "homeassistant-selora": {
+      "slug": "homeassistant-selora",
+      "status": "canary",
+      "risk_tier": "MEDIUM",
+      "vetting_score": 80,
+      "quality_tier": "",
+      "verdict": "PASS",
+      "last_vetter_ts": "2026-04-10T05:05:21Z",
+      "final_score": 80,
+      "reject_count": 0,
+      "rollback_count": 0,
+      "review_count": 0,
+      "pass_count": 1,
+      "risk_score": 10
+    },
     "homelab-ai": {
       "slug": "homelab-ai",
       "status": "canary",
@@ -648,7 +663,7 @@
     },
     "jiuwu-message": {
       "slug": "jiuwu-message",
-      "status": "canary",
+      "status": "active",
       "risk_tier": "MEDIUM",
       "vetting_score": 78,
       "quality_tier": "",
@@ -948,7 +963,7 @@
     },
     "resilience-check": {
       "slug": "resilience-check",
-      "status": "canary",
+      "status": "active",
       "risk_tier": "UNKNOWN",
       "vetting_score": 0,
       "quality_tier": "",
@@ -1023,7 +1038,7 @@
     },
     "resume-rewrite": {
       "slug": "resume-rewrite",
-      "status": "canary",
+      "status": "active",
       "risk_tier": "MEDIUM",
       "vetting_score": 78,
       "quality_tier": "",
@@ -1308,7 +1323,7 @@
     },
     "wechat-publisher": {
       "slug": "wechat-publisher",
-      "status": "canary",
+      "status": "active",
       "risk_tier": "MEDIUM",
       "vetting_score": 78,
       "quality_tier": "",

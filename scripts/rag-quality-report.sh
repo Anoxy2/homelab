@@ -7,6 +7,31 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="${RAG_REPORT_REPO_ROOT:-/home/steges}"
 EVALUATE="$REPO_ROOT/agent/skills/openclaw-rag/scripts/evaluate-goldset.py"
 GOLD_SET="$REPO_ROOT/agent/skills/openclaw-rag/GOLD-SET.json"
+CANARY_CRITERIA="$REPO_ROOT/agent/skills/skill-forge/policy/canary-criteria.yaml"
+
+# Thresholds aus canary-criteria.yaml lesen (identisch mit rag-canary-smoke.sh)
+_THRESHOLDS="$(python3 - "$CANARY_CRITERIA" <<'PY'
+import json, sys
+path = sys.argv[1]
+defaults = {
+  'min_precision_at_5': 0.25,
+  'min_recall_at_5': 0.55,
+  'max_p95_latency_ms': 450,
+}
+try:
+  import yaml
+  with open(path, 'r', encoding='utf-8') as f:
+    data = yaml.safe_load(f) or {}
+  rag = (((data.get('skills') or {}).get('openclaw-rag') or {}).get('rag_quality') or {})
+  defaults.update({k: rag.get(k, v) for k, v in defaults.items()})
+except Exception:
+  pass
+print(json.dumps(defaults, ensure_ascii=True))
+PY
+)"
+MIN_PRECISION="$(python3 -c "import json,sys; print(json.loads(sys.argv[1])['min_precision_at_5'])" "$_THRESHOLDS")"
+MIN_RECALL="$(python3 -c "import json,sys; print(json.loads(sys.argv[1])['min_recall_at_5'])" "$_THRESHOLDS")"
+MAX_P95_MS="$(python3 -c "import json,sys; print(json.loads(sys.argv[1])['max_p95_latency_ms'])" "$_THRESHOLDS")"
 
 # shellcheck source=/home/steges/scripts/lib/env.sh
 source "$SCRIPT_DIR/lib/env.sh"
@@ -85,30 +110,30 @@ ${eval_out:0:300}"
   exit 1
 fi
 
-# Gate-Bewertung (aus rag-canary-smoke.sh: precision>=0.25, recall>=0.55, p95<=200ms)
+# Gate-Bewertung (Thresholds aus canary-criteria.yaml)
 gates="✅ Gates OK"
 gate_details=""
-if [[ "$precision" != "n/a" ]] && (( $(echo "$precision < 0.25" | bc -l) )); then
+if [[ "$precision" != "n/a" ]] && (( $(echo "$precision < $MIN_PRECISION" | bc -l) )); then
   gates="⚠️ Gate FAIL"
   gate_details="${gate_details}
-• Precision@5 ${precision} < 0.25 (Minimum)"
+• Precision@5 ${precision} < ${MIN_PRECISION} (Minimum)"
 fi
-if [[ "$recall" != "n/a" ]] && (( $(echo "$recall < 0.55" | bc -l) )); then
+if [[ "$recall" != "n/a" ]] && (( $(echo "$recall < $MIN_RECALL" | bc -l) )); then
   gates="⚠️ Gate FAIL"
   gate_details="${gate_details}
-• Recall@5 ${recall} < 0.55 (Minimum)"
+• Recall@5 ${recall} < ${MIN_RECALL} (Minimum)"
 fi
-if [[ "$p95" != "n/a" ]] && (( $(echo "$p95 > 200" | bc -l) )); then
+if [[ "$p95" != "n/a" ]] && (( $(echo "$p95 > $MAX_P95_MS" | bc -l) )); then
   gates="⚠️ Gate FAIL"
   gate_details="${gate_details}
-• p95 ${p95}ms > 200ms (Maximum)"
+• p95 ${p95}ms > ${MAX_P95_MS}ms (Maximum)"
 fi
 
 msg="📊 RAG Weekly Report @ ${host_name} — ${now}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-• Precision@k: ${precision} (Min: 0.25)
-• Recall@k:    ${recall} (Min: 0.55)
-• p95 Latenz:  ${p95}ms (Max: 200ms)
+• Precision@k: ${precision} (Min: ${MIN_PRECISION})
+• Recall@k:    ${recall} (Min: ${MIN_RECALL})
+• p95 Latenz:  ${p95}ms (Max: ${MAX_P95_MS}ms)
 
 ${gates}${gate_details}"
 

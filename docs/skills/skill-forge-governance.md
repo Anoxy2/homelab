@@ -67,7 +67,14 @@ skills scout [--dry-run|--live [N]|--summary|--add|--apply-suggestions] [--json]
 skills heartbeat [--live [N] [vet_score]]
 skills metrics record|weekly|latest|install-success|risk-report ...
 skills profile show|add <keyword>|reset
-skills learn show|weekly [--json]|promote <id>|extract <id>
+skills learn observe "<text>" [--tags a,b] | show [--tag x] [--since 7d] [--json] | search "<q>" [--json] | weekly [--json] | promote <id> | extract <id>
+skills memory remember "<text>" [--cat decision|pattern|config|incident|fact] [--tags x,y] [--actor <actor>]
+skills memory recall [--cat x] [--tag y] [--since 30d] [--json]
+skills memory search "<query>" [--json]
+skills memory forget <id>
+skills memory update <id> "<new text>"
+skills memory ingest
+skills memory stats [--json]
 skills health report|budget
 skills growbox diary|daily-report|flush-queue|should-report|mark-sent|status
 skills rag doc-keeper run [--reason <text>] [--daily] [--autodoc] [--autodoc-dry-run]
@@ -129,7 +136,9 @@ Alle fachlichen Aufgaben werden **direkt über `~/scripts/skills`** ausgeführt:
 - `metrics` – Metriken erfassen und auswerten
 - `scout` – Neue Skills entdecken
 - `learn` – Erkenntnisse extrahieren und sammeln
-- `learn weekly` – verdichtet Audit-, Action- und Risk-Signale einmal pro Woche zu konkreten Verbesserungsvorschlaegen in `.learnings/LEARNINGS.md`
+- `learn weekly` – verdichtet Audit-, Action- und Risk-Signale einmal pro Woche zu konkreten Verbesserungsvorschlaegen in `/home/steges/agent/LEARNINGS.md`
+- `learn observe/search/show` – ad-hoc Learnings erfassen, filtern und durchsuchen
+- `memory` – explizites, kategorisiertes Langzeitwissen in `memory.jsonl` pflegen und via `memory ingest` nach `agent/MEMORY.md` spiegeln
 - `health`, `profile`, `growbox`, `runbook-maintenance`, `canary evaluate`, `rag (retrieve/reindex/doc-keeper/autodoc)` – alle weiteren Domain-Skills
 - `vuln-watch` – Wöchentliche GitHub-Suche nach AI/LLM-Sicherheitslücken; schreibt in `docs/monitoring/vuln-log.md`, Top-5 via Telegram
 - `rag` – RAG-Retrieval und Reindex
@@ -502,12 +511,23 @@ Canary-Gates:
 - Ausnahme nur per `--emergency --reason "..."`.
 - Install startet Canary, aber promoted nicht mehr sofort automatisch.
 
-### Learn / Profile / Provenance / Heartbeat
+### Learn / Memory / Profile / Provenance / Heartbeat
 
 ```bash
-~/scripts/skill-forge learn show
-~/scripts/skill-forge learn promote <id>
-~/scripts/skill-forge learn extract <id>
+~/scripts/skills learn observe "<text>" [--tags a,b]
+~/scripts/skills learn show [--tag x] [--since 7d] [--json]
+~/scripts/skills learn search "<q>" [--json]
+~/scripts/skills learn weekly [--json]
+~/scripts/skills learn promote <id>
+~/scripts/skills learn extract <id>
+
+~/scripts/skills memory remember "<text>" [--cat decision|pattern|config|incident|fact] [--tags x,y] [--actor <actor>]
+~/scripts/skills memory recall [--cat x] [--tag y] [--since 30d] [--json]
+~/scripts/skills memory search "<query>" [--json]
+~/scripts/skills memory forget <id>
+~/scripts/skills memory update <id> "<new text>"
+~/scripts/skills memory ingest
+~/scripts/skills memory stats [--json]
 
 ~/scripts/skill-forge profile show
 ~/scripts/skill-forge profile add <keyword>

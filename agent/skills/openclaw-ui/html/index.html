@@ -683,6 +683,7 @@
     <button class="nav-link" data-page="scout">Scout</button>
     <button class="nav-link" data-page="health">Health</button>
     <button class="nav-link" data-page="metrics">Metrics</button>
+    <button class="nav-link" data-page="skills">Skills</button>
     <button class="nav-link" data-page="operations">Operations</button>
     <button class="nav-link" data-page="decisions">Decisions</button>
     <button class="nav-link" data-page="runbooks">Runbooks</button>
@@ -1077,6 +1078,66 @@
       </div>
 
       <div class="foot" id="metrics-status">Waiting for state brief feed.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ SKILLS ══ -->
+<div class="wrap page" id="page-skills">
+  <div class="inner">
+    <div class="card">
+      <div class="page-title">
+        <h1>Skills Hub</h1>
+        <button id="btn-skills-refresh">Refresh</button>
+      </div>
+
+      <div class="grid">
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Skills KPIs">
+          <h2>Skills Overview</h2>
+          <div class="kpi-grid" id="skills-kpis"></div>
+        </section>
+
+        <section class="pane" style="grid-column: 1 / -1" aria-label="Skill Filter">
+          <h2>Filter</h2>
+          <div class="actions" style="gap:10px;align-items:center;">
+            <input id="skills-search" placeholder="Search slug/source/version" style="flex:1;min-width:180px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:9px;color:var(--text);font:13px/1.4 system-ui,sans-serif;padding:7px 10px;outline:none;" aria-label="Skill search" />
+            <select id="skills-filter-status" style="background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:9px;color:var(--text);font:13px/1.4 system-ui,sans-serif;padding:7px 10px;">
+              <option value="all">All status</option>
+              <option value="active">active</option>
+              <option value="canary">canary</option>
+              <option value="pending-review">pending-review</option>
+              <option value="rollback">rollback</option>
+              <option value="pending-blacklist">pending-blacklist</option>
+              <option value="vetted">vetted</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="pane" aria-label="Skill List">
+          <h2>Skill List</h2>
+          <div class="skill-table-wrap">
+            <table class="skill-table" aria-label="All skills list">
+              <thead>
+                <tr>
+                  <th>Slug</th>
+                  <th>Status</th>
+                  <th>Source</th>
+                  <th>Version</th>
+                  <th>Last Scout</th>
+                </tr>
+              </thead>
+              <tbody id="skills-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="pane" aria-label="Skill Detail">
+          <h2>Skill Detail</h2>
+          <div id="skills-detail" class="skill-block">Select a skill from the list.</div>
+        </section>
+      </div>
+
+      <div class="foot" id="skills-status">Waiting for state brief feed.</div>
     </div>
   </div>
 </div>

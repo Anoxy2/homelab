@@ -1,0 +1,18 @@
+[Unit]
+Description=Weekly Pi-hole Blocklist Update
+Documentation=https://docs.pi-hole.net/core/pihole-command/
+
+[Timer]
+# Sonntag 04:00 (1 Stunde nach Watchtower)
+OnCalendar=Sun *-*-* 04:00:00
+# Oder: Alle 7 Tage seit letztem Lauf
+# OnUnitActiveSec=7d
+
+# Randomisierte Verzögerung (0-10 Min) für Lastverteilung
+RandomizedDelaySec=10m
+
+# Persistenz: Timer läuft auch nach Reboot
+Persistent=true
+
+[Install]
+WantedBy=timers.target

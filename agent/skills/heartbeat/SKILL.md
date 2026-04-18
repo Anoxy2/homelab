@@ -100,3 +100,9 @@ Die Entscheidung wird im Audit-Log und Action-Log erfasst.
 | Telegram senden | Modifikation von policy/, .env |
 | Growbox-Diary anlegen | Mehr als read-only auf Sensor-State |
 | Last-run-Timestamp schreiben | Direkte Canary-Manipulation |
+
+## Learn+RAG Kontext
+
+- Daily/Weekly Heartbeat prueft lokale Betriebs-Signale (Shell-Tests, Scout, Learnings, Vuln-Watch).
+- Keine externe Memory-Bridge im Heartbeat: Fokus auf lokale Pipeline-Stabilitaet.
+- Fehler werden als Warnsignal im Telegram-Heartbeat und im Audit/Action-Log dokumentiert.

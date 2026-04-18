@@ -1,43 +1,26 @@
 {
   "sources": [
     {
-      "name": "openclaw-skills",
-      "type": "github",
-      "owner": "openclaw",
-      "repo": "skills",
-      "branch": "main",
-      "trust_tier": "community"
-    },
-    {
-      "name": "awesome-openclaw",
-      "type": "github",
-      "owner": "VoltAgent",
-      "repo": "awesome-openclaw-skills",
-      "branch": "main",
-      "trust_tier": "community"
-    },
-    {
-      "name": "openclaw-master",
-      "type": "github",
-      "owner": "LeoYeAI",
-      "repo": "openclaw-master-skills",
-      "branch": "main",
-      "trust_tier": "community"
-    },
-    {
       "name": "clawhub",
       "type": "clawhub",
       "registry": "https://clawhub.ai",
-      "trust_tier": "community"
+      "trust_tier": "community",
+      "enabled": true,
+      "reason": "primary skill registry"
     }
   ],
   "search_terms": [
     "homelab",
-    "automation",
-    "iot",
     "home-assistant",
     "raspberry-pi"
   ],
   "updated_at": null,
-  "curator_version": 0
+  "curator_version": 0,
+  "consolidation_policy": {
+    "pending_blacklist_delete": "immediate",
+    "test_skills_delete": "immediate",
+    "canary_age_max_days": 14,
+    "pending_review_age_max_days": 21,
+    "last_applied": null
+  }
 }

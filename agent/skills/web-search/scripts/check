@@ -1,0 +1,31 @@
+#!/bin/bash
+# web-search: Prüfe ob SearXNG erreichbar ist
+
+set -euo pipefail
+
+SEARXNG_URL="${SEARXNG_URL:-http://192.168.2.101:8085}"
+
+echo "Prüfe SearXNG Verbindung..."
+echo "URL: $SEARXNG_URL"
+echo "═══════════════════════════════════════"
+
+if curl -sf "${SEARXNG_URL}/healthz" >/dev/null 2>&1 || \
+   curl -sf "${SEARXNG_URL}" -o /dev/null 2>&1; then
+  echo "✅ SearXNG ist erreichbar"
+  
+  # Test-Suche durchführen
+  TEST_RESULT=$(curl -sf "${SEARXNG_URL}/search?q=test&format=json" 2>/dev/null | jq -r '.results | length')
+  if [[ "$TEST_RESULT" -gt 0 ]] 2>/dev/null; then
+    echo "✅ Suche funktioniert ($TEST_RESULT Test-Ergebnisse)"
+  else
+    echo "⚠️ SearXNG erreichbar, aber keine Suchergebnisse (Engine-Problem?)"
+  fi
+  exit 0
+else
+  echo "❌ SearXNG nicht erreichbar"
+  echo ""
+  echo "Debug-Info:"
+  echo "  Container-Status:"
+  docker ps --filter "name=searxng" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" 2>/dev/null || echo "    docker nicht verfügbar"
+  exit 1
+fi

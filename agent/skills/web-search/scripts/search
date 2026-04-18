@@ -1,0 +1,66 @@
+#!/bin/bash
+# web-search: Suche via lokalem SearXNG
+# Usage: web-search search "QUERY" [--limit N] [--json]
+
+set -euo pipefail
+
+SEARXNG_URL="${SEARXNG_URL:-http://192.168.2.101:8085}"
+LIMIT=5
+FORMAT="text"
+QUERY=""
+
+# Argumente parsen
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --limit|-l)
+      LIMIT="$2"
+      shift 2
+      ;;
+    --json|-j)
+      FORMAT="json"
+      shift
+      ;;
+    --help|-h)
+      echo "Usage: web-search search [QUERY] [OPTIONS]"
+      echo "Options:"
+      echo "  --limit N     Anzahl Ergebnisse (default: 5)"
+      echo "  --json        JSON-Output"
+      echo "  --help        Diese Hilfe"
+      exit 0
+      ;;
+    *)
+      if [[ -z "$QUERY" ]]; then
+        QUERY="$1"
+      else
+        QUERY="$QUERY $1"
+      fi
+      shift
+      ;;
+  esac
+done
+
+if [[ -z "$QUERY" ]]; then
+  echo "ERROR: Kein Suchbegriff angegeben" >&2
+  echo "Usage: web-search search \"Docker compose example\"" >&2
+  exit 1
+fi
+
+# URL-encode Query
+ENCODED_QUERY=$(printf '%s' "$QUERY" | jq -sRr @uri)
+
+# SearXNG API aufrufen
+RESPONSE=$(curl -sf "${SEARXNG_URL}/search?q=${ENCODED_QUERY}&format=json&pageno=1" 2>/dev/null || echo '{"results":[]}')
+
+# Ergebnisse formatieren
+if [[ "$FORMAT" == "json" ]]; then
+  echo "$RESPONSE" | jq -r --arg limit "$LIMIT" '.results[:($limit | tonumber)]'
+else
+  # Text-Output
+  echo "Suche: $QUERY"
+  echo "═══════════════════════════════════════"
+  
+  echo "$RESPONSE" | jq -r --arg limit "$LIMIT" '
+    .results[:($limit | tonumber)][] |
+    "📄 \(.title)\n   \(.url)\n   \(.content | gsub("<[^>]+>"; "") | .[0:200])...\n"
+  '
+fi

@@ -151,11 +151,17 @@
     if (id === "mqtt") window.CanvasMqtt?.initPage();
     if (id === "rag") window.CanvasRag?.initPage();
     if (id === "operations" || id === "decisions" || id === "runbooks") window.CanvasOps?.initPage();
-    if (id === "scout" || id === "health" || id === "metrics") window.CanvasSkill?.initPage();
+    if (id === "scout" || id === "health" || id === "metrics" || id === "skills") window.CanvasSkill?.initPage();
   };
   navLinks.forEach(l => l.addEventListener("click", () => showPage(l.dataset.page)));
   const hash = location.hash.replace("#", "");
-  if (hash && document.getElementById("page-" + hash)) showPage(hash);
+  if (hash.startsWith("skills:")) {
+    showPage("skills");
+    const slug = hash.split(":", 2)[1] || "";
+    window.dispatchEvent(new CustomEvent("canvas-skill-select", { detail: { slug } }));
+  } else if (hash && document.getElementById("page-" + hash)) {
+    showPage(hash);
+  }
 
   const isTypingContext = (target) => {
     const tag = (target?.tagName || "").toLowerCase();
@@ -257,7 +263,8 @@
   if (
     document.getElementById("page-scout")?.classList.contains("active") ||
     document.getElementById("page-health")?.classList.contains("active") ||
-    document.getElementById("page-metrics")?.classList.contains("active")
+    document.getElementById("page-metrics")?.classList.contains("active") ||
+    document.getElementById("page-skills")?.classList.contains("active")
   ) window.CanvasSkill?.initPage();
 
 })();

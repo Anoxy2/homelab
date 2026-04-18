@@ -1,0 +1,12 @@
+[Unit]
+Description=Skill-Forge Generated Cleanup
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/steges
+User=steges
+ExecStart=/home/steges/scripts/skill-forge-cleanup.sh
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=skill-forge-cleanup

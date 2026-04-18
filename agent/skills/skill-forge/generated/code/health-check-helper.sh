@@ -1,3 +1,0 @@
-#!/bin/bash
-set -euo pipefail
-# TODO: implement generated task

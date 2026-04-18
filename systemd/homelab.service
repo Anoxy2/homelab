@@ -5,7 +5,7 @@ Wants=network-online.target
 Requires=docker.service
 
 [Service]
-Type=oneshot
+Type=forking
 RemainAfterExit=yes
 WorkingDirectory=/home/steges
 User=steges

@@ -162,16 +162,29 @@ automation:
           message: "🚨 Backup failed! Check logs."
 ```
 
-### 4. Prometheus Alertmanager
+### 4. Prometheus Alertmanager Integration
+
+ntfy ist mit Alertmanager für `severity="critical"` verdrahtet. Credentials via `.env`:
+
+```bash
+# ntfy User für Alertmanager anlegen (bereits eingerichtet):
+docker exec ntfy ntfy user add --role=user alertmanager
+docker exec ntfy ntfy access alertmanager alerts rw
+
+# Auth testen:
+curl -u alertmanager:<PASSWORD> -d "test" http://192.168.2.101:8900/alerts
+```
 
 ```yaml
-# alertmanager.yml
-receivers:
-  - name: 'ntfy'
-    webhook_configs:
-      - url: 'http://ntfy.lan/alerts'
-        send_resolved: true
+# alertmanager.yml (Live – Receiver telegram-and-ntfy):
+webhook_configs:
+  - url: 'http://<user>:<pass>@192.168.2.101:8900/alerts?priority=urgent&tags=rotating_light,pilab'
+    send_resolved: true
 ```
+
+- Credentials: `NTFY_ALERTMANAGER_USER` / `NTFY_ALERTMANAGER_PASSWORD` in `.env`
+- Nur `severity="critical"` landet in ntfy (Warning/Info nur Telegram)
+- Vollständige Routing-Konfiguration: [alertmanager-routing.md](alertmanager-routing.md)
 
 ---
 
@@ -286,3 +299,4 @@ cp /var/lib/ntfy/*.db /backup/
 | Datum | Änderung |
 |-------|----------|
 | 2026-04-10 | Dokumentation erstellt, ntfy v2.13.0 |
+| 2026-04-13 | auth-default-access=deny-all; Alertmanager-Integration mit dediziertem Publisher-User |

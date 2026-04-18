@@ -4,6 +4,7 @@
 
 set -euo pipefail
 
+readonly SCRIPT_DIR="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly USB_MOUNT="/mnt/usb-backup"
 readonly BACKUP_ROOT="$USB_MOUNT/backups"
 readonly SOURCE_DIR="/home/steges"

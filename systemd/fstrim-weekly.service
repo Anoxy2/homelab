@@ -1,0 +1,6 @@
+[Unit]
+Description=Weekly fstrim for mounted filesystems
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/fstrim -av

@@ -1,10 +1,14 @@
-/* --- app-skill.js - Canvas Scout / Health / Metrics --- */
+/* --- app-skill.js - Canvas Scout / Health / Metrics / Skills Hub --- */
 window.CanvasSkill = (() => {
   let deps = null;
   let pageInitialized = false;
-  let cache = null;
-  let cacheTs = 0;
+  let coreCache = null;
+  let coreCacheTs = 0;
+  let skillsCache = null;
+  let skillsCacheTs = 0;
+  let latestSkillsPayload = null;
   const FEED_URL = "/state-brief.latest.json";
+  const FEED_SKILLS_URL = "/skill-pages.latest.json";
   const FEED_CACHE_MS = 30000;
 
   const register = ({ ts, showError, setLoading }) => {
@@ -155,6 +159,196 @@ window.CanvasSkill = (() => {
       promoted: "st-ok",
     };
     return { text: status || "unknown", cls: map[status] || "" };
+  };
+
+  /* === SKILLS HUB ==================================================== */
+  const openDocLink = (path) => {
+    if (!path) return "";
+    const clean = String(path).replace(/^\/+/, "");
+    return `<a href=\"/${clean}\" target=\"_blank\" rel=\"noopener\">${esc(clean)}</a>`;
+  };
+
+  const copyActionCommand = async (cmd) => {
+    const statusEl = document.getElementById("skills-status");
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(String(cmd || ""));
+      } else {
+        throw new Error("clipboard-unavailable");
+      }
+      if (statusEl) statusEl.textContent = "Command copied: " + String(cmd || "");
+    } catch {
+      if (statusEl) statusEl.textContent = "Copy failed. Command: " + String(cmd || "");
+    }
+  };
+
+  const renderSkillDetail = (payload, slug) => {
+    const detailEl = document.getElementById("skills-detail");
+    if (!detailEl) return;
+    const skills = payload?.items || [];
+    const skill = skills.find((s) => s.slug === slug);
+    if (!skill) {
+      detailEl.className = "skill-block";
+      detailEl.textContent = "Select a skill from the list.";
+      return;
+    }
+
+    const lines = [
+      "Purpose: " + (skill.purpose || "—"),
+      "Status: " + (skill.status || "—") + " | Source: " + (skill.source || "—"),
+      "Version: " + (skill.version || "—") + " | Last Scout: " + fmtTs(skill.last_scout),
+      "Vetting: " + (skill.vetting_score != null ? Number(skill.vetting_score).toFixed(1) : "—") +
+        " | Risk: " + (skill.risk_tier || "—") + " (" + (skill.risk_score != null ? Number(skill.risk_score).toFixed(1) : "—") + ")",
+      "Verdict: " + (skill.verdict || "—"),
+    ];
+
+    const isBad = String(skill.status || "").includes("rollback") || String(skill.risk_tier || "").toLowerCase() === "critical";
+    const isWarn = String(skill.status || "") === "canary" || String(skill.status || "").includes("pending") || String(skill.risk_tier || "").toLowerCase() === "high";
+    detailEl.className = "skill-block " + (isBad ? "skill-block-bad" : isWarn ? "skill-block-warn" : "skill-block-ok");
+
+    const actions = Array.isArray(skill.actions) ? skill.actions : [];
+    const docs = skill.docs || {};
+    detailEl.innerHTML = [
+      "<pre style=\"margin:0 0 10px;white-space:pre-wrap;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;\">" + esc(lines.join("\n")) + "</pre>",
+      "<div style=\"display:grid;gap:8px;\">",
+      "<div><strong>Docs:</strong> " + (openDocLink(docs.skill_md) || "—") + (docs.runbook ? " | " + openDocLink(docs.runbook) : "") + "</div>",
+      "<div><strong>Actions:</strong></div>",
+      "<div class=\"actions\" id=\"skills-detail-actions\"></div>",
+      "</div>",
+    ].join("");
+
+    const actionsEl = document.getElementById("skills-detail-actions");
+    if (actionsEl) {
+      if (!actions.length) {
+        const span = document.createElement("span");
+        span.className = "foot";
+        span.textContent = "No actions configured.";
+        actionsEl.appendChild(span);
+      } else {
+        actions.forEach((a) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = a.label || "Action";
+          btn.disabled = a.enabled === false;
+          btn.title = a.id || "";
+          btn.addEventListener("click", () => copyActionCommand(a.id || ""));
+          actionsEl.appendChild(btn);
+        });
+      }
+    }
+  };
+
+  const renderSkills = (payload) => {
+    latestSkillsPayload = payload;
+    const skills = payload.items || [];
+    const statusCounts = {};
+    skills.forEach((s) => {
+      const key = String(s.status || "unknown");
+      statusCounts[key] = (statusCounts[key] || 0) + 1;
+    });
+    const highRisk = skills.filter((s) => {
+      const tier = String(s.risk_tier || "").toLowerCase();
+      return tier === "high" || tier === "critical";
+    }).length;
+
+    renderKpis(document.getElementById("skills-kpis"), [
+      { label: "Known", value: payload.count ?? skills.length },
+      { label: "Active", value: statusCounts.active ?? 0, cls: "ok" },
+      { label: "Canary", value: statusCounts.canary ?? 0, cls: (statusCounts.canary ?? 0) > 0 ? "warn" : "ok" },
+      { label: "Pending", value: (statusCounts["pending-review"] ?? 0) + (statusCounts["pending-blacklist"] ?? 0), cls: ((statusCounts["pending-review"] ?? 0) + (statusCounts["pending-blacklist"] ?? 0)) > 0 ? "warn" : "ok" },
+      { label: "Rollback", value: statusCounts.rollback ?? 0, cls: (statusCounts.rollback ?? 0) > 0 ? "bad" : "ok" },
+      { label: "High Risk", value: highRisk, cls: highRisk > 0 ? "bad" : "ok" },
+    ]);
+
+    const body = document.getElementById("skills-table-body");
+    const searchInput = document.getElementById("skills-search");
+    const statusFilter = document.getElementById("skills-filter-status");
+    if (!body || !searchInput || !statusFilter) return;
+
+    const selectSkill = (slug) => {
+      renderSkillDetail(latestSkillsPayload || payload, slug);
+      history.replaceState(null, "", "#skills:" + encodeURIComponent(slug));
+    };
+
+    const applyFilter = () => {
+      const q = String(searchInput.value || "").trim().toLowerCase();
+      const f = String(statusFilter.value || "all");
+      const filtered = skills.filter((s) => {
+        if (f !== "all" && String(s.status || "") !== f) return false;
+        if (!q) return true;
+        const blob = [s.slug, s.source, s.version, s.status].map((x) => String(x || "").toLowerCase()).join(" ");
+        return blob.includes(q);
+      });
+
+      body.innerHTML = "";
+      if (!filtered.length) {
+        body.innerHTML = "<tr><td colspan=\"5\" class=\"skill-empty\">Keine Skills fuer diesen Filter.</td></tr>";
+        return;
+      }
+
+      filtered.forEach((s) => {
+        const tr = document.createElement("tr");
+        tr.style.cursor = "pointer";
+        tr.title = "Open detail";
+
+        const tdSlug = document.createElement("td");
+        tdSlug.textContent = s.slug || "—";
+
+        const tdStatus = document.createElement("td");
+        const b = document.createElement("span");
+        const sb = statusBadge(s.status);
+        b.className = "st " + sb.cls;
+        b.textContent = sb.text;
+        tdStatus.appendChild(b);
+
+        const tdSource = document.createElement("td");
+        tdSource.textContent = s.source || "—";
+
+        const tdVer = document.createElement("td");
+        tdVer.textContent = s.version || "—";
+
+        const tdLast = document.createElement("td");
+        tdLast.textContent = fmtTs(s.last_scout);
+
+        tr.appendChild(tdSlug);
+        tr.appendChild(tdStatus);
+        tr.appendChild(tdSource);
+        tr.appendChild(tdVer);
+        tr.appendChild(tdLast);
+
+        tr.addEventListener("click", () => selectSkill(s.slug));
+        body.appendChild(tr);
+      });
+    };
+
+    if (!searchInput.dataset.bound) {
+      searchInput.dataset.bound = "1";
+      searchInput.addEventListener("input", applyFilter);
+    }
+    if (!statusFilter.dataset.bound) {
+      statusFilter.dataset.bound = "1";
+      statusFilter.addEventListener("change", applyFilter);
+    }
+
+    applyFilter();
+
+    const hash = String(location.hash || "").replace("#", "");
+    let preferredSlug = "";
+    if (hash.startsWith("skills:")) {
+      preferredSlug = decodeURIComponent(hash.split(":", 2)[1] || "");
+    }
+    renderSkillDetail(payload, preferredSlug || skills[0]?.slug || "");
+
+    if (!window.__canvasSkillSelectBound) {
+      window.__canvasSkillSelectBound = true;
+      window.addEventListener("canvas-skill-select", (ev) => {
+        const slug = ev?.detail?.slug || "";
+        if (slug && latestSkillsPayload) renderSkillDetail(latestSkillsPayload, decodeURIComponent(slug));
+      });
+    }
+
+    const foot = document.getElementById("skills-status");
+    if (foot) foot.textContent = "Skills feed updated: " + (payload.updated_at || "—") + " — total: " + (skills.length || 0);
   };
 
   /* === SCOUT ========================================================= */
@@ -334,32 +528,45 @@ window.CanvasSkill = (() => {
 
     const loadFeed = async ({ force = false } = {}) => {
       const now = Date.now();
-      if (!force && cache && now - cacheTs < FEED_CACHE_MS) {
-        renderScout(cache);
-        renderHealth(cache);
-        renderMetrics(cache);
+      if (!force && coreCache && skillsCache && now - coreCacheTs < FEED_CACHE_MS && now - skillsCacheTs < FEED_CACHE_MS) {
+        renderScout(coreCache);
+        renderHealth(coreCache);
+        renderMetrics(coreCache);
+        renderSkills(skillsCache);
         return;
       }
-      ["scout", "health", "metrics"].forEach((id) => setLoading(id + "-status", true));
+      ["scout", "health", "metrics", "skills"].forEach((id) => setLoading(id + "-status", true));
       try {
-        const res = await fetchWithPolicy(FEED_URL, { cache: "no-store" }, { timeoutMs: 5000, retries: 1 });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        cache = await res.json();
-        cacheTs = Date.now();
-        renderScout(cache);
-        renderHealth(cache);
-        renderMetrics(cache);
+        const [coreRes, skillsRes] = await Promise.all([
+          fetchWithPolicy(FEED_URL, { cache: "no-store" }, { timeoutMs: 5000, retries: 1 }),
+          fetchWithPolicy(FEED_SKILLS_URL, { cache: "no-store" }, { timeoutMs: 5000, retries: 1 }),
+        ]);
+        if (!coreRes.ok) throw new Error("state-brief HTTP " + coreRes.status);
+        if (!skillsRes.ok) throw new Error("skill-pages HTTP " + skillsRes.status);
+
+        coreCache = await coreRes.json();
+        skillsCache = await skillsRes.json();
+        coreCacheTs = Date.now();
+        skillsCacheTs = Date.now();
+
+        renderScout(coreCache);
+        renderHealth(coreCache);
+        renderMetrics(coreCache);
+        renderSkills(skillsCache);
       } catch (err) {
         setStatuses("Feed error: " + (err.message || "unknown"));
-        showError(classifyFetchError(err), "State brief feed failed: " + (err.message || "unknown"));
+        const skillsStatus = document.getElementById("skills-status");
+        if (skillsStatus) skillsStatus.textContent = "Feed error: " + (err.message || "unknown");
+        showError(classifyFetchError(err), "Skills feed failed: " + (err.message || "unknown"));
       } finally {
-        ["scout", "health", "metrics"].forEach((id) => setLoading(id + "-status", false));
+        ["scout", "health", "metrics", "skills"].forEach((id) => setLoading(id + "-status", false));
       }
     };
 
     ["scout", "health", "metrics"].forEach((id) => {
       document.getElementById("btn-" + id + "-refresh")?.addEventListener("click", () => loadFeed({ force: true }));
     });
+    document.getElementById("btn-skills-refresh")?.addEventListener("click", () => loadFeed({ force: true }));
     loadFeed({ force: true });
   };
 

@@ -1,55 +1,14 @@
 {
-  "updated_at": "2026-04-09T21:11:50Z",
+  "updated_at": "2026-04-10T05:06:46Z",
   "operations": {
     "open_work": {
       "source_path": "docs/operations/open-work-todo.md",
-      "items": [
-        {
-          "priority": "OPEN",
-          "section": "Offene Arbeit",
-          "text": "P0 Reverse-Proxy Restarbeit: Bridge-Mode-Fix fuer Caddy bei weiter erreichbaren host-mode Backends."
-        },
-        {
-          "priority": "OPEN",
-          "section": "Offene Arbeit",
-          "text": "Infra-Folgeentscheidungen aus Hardening/Monitoring in konkrete Umsetzungs-Todos zerlegen."
-        },
-        {
-          "priority": "P1",
-          "section": "P1 Self-Healing Backlog (integriert aus agent/TO-DO.md)",
-          "text": "Service-Health-Watchdog fuer zentrale Container inkl. Restart-Strategie und Eskalation nach wiederholten Fehlversuchen."
-        },
-        {
-          "priority": "P1",
-          "section": "P1 Self-Healing Backlog (integriert aus agent/TO-DO.md)",
-          "text": "Config-Check und abgesicherter Rollback-Flow fuer kritische Konfigurationen (Pi-hole, Home Assistant, Caddy)."
-        },
-        {
-          "priority": "P1",
-          "section": "P1 Self-Healing Backlog (integriert aus agent/TO-DO.md)",
-          "text": "Connectivity-/Tailscale-Selbsttest inkl. DNS-/Gateway-Pruefungen und klarer Reconnect-Strategie."
-        },
-        {
-          "priority": "P1",
-          "section": "P1 Self-Healing Backlog (integriert aus agent/TO-DO.md)",
-          "text": "Storage/Mount-Recovery fuer NVMe/Backups inkl. Alarmierung bei hoher Auslastung oder Offline-Zustand."
-        },
-        {
-          "priority": "P1",
-          "section": "P1 Self-Healing Backlog (integriert aus agent/TO-DO.md)",
-          "text": "Sensor-/Hardware-Check fuer Growbox/ESP32 inkl. abgestuftem Reconnect/Neustart-Ansatz."
-        },
-        {
-          "priority": "P1",
-          "section": "P1 Self-Healing Backlog (integriert aus agent/TO-DO.md)",
-          "text": "Self-Heal-Reporting mit strukturiertem Log und regelmaessiger Zusammenfassung (Canvas/Telegram)."
-        }
-      ],
+      "items": [],
       "counts": {
-        "open": 2,
+        "open": 0,
         "p0": 0,
-        "p1": 6,
-        "total": 8
+        "p1": 0,
+        "total": 0
       }
     },
     "handover": {
@@ -75,9 +34,9 @@
       ]
     },
     "kpis": {
-      "open_total": 8,
+      "open_total": 0,
       "p0": 0,
-      "p1": 6,
+      "p1": 0,
       "start_checks": 5,
       "end_checks": 3
     },
@@ -147,8 +106,22 @@
     ]
   },
   "runbooks": {
-    "count": 5,
+    "count": 12,
     "items": [
+      {
+        "title": "Backup Failure Recovery Runbook",
+        "slug": "backup-failure-recovery",
+        "source_path": "docs/runbooks/backup-failure-recovery.md",
+        "summary": "> Was tun wenn Backup fehlschl\u00e4gt? > Schritt-f\u00fcr-Schritt Recovery f\u00fcr alle Backup-Szenarien",
+        "first_steps": [
+          "I/O Errors beim Lesen/Schreiben",
+          "SMART-Attribute zeigen Fehler"
+        ],
+        "tags": [
+          "backup",
+          "recovery"
+        ]
+      },
       {
         "title": "Runbook: ESP32 offline",
         "slug": "esp32-offline",
@@ -160,6 +133,45 @@
         ],
         "tags": [
           "esp32"
+        ]
+      },
+      {
+        "title": "GitHub Auth Refresh Runbook",
+        "slug": "github-auth-refresh",
+        "source_path": "docs/runbooks/github-auth-refresh.md",
+        "summary": "> GitHub Token erneuern wenn abgelaufen oder invalid > Token-Rotation und Troubleshooting",
+        "first_steps": [
+          "`docs/setup/github-automation-setup.md` \u2013 Erst-Setup",
+          "`docs/infrastructure/backup-automation-skill.md` \u2013 Backup-Skill"
+        ],
+        "tags": [
+          "ops"
+        ]
+      },
+      {
+        "title": "Runbook: Home Assistant Restore",
+        "slug": "homeassistant-restore",
+        "source_path": "docs/runbooks/homeassistant-restore.md",
+        "summary": "> Recovery from corruption, failed updates, or data loss > SQLite restore, InfluxDB recovery, configuration reset",
+        "first_steps": [
+          "`docs/infrastructure/homeassistant-smarthome.md`",
+          "`docs/runbooks/backup-failure-recovery.md`"
+        ],
+        "tags": [
+          "ops"
+        ]
+      },
+      {
+        "title": "Runbook: MQTT Broker Recovery",
+        "slug": "mqtt-broker-restart",
+        "source_path": "docs/runbooks/mqtt-broker-restart.md",
+        "summary": "> Mosquitto broker restart, persistence issues, auth problems",
+        "first_steps": [
+          "`docs/infrastructure/mqtt-mosquitto.md`",
+          "`docs/infrastructure/esphome-firmware.md`"
+        ],
+        "tags": [
+          "ops"
         ]
       },
       {
@@ -213,6 +225,45 @@
         ],
         "tags": [
           "rag",
+          "recovery"
+        ]
+      },
+      {
+        "title": "Skill Dependency Health Check",
+        "slug": "skill-dependency-check",
+        "source_path": "docs/runbooks/skill-dependency-check.md",
+        "summary": "> \u00dcberpr\u00fcfung der Skill-Abh\u00e4ngigkeiten > Diagnose und Fix f\u00fcr broken dependencies",
+        "first_steps": [
+          "github-automation # Skill-Name",
+          "rsync # System-Package"
+        ],
+        "tags": [
+          "ops"
+        ]
+      },
+      {
+        "title": "USB Restore Procedure",
+        "slug": "usb-restore-procedure",
+        "source_path": "docs/runbooks/usb-restore-procedure.md",
+        "summary": "> Schritt-f\u00fcr-Schritt Wiederherstellung aus USB-Backup > Disaster Recovery f\u00fcr komplette oder partielle Restore",
+        "first_steps": [
+          "[ ] NVMe funktioniert (oder Ersatz-SD/NVMe)",
+          "[ ] USB-Backup Stick vorhanden"
+        ],
+        "tags": [
+          "ops"
+        ]
+      },
+      {
+        "title": "Runbook: Vaultwarden Lockout Recovery",
+        "slug": "vaultwarden-lockout-recovery",
+        "source_path": "docs/runbooks/vaultwarden-lockout-recovery.md",
+        "summary": "> Recovery when locked out of Vaultwarden > Admin token, database reset, restore from backup",
+        "first_steps": [
+          "`docs/infrastructure/vaultwarden-setup.md`",
+          "`docs/runbooks/backup-failure-recovery.md`"
+        ],
+        "tags": [
           "recovery"
         ]
       }

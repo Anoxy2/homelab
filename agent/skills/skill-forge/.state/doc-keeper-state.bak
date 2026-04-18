@@ -2,8 +2,8 @@
   "last_changelog_mode": "skip",
   "last_daily_run": "2026-04-05",
   "last_mode": "manual",
-  "last_processed_head": "1f1447a131eb2fcdfed3b2607ed18ef401a2bef7",
-  "last_reason": "path-migration-smoke",
-  "last_run_at": "2026-04-09T19:30:02Z",
+  "last_processed_head": "2bd6dd4de9e132d031d3aae41f70d45783d140e3",
+  "last_reason": "heartbeat-weekly",
+  "last_run_at": "2026-04-17T05:02:57Z",
   "last_scan": "full-scan"
 }

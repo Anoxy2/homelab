@@ -13,6 +13,7 @@
 - `/home/steges/agent/HEARTBEAT.md`
 - `/home/steges/agent/HANDSHAKE.md`
 - `/home/steges/agent/MEMORY.md`
+- `/home/steges/agent/LEARNINGS.md` (via learn-Skill; automatisch bei jedem observe/weekly)
 - `/home/steges/docs/operations/open-work-todo.md`
 - `/home/steges/infra/openclaw-data/action-log.jsonl` (letzte Eintraege, normalisiert)
 - `/home/steges/agent/SELF-MODEL.md`

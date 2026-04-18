@@ -1,119 +1,7 @@
 {
-  "updated_at": "2026-04-09T18:44:49Z",
+  "updated_at": "2026-04-10T05:06:46Z",
   "count": 50,
   "entries": [
-    {
-      "ts": "2026-04-06T20:37:08Z",
-      "skill": "heartbeat",
-      "action": "telegram_summary",
-      "result": "sent_or_skipped",
-      "triggered_by": "heartbeat"
-    },
-    {
-      "ts": "2026-04-07T05:02:50Z",
-      "skill": "heartbeat",
-      "action": "orchestrate_live",
-      "result": "success(vet=80)",
-      "triggered_by": "heartbeat"
-    },
-    {
-      "ts": "2026-04-07T05:02:50Z",
-      "skill": "doc-keeper",
-      "action": "daily_run",
-      "result": "failed(rc=1)",
-      "triggered_by": "heartbeat"
-    },
-    {
-      "ts": "2026-04-07T05:02:50Z",
-      "skill": "growbox",
-      "action": "daily_diary_entry",
-      "result": "created",
-      "triggered_by": "heartbeat"
-    },
-    {
-      "ts": "2026-04-07T05:02:51Z",
-      "skill": "heartbeat",
-      "action": "metrics_weekly",
-      "result": "failed(rc=1)",
-      "triggered_by": "heartbeat"
-    },
-    {
-      "ts": "2026-04-07T05:02:51Z",
-      "skill": "heartbeat",
-      "action": "telegram_summary",
-      "result": "sent_or_skipped",
-      "triggered_by": "heartbeat"
-    },
-    {
-      "ts": "2026-04-07T05:02:51Z",
-      "skill": "heartbeat",
-      "action": "last_run_ts_updated",
-      "result": "2026-04-07T05:02:51Z",
-      "triggered_by": "heartbeat"
-    },
-    {
-      "ts": "2026-04-07T17:05:03Z",
-      "skill": "heartbeat",
-      "action": "orchestrate_live",
-      "result": "success(vet=80)",
-      "triggered_by": "heartbeat"
-    },
-    {
-      "ts": "2026-04-07T17:05:03Z",
-      "skill": "heartbeat",
-      "action": "metrics_weekly",
-      "result": "failed(rc=1)",
-      "triggered_by": "heartbeat"
-    },
-    {
-      "ts": "2026-04-07T17:05:04Z",
-      "skill": "heartbeat",
-      "action": "telegram_summary",
-      "result": "sent_or_skipped",
-      "triggered_by": "heartbeat"
-    },
-    {
-      "ts": "2026-04-07T17:05:04Z",
-      "skill": "heartbeat",
-      "action": "last_run_ts_updated",
-      "result": "2026-04-07T17:05:04Z",
-      "triggered_by": "heartbeat"
-    },
-    {
-      "ts": "2026-04-08T05:01:31Z",
-      "skill": "heartbeat",
-      "action": "orchestrate_live",
-      "result": "success(vet=80)",
-      "triggered_by": "heartbeat"
-    },
-    {
-      "ts": "2026-04-08T05:01:31Z",
-      "skill": "doc-keeper",
-      "action": "daily_run",
-      "result": "failed(rc=1)",
-      "triggered_by": "heartbeat"
-    },
-    {
-      "ts": "2026-04-08T05:01:31Z",
-      "skill": "growbox",
-      "action": "daily_diary_entry",
-      "result": "created",
-      "triggered_by": "heartbeat"
-    },
-    {
-      "ts": "2026-04-08T05:01:31Z",
-      "skill": "heartbeat",
-      "action": "metrics_weekly",
-      "result": "failed(rc=1)",
-      "triggered_by": "heartbeat"
-    },
-    {
-      "ts": "2026-04-08T05:01:32Z",
-      "skill": "heartbeat",
-      "action": "telegram_summary",
-      "result": "sent_or_skipped",
-      "triggered_by": "heartbeat"
-    },
     {
       "ts": "2026-04-08T05:01:32Z",
       "skill": "heartbeat",
@@ -357,6 +245,125 @@
       "skill": "heartbeat",
       "action": "telegram_summary",
       "result": "sent_or_skipped",
+      "triggered_by": "heartbeat"
+    },
+    {
+      "ts": "2026-04-09T18:44:49Z",
+      "skill": "heartbeat",
+      "action": "last_run_ts_updated",
+      "result": "2026-04-09T18:44:49Z",
+      "triggered_by": "heartbeat"
+    },
+    {
+      "ts": "2026-04-09T18:51:23Z",
+      "skill": "openclaw-rag",
+      "action": "reindex",
+      "result": "failed(post_canary_failed; restored_snapshot)",
+      "triggered_by": "reindex.sh",
+      "index_checksum": "e85cc3a43b951e0d2809c38ca302aab8415973f1dfe57000a6d0e52a096eaa1e"
+    },
+    {
+      "ts": "2026-04-09T18:51:56Z",
+      "skill": "openclaw-rag",
+      "action": "reindex",
+      "result": "failed(post_canary_failed; restored_snapshot)",
+      "triggered_by": "reindex.sh",
+      "index_checksum": "e85cc3a43b951e0d2809c38ca302aab8415973f1dfe57000a6d0e52a096eaa1e"
+    },
+    {
+      "ts": "2026-04-09T18:54:13Z",
+      "skill": "openclaw-rag",
+      "action": "reindex",
+      "result": "failed(post_canary_failed; restored_snapshot)",
+      "triggered_by": "reindex.sh",
+      "index_checksum": "e85cc3a43b951e0d2809c38ca302aab8415973f1dfe57000a6d0e52a096eaa1e"
+    },
+    {
+      "ts": "2026-04-09T18:55:18Z",
+      "skill": "openclaw-rag",
+      "action": "reindex",
+      "result": "failed(post_canary_failed; restored_snapshot)",
+      "triggered_by": "reindex.sh",
+      "index_checksum": "e85cc3a43b951e0d2809c38ca302aab8415973f1dfe57000a6d0e52a096eaa1e"
+    },
+    {
+      "ts": "2026-04-09T19:06:57Z",
+      "skill": "openclaw-rag",
+      "action": "reindex",
+      "result": "success(post_canary_passed)",
+      "triggered_by": "reindex.sh",
+      "index_checksum": "0b98d57fcb3a3669285aca5c35b964142290202c91628ba22bb27b300944d3cc"
+    },
+    {
+      "ts": "2026-04-09T19:25:11Z",
+      "skill": "openclaw-rag",
+      "action": "reindex",
+      "result": "success(post_canary_passed)",
+      "triggered_by": "reindex.sh",
+      "index_checksum": "c5020bd0171313e5ead6ef9ac4fa848f6789d2b624aef9a80e5196bc11e3510b"
+    },
+    {
+      "ts": "2026-04-10T05:05:22Z",
+      "skill": "heartbeat",
+      "action": "orchestrate_live",
+      "result": "success(vet=80)",
+      "triggered_by": "heartbeat"
+    },
+    {
+      "ts": "2026-04-10T05:06:41Z",
+      "skill": "openclaw-rag",
+      "action": "reindex",
+      "result": "success(post_canary_passed)",
+      "triggered_by": "reindex.sh",
+      "index_checksum": "d9859913ebaeb4a4eb4a43cd14a3de9bcece0d68c1010e79c09dc037bc895a4c"
+    },
+    {
+      "ts": "2026-04-10T05:06:42Z",
+      "skill": "doc-keeper",
+      "action": "daily_run",
+      "result": "triggered",
+      "triggered_by": "heartbeat"
+    },
+    {
+      "ts": "2026-04-10T05:06:42Z",
+      "skill": "growbox",
+      "action": "daily_diary_entry",
+      "result": "created",
+      "triggered_by": "heartbeat"
+    },
+    {
+      "ts": "2026-04-10T05:06:42Z",
+      "skill": "heartbeat",
+      "action": "metrics_weekly",
+      "result": "failed(rc=1)",
+      "triggered_by": "heartbeat"
+    },
+    {
+      "ts": "2026-04-10T05:06:43Z",
+      "skill": "heartbeat",
+      "action": "telegram_summary",
+      "result": "sent_or_skipped",
+      "triggered_by": "heartbeat"
+    },
+    {
+      "ts": "2026-04-10T05:06:46Z",
+      "skill": "heartbeat",
+      "action": "daily_health_snapshot",
+      "result": "sent",
+      "triggered_by": "heartbeat"
+    },
+    {
+      "ts": "2026-04-10T05:06:46Z",
+      "skill": "heartbeat",
+      "action": "canvas_ops_brief",
+      "result": "updated",
+      "triggered_by": "heartbeat"
+    },
+    {
+      "ts": "2026-04-10T05:06:46Z",
+      "skill": "heartbeat",
+      "action": "canvas_state_brief",
+      "result": "updated",
       "triggered_by": "heartbeat"
     }
   ]

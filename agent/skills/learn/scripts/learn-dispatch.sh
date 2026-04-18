@@ -3,33 +3,193 @@ set -euo pipefail
 # shellcheck source=/dev/null
 source "/home/steges/agent/skills/skill-forge/scripts/common.sh"
 
-LEARN="$SM_ROOT/.learnings/LEARNINGS.md"
+LEARNINGS_MD="/home/steges/agent/LEARNINGS.md"
+LEARNINGS_JSONL="$STATE_DIR/learnings.jsonl"
+LEARN_WEEKLY_STATE="$STATE_DIR/learn-weekly.json"
 ACTION_LOG="/home/steges/infra/openclaw-data/action-log.jsonl"
 KNOWN_SKILLS_PATH="$STATE_DIR/known-skills.json"
 RISK_REPORT="$STATE_DIR/skill-risk-report.json"
-LEARN_WEEKLY_STATE="$STATE_DIR/learn-weekly.json"
-mkdir -p "$SM_ROOT/.learnings"
-[[ -f "$LEARN" ]] || cat > "$LEARN" <<'EOF'
-# LEARNINGS
-EOF
 
 usage() {
-  echo "Usage: learn-dispatch.sh show|weekly [--json]|promote <id>|extract <id>"
+  echo "Usage: learn-dispatch.sh show|observe|search|weekly [--json]|promote <id>|extract <id>"
+}
+
+observe() {
+  local text="${1:-}"
+  [[ -n "$text" ]] || { echo "Usage: learn observe \"<text>\" [--tags a,b]" >&2; exit 2; }
+  shift
+  local tags=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --tags)
+        tags="${2:-}"
+        shift 2
+        ;;
+      *)
+        shift
+        ;;
+    esac
+  done
+
+  python3 - "$LEARNINGS_JSONL" "$LEARNINGS_MD" "$text" "$tags" <<'PY'
+import fcntl
+import json
+import sys
+from datetime import datetime, timezone
+
+jsonl_path, md_path, text, tags_raw = sys.argv[1:]
+now = datetime.now(timezone.utc)
+ts = now.strftime('%Y-%m-%dT%H:%M:%SZ')
+entry_id = f"learn-{now.strftime('%Y%m%d%H%M%S')}"
+tags = [t.strip() for t in tags_raw.split(',') if t.strip()] if tags_raw else []
+
+entry = {
+  "id": entry_id,
+  "ts": ts,
+  "text": text,
+  "tags": tags,
+  "source": "observe",
+  "promoted": False,
+}
+
+lock_path = jsonl_path + '.lock'
+with open(lock_path, 'w', encoding='utf-8') as lf:
+  fcntl.flock(lf, fcntl.LOCK_EX)
+  with open(jsonl_path, 'a', encoding='utf-8') as f:
+    f.write(json.dumps(entry, ensure_ascii=True) + '\n')
+  fcntl.flock(lf, fcntl.LOCK_UN)
+
+tag_str = f" [{', '.join(tags)}]" if tags else ""
+with open(md_path, 'a', encoding='utf-8') as f:
+  f.write(f"\n- [{entry_id}] {text}{tag_str}\n")
+
+print(f"observed: {entry_id}")
+PY
+  log_audit "LEARN" "-" "observe"
+}
+
+show_filtered() {
+  local tag=""
+  local since=""
+  local json_mode=0
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --tag)
+        tag="${2:-}"
+        shift 2
+        ;;
+      --since)
+        since="${2:-}"
+        shift 2
+        ;;
+      --json)
+        json_mode=1
+        shift
+        ;;
+      *)
+        shift
+        ;;
+    esac
+  done
+
+  python3 - "$LEARNINGS_JSONL" "$tag" "$since" "$json_mode" <<'PY'
+import json
+import os
+import sys
+from datetime import datetime, timezone, timedelta
+
+jsonl_path, tag, since_str, json_mode = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4] == '1'
+entries = []
+if os.path.exists(jsonl_path):
+  with open(jsonl_path, encoding='utf-8') as f:
+    for line in f:
+      line = line.strip()
+      if not line:
+        continue
+      try:
+        entries.append(json.loads(line))
+      except Exception:
+        pass
+
+if since_str:
+  try:
+    days = int(since_str.rstrip('d'))
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    filtered = []
+    for e in entries:
+      ts = e.get('ts', '')
+      dt = datetime.strptime(ts, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+      if dt >= cutoff:
+        filtered.append(e)
+    entries = filtered
+  except Exception:
+    pass
+
+if tag:
+  entries = [e for e in entries if tag in e.get('tags', [])]
+
+if json_mode:
+  print(json.dumps(entries, ensure_ascii=True, indent=2))
+else:
+  for e in entries:
+    tag_str = f" [{', '.join(e.get('tags', []))}]" if e.get('tags') else ''
+    prom = ' [promoted]' if e.get('promoted') else ''
+    print(f"- [{e.get('id', '?')}] {e.get('ts', '')} {e.get('text', '')}{tag_str}{prom}")
+PY
+}
+
+search_learn() {
+  local query="${1:-}"
+  local json_mode=0
+  [[ "${2:-}" == "--json" ]] && json_mode=1
+  [[ -n "$query" ]] || { echo "Usage: learn search \"<keyword>\" [--json]" >&2; exit 2; }
+
+  python3 - "$LEARNINGS_JSONL" "$query" "$json_mode" <<'PY'
+import json
+import os
+import sys
+
+jsonl_path, query, json_mode = sys.argv[1], sys.argv[2].lower(), sys.argv[3] == '1'
+entries = []
+if os.path.exists(jsonl_path):
+  with open(jsonl_path, encoding='utf-8') as f:
+    for line in f:
+      line = line.strip()
+      if not line:
+        continue
+      try:
+        e = json.loads(line)
+      except Exception:
+        continue
+      text = e.get('text', '').lower()
+      tags = [str(t).lower() for t in e.get('tags', [])]
+      if query in text or any(query in t for t in tags):
+        entries.append(e)
+
+if json_mode:
+  print(json.dumps(entries, ensure_ascii=True, indent=2))
+else:
+  for e in entries:
+    print(f"- [{e.get('id', '?')}] {e.get('text', '')}")
+print(f"# {len(entries)} match(es) for '{query}'", file=sys.stderr)
+PY
 }
 
 weekly() {
   local json_mode=0
   [[ "${1:-}" == "--json" ]] && json_mode=1
 
-  python3 - "$LEARN" "$AUDIT_LOG" "$ACTION_LOG" "$KNOWN_SKILLS_PATH" "$RISK_REPORT" "$LEARN_WEEKLY_STATE" "$json_mode" <<'PY'
+  local result
+  result="$(python3 - "$LEARNINGS_MD" "$AUDIT_LOG" "$ACTION_LOG" "$KNOWN_SKILLS_PATH" "$RISK_REPORT" "$LEARN_WEEKLY_STATE" "$LEARNINGS_JSONL" "$json_mode" <<'PY'
 import json
 import os
 import sys
 import tempfile
 from collections import Counter
 from datetime import datetime, timedelta, timezone
+import fcntl
 
-learn_path, audit_path, action_path, known_path, risk_path, state_path, json_mode = sys.argv[1:8]
+learn_path, audit_path, action_path, known_path, risk_path, state_path, jsonl_path, json_mode = sys.argv[1:9]
 json_mode = json_mode == '1'
 now = datetime.now(timezone.utc)
 week_key = now.strftime('%G-W%V')
@@ -167,6 +327,21 @@ for entry in entries:
 with open(learn_path, 'a', encoding='utf-8') as f:
   f.write('\n'.join(section_lines) + '\n')
 
+lock_path = jsonl_path + '.lock'
+with open(lock_path, 'w', encoding='utf-8') as lf:
+  fcntl.flock(lf, fcntl.LOCK_EX)
+  with open(jsonl_path, 'a', encoding='utf-8') as jf:
+    for entry in entries:
+      jf.write(json.dumps({
+        'id': entry['id'],
+        'ts': now.strftime('%Y-%m-%dT%H:%M:%SZ'),
+        'text': entry['summary'],
+        'tags': ['weekly-distill'],
+        'source': 'weekly-distill',
+        'promoted': False,
+      }, ensure_ascii=True) + '\n')
+  fcntl.flock(lf, fcntl.LOCK_UN)
+
 state = {
   'last_week_key': week_key,
   'last_run_at': now.strftime('%Y-%m-%dT%H:%M:%SZ'),
@@ -192,36 +367,118 @@ else:
   first = entries[0]['id'] if entries else 'none'
   print(f"Weekly learnings: ok; week={week_key}; entries={len(entries)}; first={first}")
 PY
+)"
+
+  if [[ "$json_mode" == "1" ]]; then
+    echo "$result"
+  else
+    python3 - <<'PY' "$result"
+import json, sys
+data = json.loads(sys.argv[1])
+if data.get('status') == 'skipped':
+    print(f"Weekly learnings: skipped; week={data.get('week_key')}; entries={len(data.get('entries', []))}")
+else:
+    entries = data.get('entries', [])
+    first = entries[0].get('id') if entries else 'none'
+    print(f"Weekly learnings: ok; week={data.get('week_key')}; entries={len(entries)}; first={first}")
+PY
+  fi
+}
+
+promote() {
+  local id="${1:-}"
+  [[ -n "$id" ]] || { echo "Usage: learn promote <id>" >&2; exit 2; }
+
+  python3 - "$LEARNINGS_JSONL" "$id" <<'PY'
+import json
+import os
+import sys
+import tempfile
+
+jsonl_path, target_id = sys.argv[1], sys.argv[2]
+if not os.path.exists(jsonl_path):
+  print(f"ERROR: {jsonl_path} not found", file=sys.stderr)
+  raise SystemExit(1)
+
+entries = []
+found = False
+with open(jsonl_path, encoding='utf-8') as f:
+  for line in f:
+    line = line.strip()
+    if not line:
+      continue
+    try:
+      e = json.loads(line)
+    except Exception:
+      continue
+    if e.get('id') == target_id:
+      e['promoted'] = True
+      found = True
+    entries.append(e)
+
+if not found:
+  print(f"ERROR: id {target_id} not found", file=sys.stderr)
+  raise SystemExit(1)
+
+fd, tmp = tempfile.mkstemp(prefix='.tmp-', suffix='.jsonl', dir=os.path.dirname(jsonl_path))
+try:
+  with os.fdopen(fd, 'w', encoding='utf-8') as f:
+    for e in entries:
+      f.write(json.dumps(e, ensure_ascii=True) + '\n')
+    f.flush()
+    os.fsync(f.fileno())
+  os.replace(tmp, jsonl_path)
+finally:
+  if os.path.exists(tmp):
+    os.unlink(tmp)
+
+print(f"promoted: {target_id}")
+PY
+  log_audit "LEARN" "-" "promote id=$id"
 }
 
 main(){
   ensure_dirs; init_state_files
+  [[ -f "$LEARNINGS_JSONL" ]] || : > "$LEARNINGS_JSONL"
+
+  local old_learnings="$SM_ROOT/.learnings/LEARNINGS.md"
+  if [[ -f "$old_learnings" && ! -f "$LEARNINGS_MD" ]]; then
+    cp "$old_learnings" "$LEARNINGS_MD"
+  fi
+  [[ -f "$LEARNINGS_MD" ]] || printf '# LEARNINGS\n' > "$LEARNINGS_MD"
+
   local sub="${1:-show}"
   case "$sub" in
     show)
-      cat "$LEARN"
+      shift
+      show_filtered "$@"
       ;;
-  weekly)
-    shift
-    weekly "$@"
-    log_audit "LEARN" "-" "weekly-distill"
-    ;;
+    observe)
+      shift
+      observe "$@"
+      ;;
+    search)
+      shift
+      search_learn "$@"
+      ;;
+    weekly)
+      shift
+      weekly "$@"
+      log_audit "LEARN" "-" "weekly-distill"
+      ;;
     promote)
-      [[ $# -eq 2 ]] || { echo "Usage: learn-dispatch.sh promote <id>"; exit 1; }
-      echo "- promoted learning id=$2 at $(now_iso)" >> "$LEARN"
-      log_audit "LEARN" "-" "promote id=$2"
-      echo "Promoted learning: $2"
+      [[ $# -eq 2 ]] || { echo "Usage: learn-dispatch.sh promote <id>"; exit 2; }
+      promote "$2"
       ;;
     extract)
-      [[ $# -eq 2 ]] || { echo "Usage: learn-dispatch.sh extract <id>"; exit 1; }
-      # extract delegiert an authoring-skill via skill-forge author-skill.sh (lifecycle)
+      [[ $# -eq 2 ]] || { echo "Usage: learn-dispatch.sh extract <id>"; exit 2; }
       "$SM_ROOT/scripts/author-skill.sh" "learning-$2" --mode scratch --reason "learning extraction $2" >/dev/null
       log_audit "LEARN" "-" "extract id=$2"
       echo "Extracted learning as skill: learning-$2"
       ;;
     *)
       usage
-      exit 1
+      exit 2
       ;;
   esac
 }
