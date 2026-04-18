@@ -153,12 +153,16 @@ run_backup() {
         "Home Assistant" \
         || ((errors++))
     
-    # 4. Grafana
-    backup_path \
-        "$SOURCE_DIR/grafana/data/grafana.db" \
-        "$backup_dir/grafana/" \
-        "Grafana DB" \
-        || ((errors++))
+    # 4. Grafana — sqlite3 .backup für konsistenten Snapshot (WAL-safe)
+    log "Backing up Grafana DB..."
+    mkdir -p "$backup_dir/grafana"
+    if sqlite3 "$SOURCE_DIR/grafana/data/grafana.db" ".backup $backup_dir/grafana/grafana.db" 2>/dev/null; then
+        local size=$(du -sm "$backup_dir/grafana/" | cut -f1)
+        log "  Grafana DB: ${size}MB"
+    else
+        error "  Failed to backup Grafana DB"
+        ((errors++))
+    fi
     
     # 5. Vaultwarden
     backup_path \
