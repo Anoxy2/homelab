@@ -188,7 +188,42 @@ run_backup() {
     # 8. Git Config
     [[ -f "$SOURCE_DIR/.gitconfig" ]] && cp "$SOURCE_DIR/.gitconfig" "$backup_dir/"
     log "  Git config: backed up"
-    
+
+    # 9. Mosquitto
+    backup_path \
+        "$SOURCE_DIR/mosquitto/config/" \
+        "$backup_dir/mosquitto/" \
+        "Mosquitto" \
+        || ((errors++))
+
+    # 10. ESPHome secrets (nur secrets.yaml — configs sind im Git)
+    mkdir -p "$backup_dir/esphome"
+    if [[ -f "$SOURCE_DIR/esphome/config/secrets.yaml" ]]; then
+        cp "$SOURCE_DIR/esphome/config/secrets.yaml" "$backup_dir/esphome/"
+        log "  ESPHome secrets: backed up"
+    else
+        log "  Skipping ESPHome secrets (not found)"
+    fi
+
+    # 11. Authelia
+    backup_path \
+        "$SOURCE_DIR/authelia/config/" \
+        "$backup_dir/authelia/" \
+        "Authelia" \
+        || ((errors++))
+
+    # 12. Uptime Kuma — sqlite3 .backup (WAL-safe, wie Grafana)
+    log "Backing up Uptime Kuma..."
+    mkdir -p "$backup_dir/uptime-kuma"
+    if sqlite3 "$SOURCE_DIR/uptime-kuma/data/kuma.db" \
+        ".backup $backup_dir/uptime-kuma/kuma.db" 2>/dev/null; then
+        local size=$(du -sm "$backup_dir/uptime-kuma/" | cut -f1)
+        log "  Uptime Kuma: ${size}MB"
+    else
+        error "  Failed to backup Uptime Kuma"
+        ((errors++))
+    fi
+
     # Sync to ensure writes complete
     sync
     

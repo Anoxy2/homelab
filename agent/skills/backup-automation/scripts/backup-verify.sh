@@ -99,6 +99,10 @@ check_completeness() {
         "vaultwarden"
         "secrets"
         "ssh"
+        "mosquitto"
+        "esphome"
+        "authelia"
+        "uptime-kuma"
     )
     
     for item in "${required[@]}"; do
