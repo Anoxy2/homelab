@@ -688,6 +688,7 @@
     <button class="nav-link" data-page="decisions">Decisions</button>
     <button class="nav-link" data-page="runbooks">Runbooks</button>
     <button class="nav-link" data-page="settings">Settings</button>
+    <button class="nav-link" data-page="strom">Strom</button>
   </div>
   <div class="nav-clock" id="clock" aria-label="Current time">--:--:--</div>
 </nav>
@@ -1354,6 +1355,18 @@
       </div>
       <p class="settings-notice" id="settings-save-status">Settings are stored locally in the browser. Growbox threshold changes here are display-only - apply them in Home Assistant or THRESHOLDS.md to take effect.</p>
     </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ STROM ══ -->
+<div class="wrap page" id="page-strom">
+  <div class="inner" style="padding:0;height:calc(100vh - var(--nav-h));">
+    <iframe
+      src="/hochrechnung.html"
+      title="Stromkosten-Hochrechnung"
+      style="width:100%;height:100%;border:none;border-radius:0;display:block;"
+      loading="lazy">
+    </iframe>
   </div>
 </div>
 

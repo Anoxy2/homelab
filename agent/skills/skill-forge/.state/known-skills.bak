@@ -233,7 +233,7 @@
   },
   "dht11-temp": {
     "discovered_at": "2026-04-08T19:19:07Z",
-    "last_scout": "2026-04-18T05:01:54Z",
+    "last_scout": "2026-04-18T17:03:41Z",
     "scout_score": 8,
     "slug": "dht11-temp",
     "source": "clawhub",
@@ -266,7 +266,7 @@
   },
   "esp32": {
     "discovered_at": "2026-04-08T19:19:07Z",
-    "last_scout": "2026-04-18T05:01:54Z",
+    "last_scout": "2026-04-18T17:03:41Z",
     "scout_score": 8,
     "slug": "esp32",
     "source": "clawhub",
@@ -299,7 +299,7 @@
   },
   "home-assistant": {
     "discovered_at": "2026-04-08T19:19:06Z",
-    "last_scout": "2026-04-18T05:01:53Z",
+    "last_scout": "2026-04-18T17:03:40Z",
     "scout_score": 8,
     "slug": "home-assistant",
     "source": "clawhub",
@@ -310,7 +310,7 @@
   },
   "home-assistant-agent-secure": {
     "discovered_at": "2026-04-08T19:19:06Z",
-    "last_scout": "2026-04-18T05:01:52Z",
+    "last_scout": "2026-04-18T17:03:40Z",
     "scout_score": 8,
     "slug": "home-assistant-agent-secure",
     "source": "clawhub",
@@ -321,7 +321,7 @@
   },
   "home-assistant-bridge-python": {
     "discovered_at": "2026-04-08T19:19:06Z",
-    "last_scout": "2026-04-18T05:01:53Z",
+    "last_scout": "2026-04-18T17:03:40Z",
     "scout_score": 8,
     "slug": "home-assistant-bridge-python",
     "source": "clawhub",
@@ -332,7 +332,7 @@
   },
   "home-assistant-master": {
     "discovered_at": "2026-04-08T19:19:06Z",
-    "last_scout": "2026-04-18T05:01:53Z",
+    "last_scout": "2026-04-18T17:03:40Z",
     "scout_score": 8,
     "slug": "home-assistant-master",
     "source": "clawhub",
@@ -343,7 +343,7 @@
   },
   "home-assistant-skill": {
     "discovered_at": "2026-04-13T05:00:46Z",
-    "last_scout": "2026-04-18T05:01:53Z",
+    "last_scout": "2026-04-18T17:03:40Z",
     "scout_score": 8,
     "slug": "home-assistant-skill",
     "source": "clawhub",
@@ -354,7 +354,7 @@
   },
   "home-assistant-toolkit": {
     "discovered_at": "2026-04-08T19:19:06Z",
-    "last_scout": "2026-04-18T05:01:53Z",
+    "last_scout": "2026-04-18T17:03:40Z",
     "scout_score": 8,
     "slug": "home-assistant-toolkit",
     "source": "clawhub",
@@ -365,7 +365,7 @@
   },
   "homeassistant-assist": {
     "discovered_at": "2026-04-08T19:19:06Z",
-    "last_scout": "2026-04-18T05:01:53Z",
+    "last_scout": "2026-04-18T17:03:40Z",
     "scout_score": 8,
     "slug": "homeassistant-assist",
     "source": "clawhub",
@@ -376,7 +376,7 @@
   },
   "homeassistant-cli": {
     "discovered_at": "2026-04-08T19:19:06Z",
-    "last_scout": "2026-04-18T05:01:53Z",
+    "last_scout": "2026-04-18T17:03:40Z",
     "scout_score": 8,
     "slug": "homeassistant-cli",
     "source": "clawhub",
@@ -398,7 +398,7 @@
   },
   "homelab-ai": {
     "discovered_at": "2026-04-08T19:19:05Z",
-    "last_scout": "2026-04-18T05:01:52Z",
+    "last_scout": "2026-04-18T17:03:39Z",
     "scout_score": 8,
     "slug": "homelab-ai",
     "source": "clawhub",
@@ -409,7 +409,7 @@
   },
   "homelab-cluster": {
     "discovered_at": "2026-04-08T19:19:05Z",
-    "last_scout": "2026-04-18T05:01:52Z",
+    "last_scout": "2026-04-18T17:03:39Z",
     "scout_score": 8,
     "slug": "homelab-cluster",
     "source": "clawhub",
@@ -431,7 +431,7 @@
   },
   "homeserver": {
     "discovered_at": "2026-04-08T19:19:05Z",
-    "last_scout": "2026-04-18T05:01:52Z",
+    "last_scout": "2026-04-18T17:03:39Z",
     "scout_score": 8,
     "slug": "homeserver",
     "source": "clawhub",
@@ -486,18 +486,18 @@
   },
   "led-ctrl": {
     "discovered_at": "2026-04-08T19:19:07Z",
-    "last_scout": "2026-04-17T17:04:18Z",
+    "last_scout": "2026-04-18T05:01:54Z",
     "scout_score": 8,
     "slug": "led-ctrl",
     "source": "clawhub",
     "status": "canary",
-    "version": "2026.04.17",
+    "version": "2026.04.18",
     "vetted_at": "2026-04-09T05:01:00Z",
     "vetting_score": 80
   },
   "mcp-hass": {
     "discovered_at": "2026-04-08T19:19:06Z",
-    "last_scout": "2026-04-18T05:01:53Z",
+    "last_scout": "2026-04-18T17:03:40Z",
     "scout_score": 8,
     "slug": "mcp-hass",
     "source": "clawhub",
@@ -519,7 +519,7 @@
   },
   "moltbot-ha": {
     "discovered_at": "2026-04-08T19:19:06Z",
-    "last_scout": "2026-04-18T05:01:53Z",
+    "last_scout": "2026-04-18T17:03:40Z",
     "scout_score": 8,
     "slug": "moltbot-ha",
     "source": "clawhub",
@@ -593,7 +593,7 @@
   },
   "pi-admin": {
     "discovered_at": "2026-04-14T17:02:11Z",
-    "last_scout": "2026-04-18T05:01:54Z",
+    "last_scout": "2026-04-18T17:03:41Z",
     "scout_score": 8,
     "slug": "pi-admin",
     "source": "clawhub",
@@ -604,7 +604,7 @@
   },
   "pi-health": {
     "discovered_at": "2026-04-14T17:02:11Z",
-    "last_scout": "2026-04-18T05:01:54Z",
+    "last_scout": "2026-04-18T17:03:41Z",
     "scout_score": 8,
     "slug": "pi-health",
     "source": "clawhub",
@@ -648,7 +648,7 @@
   },
   "raspberry": {
     "discovered_at": "2026-04-08T19:19:07Z",
-    "last_scout": "2026-04-18T05:01:53Z",
+    "last_scout": "2026-04-18T17:03:41Z",
     "scout_score": 8,
     "slug": "raspberry",
     "source": "clawhub",
@@ -659,7 +659,7 @@
   },
   "raspberry-pi-camera-service": {
     "discovered_at": "2026-04-08T19:19:07Z",
-    "last_scout": "2026-04-18T05:01:53Z",
+    "last_scout": "2026-04-18T17:03:40Z",
     "scout_score": 8,
     "slug": "raspberry-pi-camera-service",
     "source": "clawhub",
@@ -670,7 +670,7 @@
   },
   "raspberry-pi-gpio": {
     "discovered_at": "2026-04-08T19:19:07Z",
-    "last_scout": "2026-04-18T05:01:53Z",
+    "last_scout": "2026-04-18T17:03:40Z",
     "scout_score": 8,
     "slug": "raspberry-pi-gpio",
     "source": "clawhub",
@@ -681,7 +681,7 @@
   },
   "raspberry-pi-servo": {
     "discovered_at": "2026-04-08T19:19:07Z",
-    "last_scout": "2026-04-18T05:01:53Z",
+    "last_scout": "2026-04-18T17:03:40Z",
     "scout_score": 8,
     "slug": "raspberry-pi-servo",
     "source": "clawhub",
@@ -692,7 +692,7 @@
   },
   "rdk-x5-gpio": {
     "discovered_at": "2026-04-08T19:19:07Z",
-    "last_scout": "2026-04-18T05:01:54Z",
+    "last_scout": "2026-04-18T17:03:41Z",
     "scout_score": 8,
     "slug": "rdk-x5-gpio",
     "source": "clawhub",
@@ -784,7 +784,7 @@
   },
   "truenas-skill": {
     "discovered_at": "2026-04-14T17:02:10Z",
-    "last_scout": "2026-04-18T05:01:52Z",
+    "last_scout": "2026-04-18T17:03:39Z",
     "scout_score": 8,
     "slug": "truenas-skill",
     "source": "clawhub",
