@@ -190,15 +190,101 @@ PY
   rm -f "$tmp_results"
 }
 
-# ── Step 3: canary ────────────────────────────────────────────────────────────
-# For each vetted skill, checks conflicts and starts a canary run.
-# Conflict-detected skills also enter canary (tracked but flagged).
-# Per-skill errors are captured and non-fatal.
+# ── Step 2b: overlap detection ────────────────────────────────────────────────
+# Prüft jeden vetted Slug gegen lokal installierte Skills.
+# SKIP  → wird nicht in Canary aufgenommen; known-skills: status=covered
+# MERGE → Canary läuft mit overlap_type/covers im Eintrag
+# NEW   → normaler Canary-Lauf
 # Args: vet_file run_id out_file
+# Output: JSON → out_file
+#   {"kind":"step_overlap","run_id":"...","results":[...],"new_count":N,"merge_count":N,"skip_count":N}
+step_overlap() {
+  local vet_file="$1" run_id="$2" out_file="$3"
+
+  local new_count=0 merge_count=0 skip_count=0
+  declare -a overlap_items=()
+
+  while IFS= read -r slug; do
+    [[ -z "$slug" ]] && continue
+
+    local overlap_json overlap_type covers
+    overlap_json="$("$SCRIPT_DIR/overlap-check.sh" "$slug" --json 2>/dev/null \
+      || printf '{"slug":"%s","overlap_type":"NEW","covers":null,"confidence":0}' "$slug")"
+    overlap_type="$(printf '%s' "$overlap_json" | python3 -c \
+      'import json,sys; d=json.load(sys.stdin); print(d.get("overlap_type","NEW"))')"
+    covers="$(printf '%s' "$overlap_json" | python3 -c \
+      'import json,sys; d=json.load(sys.stdin); print(d.get("covers") or "")')"
+
+    case "$overlap_type" in
+      SKIP)
+        skip_count=$((skip_count + 1))
+        log_audit "ORCHESTRATE" "$slug" "overlap SKIP:${covers}"
+        python3 - "$slug" "$covers" "$STATE_DIR/known-skills.json" <<'PY'
+import json, sys
+sys.path.insert(0, '/home/steges/agent/skills/skill-forge/scripts')
+from py_helpers import write_json_atomic
+from datetime import datetime, timezone
+slug, covers, kp = sys.argv[1], sys.argv[2], sys.argv[3]
+with open(kp) as f: known = json.load(f)
+if slug in known:
+    known[slug]['status']       = 'covered'
+    known[slug]['overlap_type'] = 'SKIP'
+    known[slug]['covers']       = covers
+    known[slug]['covered_at']   = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+    write_json_atomic(kp, known)
+PY
+        ;;
+      MERGE)
+        merge_count=$((merge_count + 1))
+        log_audit "ORCHESTRATE" "$slug" "overlap MERGE:${covers}"
+        ;;
+      *)
+        new_count=$((new_count + 1))
+        log_audit "ORCHESTRATE" "$slug" "overlap NEW"
+        ;;
+    esac
+
+    overlap_items+=("${slug}|${overlap_type}|${covers}")
+  done < <(python3 - "$vet_file" <<'PY'
+import json, sys
+with open(sys.argv[1]) as f: d = json.load(f)
+for r in d.get('results', []):
+    if r.get('status') == 'vetted':
+        print(r['slug'])
+PY
+)
+
+  python3 - "$run_id" "$new_count" "$merge_count" "$skip_count" "$out_file" \
+    "${overlap_items[@]+"${overlap_items[@]}"}" <<'PY'
+import json, sys
+run_id, new_c, merge_c, skip_c, out = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]
+results = []
+for i in sys.argv[6:]:
+    if not i: continue
+    parts = i.split('|', 2)
+    results.append({'slug': parts[0], 'overlap_type': parts[1], 'covers': parts[2] or None})
+result = {
+    'kind':        'step_overlap',
+    'run_id':      run_id,
+    'results':     results,
+    'new_count':   int(new_c),
+    'merge_count': int(merge_c),
+    'skip_count':  int(skip_c),
+}
+with open(out, 'w', encoding='utf-8') as f: json.dump(result, f, indent=2)
+PY
+}
+
+# ── Step 3: canary ────────────────────────────────────────────────────────────
+# For each vetted skill (not SKIP-overlapped), checks conflicts and starts a canary run.
+# Conflict-detected skills still enter canary (tracked but flagged).
+# MERGE/NEW canary entries are enriched with overlap_type and covers.
+# Per-skill errors are captured and non-fatal.
+# Args: vet_file overlap_file run_id out_file
 # Output: JSON → out_file
 #   {"kind":"step_canary","run_id":"...","results":[...],"started_count":N,"conflict_count":N,"error_count":N}
 step_canary() {
-  local vet_file="$1" run_id="$2" out_file="$3"
+  local vet_file="$1" overlap_file="$2" run_id="$3" out_file="$4"
 
   local tmp_results
   tmp_results="$(mktemp)"
@@ -206,8 +292,22 @@ step_canary() {
 
   local started_count=0 conflict_count=0 error_count=0
 
+  # Build lookup tables from overlap_file for fast per-slug access
+  declare -A _ol_type _ol_covers
+  while IFS='|' read -r _s _t _c; do
+    [[ -n "$_s" ]] && _ol_type["$_s"]="$_t" && _ol_covers["$_s"]="$_c"
+  done < <(python3 - "$overlap_file" <<'PY'
+import json, sys
+with open(sys.argv[1]) as f: d = json.load(f)
+for r in d.get('results', []):
+    print(f"{r['slug']}|{r.get('overlap_type','NEW')}|{r.get('covers') or ''}")
+PY
+)
+
   while IFS= read -r slug; do
     [[ -z "$slug" ]] && continue
+    # Skip slugs fully covered by a local skill
+    [[ "${_ol_type[$slug]:-NEW}" == "SKIP" ]] && continue
 
     local action
     if "$SCRIPT_DIR/conflict-check.sh" "$slug" >/dev/null 2>&1; then
@@ -216,6 +316,21 @@ step_canary() {
         action="started"
         started_count=$((started_count + 1))
         log_audit "ORCHESTRATE" "$slug" "canary-start"
+        # Enrich canary entry with overlap metadata (MERGE slugs)
+        local _olt="${_ol_type[$slug]:-NEW}" _ocovers="${_ol_covers[$slug]:-}"
+        if [[ "$_olt" != "NEW" ]]; then
+          python3 - "$slug" "$_olt" "$_ocovers" "$STATE_DIR/canary.json" <<'PY'
+import json, sys
+sys.path.insert(0, '/home/steges/agent/skills/skill-forge/scripts')
+from py_helpers import write_json_atomic
+slug, olt, covers, cp = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+with open(cp) as f: c = json.load(f)
+if slug in c:
+    c[slug]['overlap_type'] = olt
+    if covers: c[slug]['covers'] = covers
+    write_json_atomic(cp, c)
+PY
+        fi
       else
         action="error"
         error_count=$((error_count + 1))
@@ -260,6 +375,95 @@ result = {
 with open(out, 'w', encoding='utf-8') as f: json.dump(result, f, indent=2)
 PY
   rm -f "$tmp_results"
+}
+
+# ── Step 3b: sweep stale canaries ─────────────────────────────────────────────
+# Re-evaluiert pre-existierende Running-Canaries, deren until-Fenster abgelaufen ist.
+# Versucht promote; schlägt das fehl → fail. Verhindert dauerhaft hängende Einträge.
+# Args: run_id out_file
+# Output: JSON → out_file
+#   {"kind":"step_sweep_stale","run_id":"...","results":[...],"promoted_count":N,"failed_count":N}
+step_sweep_stale() {
+  local run_id="$1" out_file="$2"
+  local promoted_count=0 failed_count=0
+  local action exit_code fail_code
+  declare -a sweep_items=()
+
+  while IFS= read -r slug; do
+    [[ -z "$slug" ]] && continue
+
+    set +e
+    "$SCRIPT_DIR/canary.sh" promote "$slug" >/dev/null 2>&1
+    exit_code=$?
+    set -e
+
+    if [[ "$exit_code" -eq 0 ]]; then
+      action="promoted"
+      promoted_count=$((promoted_count + 1))
+      log_audit "ORCHESTRATE" "$slug" "stale-sweep promoted"
+    elif [[ "$exit_code" -eq 5 ]]; then
+      action="frozen"
+      log_audit "ORCHESTRATE" "$slug" "stale-sweep frozen"
+    else
+      set +e
+      "$SCRIPT_DIR/canary.sh" fail "$slug" >/dev/null 2>&1
+      fail_code=$?
+      set -e
+      if [[ "$fail_code" -ne 0 ]]; then
+        # canary.sh fail rejected slug (not in known-skills) — patch canary.json directly
+        python3 - "$slug" "$STATE_DIR/canary.json" <<'PY'
+import json, sys
+sys.path.insert(0, '/home/steges/agent/skills/skill-forge/scripts')
+from py_helpers import write_json_atomic
+from datetime import datetime, timezone
+slug, cp = sys.argv[1], sys.argv[2]
+with open(cp) as f: c = json.load(f)
+if slug in c and c[slug].get('status') == 'running':
+    c[slug]['status'] = 'failed'
+    c[slug]['failed_at'] = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+    write_json_atomic(cp, c)
+PY
+      fi
+      action="failed"
+      failed_count=$((failed_count + 1))
+      log_audit "ORCHESTRATE" "$slug" "stale-sweep failed exit=$exit_code"
+    fi
+
+    sweep_items+=("$slug|$action")
+  done < <(python3 - "$STATE_DIR/canary.json" <<'PY'
+import json, sys
+from datetime import datetime, timezone
+with open(sys.argv[1]) as f: d = json.load(f)
+now = datetime.now(timezone.utc)
+for slug, v in d.items():
+    if v.get('status') != 'running':
+        continue
+    until = v.get('until', '')
+    if not until:
+        continue
+    try:
+        dt = datetime.fromisoformat(until.replace('Z', '+00:00'))
+        if now > dt:
+            print(slug)
+    except Exception:
+        pass
+PY
+)
+
+  python3 - "$run_id" "$promoted_count" "$failed_count" "$out_file" "${sweep_items[@]+"${sweep_items[@]}"}" <<'PY'
+import json, sys
+run_id, promoted, failed, out = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+items = sys.argv[5:]
+results = [{'slug': i.split('|')[0], 'action': i.split('|')[1]} for i in items if i]
+result = {
+    'kind': 'step_sweep_stale',
+    'run_id': run_id,
+    'results': results,
+    'promoted_count': int(promoted),
+    'failed_count': int(failed),
+}
+with open(out, 'w', encoding='utf-8') as f: json.dump(result, f, indent=2)
+PY
 }
 
 # ── Step 4: promote ───────────────────────────────────────────────────────────
@@ -438,11 +642,13 @@ PY
   trap '[[ -n "${tmp_dir:-}" ]] && rm -rf "$tmp_dir"' EXIT
 
   # ── Steps (each writes JSON to a temp file) ───────────────────────────────
-  step_discover   "$live" "$limit" "$run_id" "$verbose" "$tmp_dir/discover.json"
-  step_vet        "$tmp_dir/discover.json" "$vet_score" "$run_id" "$tmp_dir/vet.json"
-  step_canary     "$tmp_dir/vet.json" "$run_id" "$tmp_dir/canary.json"
-  step_promote    "$tmp_dir/canary.json" "$run_id" "$tmp_dir/promote.json"
-  step_post_check "$run_id" "$verbose" "$tmp_dir/post.json"
+  step_discover    "$live" "$limit" "$run_id" "$verbose" "$tmp_dir/discover.json"
+  step_vet         "$tmp_dir/discover.json" "$vet_score" "$run_id" "$tmp_dir/vet.json"
+  step_overlap     "$tmp_dir/vet.json" "$run_id" "$tmp_dir/overlap.json"
+  step_canary      "$tmp_dir/vet.json" "$tmp_dir/overlap.json" "$run_id" "$tmp_dir/canary.json"
+  step_sweep_stale "$run_id" "$tmp_dir/sweep.json"
+  step_promote     "$tmp_dir/canary.json" "$run_id" "$tmp_dir/promote.json"
+  step_post_check  "$run_id" "$verbose" "$tmp_dir/post.json"
 
   # ── Metrics & audit ──────────────────────────────────────────────────────
   local end_ms duration_ms
@@ -455,7 +661,9 @@ PY
   if [[ "$json_output" -eq 1 ]]; then
     python3 - "$live" "$vet_score" \
       "$tmp_dir/vet.json" \
+      "$tmp_dir/overlap.json" \
       "$tmp_dir/canary.json" \
+      "$tmp_dir/sweep.json" \
       "$tmp_dir/promote.json" \
       "$tmp_dir/post.json" <<'PY'
 import json, sys
@@ -463,24 +671,32 @@ from datetime import datetime, timezone
 live = sys.argv[1] == '1'
 vet_score = int(sys.argv[2])
 vet_d     = json.load(open(sys.argv[3]))
-canary_d  = json.load(open(sys.argv[4]))
-promote_d = json.load(open(sys.argv[5]))
-post_d    = json.load(open(sys.argv[6]))
+overlap_d = json.load(open(sys.argv[4]))
+canary_d  = json.load(open(sys.argv[5]))
+sweep_d   = json.load(open(sys.argv[6]))
+promote_d = json.load(open(sys.argv[7]))
+post_d    = json.load(open(sys.argv[8]))
 print(json.dumps({
     'kind': 'orchestrate_run',
     'timestamp': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
     'live': live,
     'vet_score': vet_score,
     'summary': {
-        'promoted':  promote_d.get('promoted_count', 0),
-        'blocked':   vet_d.get('blocked_count', 0),
-        'conflicts': canary_d.get('conflict_count', 0),
+        'promoted':       promote_d.get('promoted_count', 0),
+        'stale_promoted': sweep_d.get('promoted_count', 0),
+        'stale_failed':   sweep_d.get('failed_count', 0),
+        'blocked':        vet_d.get('blocked_count', 0),
+        'conflicts':      canary_d.get('conflict_count', 0),
+        'overlap_skip':   overlap_d.get('skip_count', 0),
+        'overlap_merge':  overlap_d.get('merge_count', 0),
     },
     'steps': {
-        'vet':        vet_d,
-        'canary':     canary_d,
-        'promote':    promote_d,
-        'post_check': post_d,
+        'vet':          vet_d,
+        'overlap':      overlap_d,
+        'canary':       canary_d,
+        'sweep_stale':  sweep_d,
+        'promote':      promote_d,
+        'post_check':   post_d,
     },
 }, indent=2))
 PY

@@ -24,7 +24,7 @@ Diese Skills laufen direkt auf dem Pi und sind das Rückgrat der OpenClaw-Automa
 | **health** | `~/scripts/skills health` | Skill-Health-Report (Scores pro Skill) + Budget-Check. |
 | **metrics** | `~/scripts/skills metrics` | Orchestrate-Lauf-Metriken. Latest/Weekly-Reports. |
 | **vuln-watch** | `~/scripts/skills vuln-watch` | Wöchentliche AI/LLM-Sicherheitslücken via GitHub-Suche. Schreibt vuln-log.md. |
-| **openclaw-ui** | Browser: Port 8090 | Canvas UI für OpenClaw-Bedienung. Single-Source: `agent/skills/openclaw-ui/html/index.html`. |
+| **canvas-ui** | Browser: Port 8090 | Canvas UI für OpenClaw-Bedienung. Kein Skill – statische Assets. Single-Source: `infra/canvas/html/index.html`. |
 | **runbook-maintenance** | `~/scripts/skills runbook-maintenance` | Wöchentliche Maintenance-Checks, Runbook-Routing. |
 | **learn** | `~/scripts/skills learn` | Learnings aus Betrieb sammeln. Extrahiert neue Skill-Drafts. |
 | **profile** | `~/scripts/skills profile` | Usage-Keyword-Profil für Scout-Discovery verwalten. |
@@ -90,7 +90,7 @@ Das skill-inventar umfasst die Verwaltung, Entwicklung und den Betrieb von Skill
 - Der Authoring-Prozess kann über Standalone-Skripte oder Skill-Manager-Wrapper erfolgen (`author-skill.sh`, `authoring-dispatch.sh`).
 - Canary-Tests werden mit `~/scripts/skill-forge canary start <name> 24` gestartet und mit `~/scripts/skill-forge canary promote <name>` in Produktion übernommen.
 - Rollbacks sind mit `~/scripts/skill-forge rollback <name>` möglich.
-- Provenance ist vor Produktions-Promotion erforderlich (z.B. bei openclaw-ui).
+- Provenance ist vor Produktions-Promotion erforderlich.
 
 ## Skill-Manager und Integration
 

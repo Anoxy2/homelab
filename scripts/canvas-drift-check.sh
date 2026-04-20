@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-SOURCE_FILE="/home/steges/agent/skills/openclaw-ui/html/index.html"
+SOURCE_FILE="/home/steges/infra/canvas/html/index.html"
 DEPLOYED_FILE="/home/steges/infra/openclaw-data/canvas/index.html"
 
 usage() {

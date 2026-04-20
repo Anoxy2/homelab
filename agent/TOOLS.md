@@ -46,7 +46,7 @@ Services und ihre Daten:
 - portainer     → Docker Management UI
 - watchtower    → Automatische Image-Updates (Sonntag 03:00)
 - openclaw      → Dieser Agent           – Data:   `./infra/openclaw-data`
-- ops-ui        → Canvas UI (statisch)   – HTML:   `./agent/skills/openclaw-ui/html`
+- ops-ui        → Canvas UI (statisch)   – HTML:   `./infra/canvas/html`
 - caddy         → Reverse Proxy fuer `.lan`-Hostnamen – Config: `./caddy/Caddyfile`
 
 Befehle (immer aus `/home/steges/` ausführen):

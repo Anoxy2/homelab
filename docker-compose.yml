@@ -386,7 +386,7 @@ services:
     ports:
       - "192.168.2.101:8090:80"
     volumes:
-      - ./agent/skills/openclaw-ui/html:/usr/share/nginx/html:ro
+      - ./infra/canvas/html:/usr/share/nginx/html:ro
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost/"]
       interval: 30s

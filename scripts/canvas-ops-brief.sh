@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="/home/steges"
-OUT="$ROOT/agent/skills/openclaw-ui/html/ops-brief.latest.json"
+OUT="$ROOT/infra/canvas/html/ops-brief.latest.json"
 
 python3 - "$ROOT" "$OUT" <<'PY'
 import json

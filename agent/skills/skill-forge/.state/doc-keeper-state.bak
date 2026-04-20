@@ -3,7 +3,7 @@
   "last_daily_run": "2026-04-05",
   "last_mode": "manual",
   "last_processed_head": "2bd6dd4de9e132d031d3aae41f70d45783d140e3",
-  "last_reason": "heartbeat-weekly",
-  "last_run_at": "2026-04-17T05:02:57Z",
+  "last_reason": "heartbeat-daily",
+  "last_run_at": "2026-04-18T05:01:55Z",
   "last_scan": "full-scan"
 }

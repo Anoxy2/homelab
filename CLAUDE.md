@@ -134,7 +134,7 @@ Dieses Verzeichnis (`/home/steges/`) ist die Arbeitsumgebung und gleichzeitig pe
 - Restart-Policy: `unless-stopped` für alle Dienste
 - OpenClaw Memory-Limit: 1g / Reservation: 256m
 - Caddy laeuft aktuell mit `network_mode: host`, weil die Backends mehrheitlich ebenfalls host-mode nutzen
-- Canvas Single-Source: `agent/skills/openclaw-ui/html/index.html` ist die einzige Quelle; `infra/openclaw-data/canvas/index.html` ist nur noch ein Symlink dorthin
+- Canvas Single-Source: `infra/canvas/html/index.html` ist die einzige Quelle; `infra/openclaw-data/canvas/index.html` ist nur noch ein Symlink dorthin
 - `OPENCLAW_NO_RESPAWN=1` auf dem openclaw-Container ist **absichtlich**: OpenClaw erkennt Docker nicht als Supervisor (nur systemd/launchd/Windows). Ohne diese Variable würde ein Reload-Event einen detached Child-Prozess im Container forken → zwei Gateway-Prozesse auf Port 18789. Mit der Variable übernimmt Docker's `restart: unless-stopped` die gesamte Lifecycle-Kontrolle. Nicht entfernen.
 
 ## Häufige Befehle

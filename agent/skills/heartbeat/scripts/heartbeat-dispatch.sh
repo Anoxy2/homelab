@@ -32,7 +32,7 @@ record_task_failure() {
 source "/home/steges/scripts/lib/env.sh"
 
 ACTION_LOG_PATH="/home/steges/infra/openclaw-data/action-log.jsonl"
-ACTION_LOG_CANVAS_JSON="/home/steges/agent/skills/openclaw-ui/html/action-log.latest.json"
+ACTION_LOG_CANVAS_JSON="/home/steges/infra/canvas/html/action-log.latest.json"
 CANVAS_OPS_BRIEF_SCRIPT="/home/steges/scripts/canvas-ops-brief.sh"
 CANVAS_STATE_BRIEF_SCRIPT="/home/steges/scripts/canvas-state-brief.sh"
 CANVAS_SKILL_PAGES_BRIEF_SCRIPT="/home/steges/scripts/canvas-skill-pages-brief.sh"
@@ -124,7 +124,7 @@ with open(f"{state_dir}/incident-freeze.json", 'r', encoding='utf-8') as f:
     freeze = json.load(f)
 
 active = sum(1 for v in known.values() if v.get('status') == 'active')
-canary_running = sum(1 for v in canary.values() if v.get('state') == 'running')
+canary_running = sum(1 for v in canary.values() if v.get('status') == 'running')
 pending_status = sum(1 for v in known.values() if v.get('status') == 'pending-blacklist')
 
 print(
@@ -409,7 +409,7 @@ print('1' if d.get('enabled') else '0')
     running_canaries="$(python3 -c "
 import json,sys
 d=json.load(open(sys.argv[1]))
-print(sum(1 for v in d.values() if v.get('state')=='running'))
+print(sum(1 for v in d.values() if v.get('status')=='running'))
 " "$STATE_DIR/canary.json" 2>/dev/null || echo 0)"
     if [[ "$running_canaries" -ge 3 ]]; then
       mode="dry"

@@ -1,7 +1,8 @@
 {
   "0protocol": {
+    "failed_at": "2026-04-19T02:35:20Z",
     "started_at": "2026-04-09T05:01:05Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:05Z"
   },
   "account-upgrade": {
@@ -11,28 +12,33 @@
     "until": "2026-04-05T15:54:10Z"
   },
   "afrexai-business-automation": {
+    "failed_at": "2026-04-19T02:35:20Z",
     "started_at": "2026-04-09T05:01:06Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:06Z"
   },
   "agentic-mcp-server-builder": {
+    "failed_at": "2026-04-19T02:35:20Z",
     "started_at": "2026-04-09T05:01:06Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:06Z"
   },
   "agentic-workflow-automation": {
+    "failed_at": "2026-04-19T02:35:21Z",
     "started_at": "2026-04-09T05:01:06Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:06Z"
   },
   "ai-automation-workflow": {
+    "failed_at": "2026-04-19T02:35:21Z",
     "started_at": "2026-04-09T05:01:06Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:06Z"
   },
   "ai-ceo-automation": {
+    "failed_at": "2026-04-19T02:35:21Z",
     "started_at": "2026-04-09T05:01:06Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:06Z"
   },
   "ai-mentor": {
@@ -42,33 +48,39 @@
     "until": "2026-04-05T15:59:55Z"
   },
   "ai-vulnerability-tracker": {
+    "failed_at": "2026-04-19T02:35:21Z",
     "started_at": "2026-04-09T05:01:06Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:06Z"
   },
   "automation-tool": {
+    "failed_at": "2026-04-19T02:35:21Z",
     "started_at": "2026-04-09T05:01:07Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:07Z"
   },
   "automation-workflow-builder": {
+    "failed_at": "2026-04-19T02:35:21Z",
     "started_at": "2026-04-09T05:01:07Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:07Z"
   },
   "automation-workflows": {
+    "failed_at": "2026-04-19T02:35:21Z",
     "started_at": "2026-04-09T05:01:07Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:07Z"
   },
   "automation-workflows-0-1-0": {
+    "failed_at": "2026-04-19T02:35:21Z",
     "started_at": "2026-04-09T05:01:07Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:07Z"
   },
   "carsxe": {
+    "failed_at": "2026-04-19T02:35:22Z",
     "started_at": "2026-04-09T05:01:07Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:07Z"
   },
   "clawcv": {
@@ -90,23 +102,27 @@
     "until": "2026-04-05T16:11:54Z"
   },
   "cyber-ir-playbook": {
+    "failed_at": "2026-04-19T02:35:22Z",
     "started_at": "2026-04-09T05:01:08Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:08Z"
   },
   "cyber-kev-triage": {
+    "failed_at": "2026-04-19T02:35:22Z",
     "started_at": "2026-04-09T05:01:08Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:08Z"
   },
   "cyber-owasp-review": {
+    "failed_at": "2026-04-19T02:35:22Z",
     "started_at": "2026-04-09T05:01:08Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:08Z"
   },
   "daily-health-report": {
+    "failed_at": "2026-04-19T02:35:22Z",
     "started_at": "2026-04-09T05:01:08Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:08Z"
   },
   "demo-skill": {
@@ -122,103 +138,123 @@
     "until": "2026-04-05T15:27:12Z"
   },
   "dht11-temp": {
+    "failed_at": "2026-04-19T02:35:22Z",
     "started_at": "2026-04-09T05:01:08Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:08Z"
   },
   "dl-transformer-finetune": {
+    "failed_at": "2026-04-19T02:35:22Z",
     "started_at": "2026-04-09T05:01:08Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:08Z"
   },
   "docs-pipeline-automation": {
+    "failed_at": "2026-04-19T02:35:22Z",
     "started_at": "2026-04-09T05:01:09Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:09Z"
   },
   "esp32": {
+    "failed_at": "2026-04-19T02:35:23Z",
     "started_at": "2026-04-09T05:01:09Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:09Z"
   },
   "google-workspace-automation": {
+    "failed_at": "2026-04-19T02:35:23Z",
     "started_at": "2026-04-09T05:01:09Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:09Z"
   },
   "ha-ultimate": {
+    "failed_at": "2026-04-19T02:35:23Z",
     "started_at": "2026-04-09T05:01:09Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:09Z"
   },
   "home-assistant": {
+    "failed_at": "2026-04-19T02:35:23Z",
     "started_at": "2026-04-09T05:01:09Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:09Z"
   },
   "home-assistant-agent-secure": {
+    "failed_at": "2026-04-19T02:35:23Z",
     "started_at": "2026-04-09T05:01:09Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:09Z"
   },
   "home-assistant-bridge-python": {
+    "failed_at": "2026-04-19T02:35:23Z",
     "started_at": "2026-04-09T05:01:10Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:10Z"
   },
   "home-assistant-master": {
+    "failed_at": "2026-04-19T02:35:23Z",
     "started_at": "2026-04-09T05:01:10Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:10Z"
   },
   "home-assistant-skill": {
+    "failed_at": "2026-04-19T02:35:23Z",
     "started_at": "2026-04-13T05:00:49Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-14T05:00:49Z"
   },
   "home-assistant-toolkit": {
+    "failed_at": "2026-04-19T02:35:23Z",
     "started_at": "2026-04-09T05:01:10Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:10Z"
   },
   "homeassistant-assist": {
+    "failed_at": "2026-04-19T02:35:24Z",
     "started_at": "2026-04-09T05:01:10Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:10Z"
   },
   "homeassistant-cli": {
+    "failed_at": "2026-04-19T02:35:24Z",
     "started_at": "2026-04-09T05:01:10Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:10Z"
   },
   "homeassistant-selora": {
+    "failed_at": "2026-04-19T02:35:24Z",
     "started_at": "2026-04-10T05:05:22Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-11T05:05:22Z"
   },
   "homelab-ai": {
+    "failed_at": "2026-04-19T02:35:24Z",
     "started_at": "2026-04-09T05:01:11Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:11Z"
   },
   "homelab-cluster": {
+    "failed_at": "2026-04-19T02:35:24Z",
     "started_at": "2026-04-09T05:01:11Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:11Z"
   },
   "homelab-runbook": {
+    "failed_at": "2026-04-19T02:35:24Z",
     "started_at": "2026-04-09T17:04:01Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T17:04:01Z"
   },
   "homeserver": {
+    "failed_at": "2026-04-19T02:35:24Z",
     "started_at": "2026-04-09T05:01:11Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:11Z"
   },
   "iot": {
+    "failed_at": "2026-04-19T02:35:24Z",
     "started_at": "2026-04-09T05:01:11Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:11Z"
   },
   "jiuwu-agent": {
@@ -240,28 +276,33 @@
     "until": "2026-04-05T15:59:55Z"
   },
   "led-ctrl": {
+    "failed_at": "2026-04-19T02:35:25Z",
     "started_at": "2026-04-09T05:01:11Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:11Z"
   },
   "mcp-hass": {
+    "failed_at": "2026-04-19T02:35:25Z",
     "started_at": "2026-04-09T05:01:11Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:11Z"
   },
   "ml-experiment-tracker": {
+    "failed_at": "2026-04-19T02:35:25Z",
     "started_at": "2026-04-09T05:01:12Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:12Z"
   },
   "moltbot-ha": {
+    "failed_at": "2026-04-19T02:35:25Z",
     "started_at": "2026-04-09T05:01:12Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:12Z"
   },
   "obsidian-cli-skills": {
+    "failed_at": "2026-04-19T02:35:25Z",
     "started_at": "2026-04-09T05:01:12Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:12Z"
   },
   "openclaw-rag": {
@@ -295,18 +336,21 @@
     "until": "2026-04-05T16:11:56Z"
   },
   "pi-admin": {
+    "failed_at": "2026-04-19T02:35:25Z",
     "started_at": "2026-04-14T17:02:13Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-15T17:02:13Z"
   },
   "pi-health": {
+    "failed_at": "2026-04-19T02:35:25Z",
     "started_at": "2026-04-14T17:02:14Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-15T17:02:14Z"
   },
   "pinets": {
+    "failed_at": "2026-04-19T02:35:25Z",
     "started_at": "2026-04-13T17:02:17Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-14T17:02:17Z"
   },
   "polymarket-openclaw-trader": {
@@ -316,38 +360,45 @@
     "until": "2026-04-05T16:11:56Z"
   },
   "productivity-automation-kit": {
+    "failed_at": "2026-04-19T02:35:26Z",
     "started_at": "2026-04-09T05:01:12Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:12Z"
   },
   "raspberry": {
+    "failed_at": "2026-04-19T02:35:26Z",
     "started_at": "2026-04-09T05:01:12Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:12Z"
   },
   "raspberry-pi-camera-service": {
+    "failed_at": "2026-04-19T02:35:26Z",
     "started_at": "2026-04-09T05:01:12Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:12Z"
   },
   "raspberry-pi-gpio": {
+    "failed_at": "2026-04-19T02:35:26Z",
     "started_at": "2026-04-09T05:01:13Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:13Z"
   },
   "raspberry-pi-servo": {
+    "failed_at": "2026-04-19T02:35:26Z",
     "started_at": "2026-04-09T05:01:13Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:13Z"
   },
   "rdk-x5-gpio": {
+    "failed_at": "2026-04-19T02:35:26Z",
     "started_at": "2026-04-09T05:01:13Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:13Z"
   },
   "rdk-x5-tros": {
+    "failed_at": "2026-04-19T02:35:26Z",
     "started_at": "2026-04-09T05:01:13Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:13Z"
   },
   "resilience-check": {
@@ -375,18 +426,27 @@
     "until": "2026-04-05T03:20:26Z"
   },
   "session-rotate-80": {
+    "failed_at": "2026-04-19T02:35:26Z",
     "started_at": "2026-04-09T05:01:13Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:13Z"
   },
   "triple-layer-memory": {
+    "failed_at": "2026-04-19T02:35:26Z",
     "started_at": "2026-04-09T05:01:13Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:13Z"
   },
+  "truenas-skill": {
+    "failed_at": "2026-04-19T02:35:27Z",
+    "started_at": "2026-04-14T17:02:14Z",
+    "status": "failed",
+    "until": "2026-04-15T17:02:14Z"
+  },
   "wechat-automation": {
+    "failed_at": "2026-04-19T02:35:27Z",
     "started_at": "2026-04-09T05:01:14Z",
-    "status": "running",
+    "status": "failed",
     "until": "2026-04-10T05:01:14Z"
   },
   "wechat-layout-publish": {
@@ -400,5 +460,10 @@
     "started_at": "2026-04-04T16:11:58Z",
     "status": "promoted",
     "until": "2026-04-05T16:11:58Z"
+  },
+  "__sweep-test__": {
+    "started_at": "2026-04-01T00:00:00Z",
+    "until": "2026-04-02T00:00:00Z",
+    "status": "running"
   }
 }

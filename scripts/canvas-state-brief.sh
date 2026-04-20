@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="/home/steges"
 STATE_DIR="$ROOT/agent/skills/skill-forge/.state"
-OUT="$ROOT/agent/skills/openclaw-ui/html/state-brief.latest.json"
+OUT="$ROOT/infra/canvas/html/state-brief.latest.json"
 
 python3 - "$STATE_DIR" "$OUT" <<'PY'
 import json

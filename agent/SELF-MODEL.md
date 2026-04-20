@@ -66,7 +66,7 @@ Meine Kernaufgaben:
 | **health** | Skill-Health-Report und Budget-Check | Aktiv |
 | **metrics** | Orchestrate-Lauf-Metriken, Weekly-Reports | Aktiv |
 | **vuln-watch** | Wöchentliche AI/LLM-Sicherheitslücken-Suche, schreibt vuln-log.md | Aktiv |
-| **openclaw-ui** | Canvas UI für OpenClaw-Bedienung (Port 8090) | Aktiv |
+| **canvas-ui** | Canvas UI für OpenClaw-Bedienung (Port 8090) – `infra/canvas/html/` | Aktiv |
 | **runbook-maintenance** | Wöchentliche Maintenance-Checks, Runbook-Routing | Aktiv |
 | **learn** | Learnings sammeln und als neue Skill-Drafts extrahieren | Aktiv |
 | **profile** | Usage-Keyword-Profil für Scout-Discovery | Aktiv |

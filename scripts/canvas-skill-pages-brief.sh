@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="/home/steges"
 STATE_DIR="$ROOT/agent/skills/skill-forge/.state"
 SKILLS_DIR="$ROOT/agent/skills"
-OUT="$ROOT/agent/skills/openclaw-ui/html/skill-pages.latest.json"
+OUT="$ROOT/infra/canvas/html/skill-pages.latest.json"
 
 python3 - "$STATE_DIR" "$SKILLS_DIR" "$OUT" <<'PY'
 import json

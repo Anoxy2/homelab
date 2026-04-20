@@ -10,7 +10,7 @@ MAX_AGE_HOURS="${BACKUP_VERIFY_MAX_AGE_HOURS:-48}"
 source "$SCRIPT_DIR/lib/env.sh"
 load_dotenv
 
-BACKUP_DIR="$HOME/backups"
+USB_BACKUP_ROOT="/mnt/usb-backup/backups"
 ERRORS=0
 
 send_telegram() {
@@ -24,57 +24,51 @@ send_telegram() {
     --data-urlencode "text=$msg" >/dev/null || true
 }
 
-# Lokale tar.gz Backups prüfen
+# USB-Backup prüfen (Verzeichnis-Format, kein tar.gz)
 check_local_backups() {
   local errors=0
   local latest_backup=""
-  local latest_time=0
-  
-  # Neuestes Backup-Verzeichnis finden
-  if [[ -d "$BACKUP_DIR" ]]; then
-    latest_backup=$(find "$BACKUP_DIR" -maxdepth 1 -type d -name '20*' | sort | tail -1)
-  fi
-  
-  if [[ -z "$latest_backup" ]]; then
-    echo "WARNING: Kein lokales Backup-Verzeichnis gefunden"
+
+  # USB gemountet?
+  if ! mountpoint -q /mnt/usb-backup 2>/dev/null; then
+    echo "ERROR: USB nicht gemountet (/mnt/usb-backup)"
     return 1
   fi
-  
-  echo "Prüfe lokales Backup: $(basename "$latest_backup")"
-  
-  # Prüfe ob Archive existieren und nicht leer sind
-  local archives=0
-  local empty_archives=0
-  
-  for archive in "$latest_backup"/*.tar.gz; do
-    if [[ -f "$archive" ]]; then
-      ((archives++))
-      if [[ ! -s "$archive" ]]; then
-        echo "ERROR: Leeres Archiv: $(basename "$archive")"
-        ((empty_archives++))
-        ((errors++))
-      fi
+
+  # Neuestes Backup-Verzeichnis finden (Format: YYYYMMDD)
+  latest_backup=$(ls -t "$USB_BACKUP_ROOT/" 2>/dev/null | grep -E '^20[0-9]{6}$' | head -1)
+
+  if [[ -z "$latest_backup" ]]; then
+    echo "WARNING: Kein USB-Backup-Verzeichnis gefunden in $USB_BACKUP_ROOT"
+    return 1
+  fi
+
+  local backup_dir="$USB_BACKUP_ROOT/$latest_backup"
+  echo "Prüfe USB-Backup: $latest_backup"
+
+  # Pflicht-Verzeichnisse prüfen
+  local required=(openclaw-memory pihole homeassistant vaultwarden secrets ssh mosquitto esphome authelia uptime-kuma)
+  local missing=0
+  for item in "${required[@]}"; do
+    if [[ ! -e "$backup_dir/$item" ]]; then
+      echo "ERROR: Fehlendes Backup-Verzeichnis: $item"
+      ((missing++))
+      ((errors++))
     fi
   done
-  
-  if [[ $archives -eq 0 ]]; then
-    echo "ERROR: Keine tar.gz Archive im Backup-Verzeichnis"
-    ((errors++))
-  else
-    echo "OK: $archives Archive geprüft, $empty_archives leer"
-  fi
-  
-  # Prüfe Alter (nicht älter als MAX_AGE_HOURS)
+  [[ $missing -eq 0 ]] && echo "OK: Alle ${#required[@]} Pflicht-Verzeichnisse vorhanden"
+
+  # Alter prüfen
   local backup_age_hours
-  backup_age_hours=$(($(date +%s) - $(stat -c %Y "$latest_backup")) / 3600)
-  
+  backup_age_hours=$(( ($(date +%s) - $(stat -c %Y "$backup_dir")) / 3600 ))
+
   if [[ $backup_age_hours -gt $MAX_AGE_HOURS ]]; then
     echo "WARNING: Backup ist ${backup_age_hours}h alt (Max: ${MAX_AGE_HOURS}h)"
     ((errors++))
   else
     echo "OK: Backup-Alter ${backup_age_hours}h (Max: ${MAX_AGE_HOURS}h)"
   fi
-  
+
   return $errors
 }
 
