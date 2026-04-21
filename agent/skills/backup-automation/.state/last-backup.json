@@ -1,7 +1,7 @@
 {
-  "timestamp": "20260419_020146",
-  "date": "20260419",
-  "github": {"success": true, "commit": "445fea2", "action": "commit+push"},
-  "usb": {"success": true, "path": "/mnt/usb-backup/backups/20260419", "size_mb": 60, "files": 143},
+  "timestamp": "20260420_020214",
+  "date": "20260420",
+  "github": {"success": true, "commit": "d3b488e", "action": "commit+push"},
+  "usb": {"success": true, "path": "/mnt/usb-backup/backups/20260420", "size_mb": 67, "files": 147},
   "overall_success": true
 }
